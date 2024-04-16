@@ -6,11 +6,13 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 17:32:57 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/15 19:00:42 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/16 14:13:19 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+int		no_dupplicate_check(void	*data, t_garbage_collect *gc);
 
 int	add_to_trash(t_garbage_collect **root, void *to_free)
 {
@@ -59,6 +61,18 @@ int empty_trash(t_garbage_collect *gc)
 
 void	*setter_gc(void *data_to_set, t_garbage_collect **gc)
 {
-	add_to_trash(gc, data_to_set);
+	if (no_dupplicate_check(data_to_set, *gc) == 1)
+		add_to_trash(gc, data_to_set);
 	return (data_to_set);
+}
+
+int		no_dupplicate_check(void	*data, t_garbage_collect *gc)
+{
+	while (gc)
+	{
+		if (gc->to_free == data)
+			return (0);
+		gc = gc->next;
+	}
+	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 16:11:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/15 19:09:48 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/16 16:33:07 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,22 +46,14 @@ int	export(t_env_node **root, void *variable, t_garbage_collect **gc)
 	same_name_node = check_if_variable_exist(*root, variable);
 	if (same_name_node)
 	{
-		same_name_node->variable_name = get_env_name(variable);
-		same_name_node->variable = get_env_var(variable);
-		add_to_trash(gc, same_name_node->variable);
-		add_to_trash(gc, same_name_node->variable_name);
-		// new_node->variable_name = (char *)setter_gc(get_env_name(variable), gc);
-		// new_node->variable = (char *)setter_gc(get_env_var(variable), gc);
+		same_name_node->variable_name = (char *)setter_gc(get_env_name(variable), gc);
+		same_name_node->variable = (char *)setter_gc(get_env_var(variable), gc);
 		return (1);
 	}
 	new_node = malloc_trash(sizeof(t_env_node), gc);
 	if (!new_node)
 		return (0);
 	new_node->next = NULL;
-	// new_node->variable_name = get_env_name(variable);
-	// new_node->variable = get_env_var(variable);
-	// add_to_trash(gc, new_node->variable);
-	// add_to_trash(gc, new_node->variable_name);
 	new_node->variable_name = (char *)setter_gc(get_env_name(variable), gc);
 	new_node->variable = (char *)setter_gc(get_env_var(variable), gc);
 	if ((*root) == NULL)

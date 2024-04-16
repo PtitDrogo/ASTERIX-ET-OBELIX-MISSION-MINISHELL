@@ -21,7 +21,7 @@ SRCS =		$(SRCS_DIR)/export.c \
 #---------------------------------Compilation & Linking---------------------------------#
 CC		=	cc
 RM		=	rm -f
-CFLAGS	=	-lreadline -g3 
+CFLAGS	=	  -g3
 LINKLIBS = -L libft/ -lft
 INCLUDES = -I $(HEADER_DIR) -I libft
 
@@ -52,7 +52,7 @@ $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c $(HEADER_DIR)/$(HEADER_FILE)
 
 $(NAME): $(OBJS) $(LIBFT) Makefile
 	@echo "$(YELLOW)Compiling [$<]$(RESET)"
-	@$(CC) $(OBJS) $(CFLAGS) $(INCLUDES) $(LINKLIBS) -o $@ 
+	@$(CC) $(OBJS) $(CFLAGS) -lreadline $(INCLUDES) $(LINKLIBS) -o $@ 
 	@printf $(UP)$(CUT)
 	@echo "$(GREEN)$(NAME) compiled!$(RESET)"
 

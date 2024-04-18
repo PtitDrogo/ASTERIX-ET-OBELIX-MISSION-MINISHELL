@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 14:57:56 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/18 15:39:26 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/18 15:47:08 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,3 +75,5 @@ bool	too_many_arguments(char *str)
 
 //error because letter will still execute,
 //error because too many argument doesnt executes;
+
+//lalalalallalalaa

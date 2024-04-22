@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/22 17:44:23 by garivo           ###   ########.fr       */
+/*   Updated: 2024/04/18 11:16:05 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
+#ifndef MINISHELL_H
+# define MINISHELL_H
 
 ///------------------------Includes------------------------///
 #include <stdio.h>
@@ -125,4 +126,6 @@ t_token	*dup_token(t_token *token, t_garbage_collect **gc);
 // 	free(input);
 // 	// test();
 // 	return (0);
-// }*/
+*/
+
+#endif

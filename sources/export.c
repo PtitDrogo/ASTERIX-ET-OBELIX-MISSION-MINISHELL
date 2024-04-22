@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 16:11:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/16 16:33:07 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/16 17:49:50 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,6 +157,3 @@ int	generate_env_llist(t_env_node **env_dup_root, t_garbage_collect **gc, char *
 	}
 	return (1);
 }
-
-
-

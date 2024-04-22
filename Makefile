@@ -1,31 +1,33 @@
 #---------------------------------Variables---------------------------------#
 
 OBJS_DIR	=	.objs
+DEPS_DIR	=	.deps
 SRCS_DIR	=	sources
 HEADER_DIR	=	includes
-HEADER_FILE = 	minishell.h
 LIBFT		=	./libft/libft.a
 NAME		=	minishell
 OBJS	=	$(patsubst $(SRCS_DIR)%.c, $(OBJS_DIR)%.o, $(SRCS))
+DEPS 	= 	$(OBJS:.o=.d)
 #------------------------------------------------------------------------#
 
 #---------------------------------Sources---------------------------------#
-SRCS =		$(SRCS_DIR)/export.c 				\
-			$(SRCS_DIR)/garbage_collector.c 	\
-			$(SRCS_DIR)/unset.c 				\
-			$(SRCS_DIR)/utils.c 				\
-			$(SRCS_DIR)/readline.c 				\
-			$(SRCS_DIR)/env.c					\
-			$(SRCS_DIR)/parser.c				\
+SRCS =		$(SRCS_DIR)/export.c \
+			$(SRCS_DIR)/garbage_collector.c \
+			$(SRCS_DIR)/unset.c \
+			$(SRCS_DIR)/utils.c \
+			$(SRCS_DIR)/readline.c \
+			$(SRCS_DIR)/env.c \
+      $(SRCS_DIR)/parser.c				\
 			$(SRCS_DIR)/lexer.c
 #------------------------------------------------------------------------#
 
 #---------------------------------Compilation & Linking---------------------------------#
 CC		=	cc
 RM		=	rm -f
-CFLAGS	=	  -g3
-LINKLIBS = -L libft/ -lft
-INCLUDES = -I $(HEADER_DIR) -I libft
+
+CFLAGS	=	-g3 
+LINKLIBS = -L libft/ -lft 
+INCLUDES = -I $(HEADER_DIR) -I libft -MMD -MP
 
 #------------------------------------------------------------------------#
 
@@ -40,13 +42,14 @@ CUT		=	"\033[K"
 
 
 all: $(NAME)
+-include $(DEPS)
 
 $(LIBFT): FORCE
 	@$(MAKE) --no-print-directory -C ./libft
 
 FORCE:
 
-$(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c $(HEADER_DIR)/$(HEADER_FILE)
+$(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c
 	@mkdir -p $(@D)
 	@echo "$(YELLOW)Compiling [$<]$(RESET)"
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@ 

@@ -68,6 +68,7 @@ int	basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *input
 	if (input == NULL || input[0] == '\0')
 		return (1);
 	split_input = ft_split(input, ' ');
+
 	setter_double_p_gc((void **)split_input, gc);
 	parse(split_input, gc);
 	/*if (ft_strncmp(split_input[0], "unset", ft_strlen("unset")) == 0)

@@ -90,4 +90,3 @@ void    *setter_double_p_gc(void **data_to_set, t_garbage_collect **gc)
     setter_gc(data_to_set, gc);
     return (data_to_set);
 }
-

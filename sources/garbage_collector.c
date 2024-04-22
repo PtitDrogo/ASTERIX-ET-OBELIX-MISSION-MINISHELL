@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 17:32:57 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/22 19:42:18 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/22 20:12:06 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	add_to_trash(t_garbage_collect **root, void *to_free)
 
 	new_node = malloc(sizeof(t_garbage_collect));
 	if (!new_node)
-		return (0);
+		return (0); //TODO, on fail, empty trash then exit ?
 	new_node->next = NULL;
 	new_node->to_free = to_free;
 	if ((*root) == NULL)

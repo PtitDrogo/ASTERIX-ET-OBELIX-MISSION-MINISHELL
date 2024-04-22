@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/22 19:37:11 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/22 20:02:02 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,10 +97,10 @@ char	*get_next_line(int fd);
 char	*ft_strdup(const char *src);
 size_t	ft_strlen(const char *s);
 char	*ft_strnstr(const char *big, const char *little, size_t len);
-int	ft_isalpha(int c);
-int	ft_isalnum(int c);
-int	ft_isdigit(int c);
-int	ft_strncmp(char *s1, char *s2, size_t n);
+int		ft_isalpha(int c);
+int		ft_isalnum(int c);
+int		ft_isdigit(int c);
+int		ft_strncmp(char *s1, char *s2, size_t n);
 char	**ft_split(char const *s, char c);
 void	ft_free_array(void **array);
 int		ft_atoi(const char *nptr);

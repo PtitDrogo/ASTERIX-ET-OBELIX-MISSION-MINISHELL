@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   garbage_collector.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 17:32:57 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/16 14:13:19 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/22 17:40:49 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,4 +75,18 @@ int		no_dupplicate_check(void	*data, t_garbage_collect *gc)
 		gc = gc->next;
 	}
 	return (1);
+}
+
+void    *setter_double_p_gc(void **data_to_set, t_garbage_collect **gc)
+{
+    int    i;
+    
+    i = 0;
+    while (data_to_set[i])
+    {
+        setter_gc(data_to_set[i], gc);
+        i++;
+    }
+    setter_gc(data_to_set, gc);
+    return (data_to_set);
 }

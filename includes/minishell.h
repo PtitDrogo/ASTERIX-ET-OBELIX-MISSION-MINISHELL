@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/16 22:49:58 by garivo           ###   ########.fr       */
+/*   Updated: 2024/04/22 17:44:23 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <unistd.h>
-#include "minishell_parsing.h"
 
 
 ///------------------------Structs------------------------///
@@ -30,15 +29,40 @@ typedef struct s_env_node {
 	struct s_env_node	*next;
 	char				*variable_name;
 	char				*variable;
-} t_env_node;
+}	t_env_node;
 
 typedef struct s_garbage_collect
 {
 	void						*to_free;
 	struct s_garbage_collect	*next;
-	
-} t_garbage_collect;
+}	t_garbage_collect;
 
+typedef enum s_tok_val
+{
+	PIPE = 1,
+	GREAT,
+	D_GREAT,
+	LESS,
+	D_LESS,
+	STR
+}	t_tok_val;
+
+typedef struct s_token
+{
+	char			*str;
+	t_tok_val		type;
+	struct s_token	*next;
+}	t_token;
+
+typedef struct s_cmd
+{
+	char					**str;
+	//int						(*builtin)(t_tools *, struct s_simple_cmds *);
+	int						num_redirections;
+	char					*hd_file_name;
+	t_token					*redirections;
+	struct s_cmd			*next;
+}	t_cmd;
 
 ///------------------------Functions------------------------///
 
@@ -47,6 +71,7 @@ int		add_to_trash(t_garbage_collect **root, void *to_free);
 void    *malloc_trash(int size, t_garbage_collect **gc);
 int 	empty_trash(t_garbage_collect *gc);
 void	*setter_gc(void *data_to_set, t_garbage_collect **gc);
+void    *setter_double_p_gc(void **data_to_set, t_garbage_collect **gc);
 
 //BUILT INS
 int	unset(t_env_node *env_dup_root, char *env_to_find);
@@ -71,8 +96,12 @@ int	ft_isdigit(int c);
 int	ft_strncmp(char *s1, char *s2, size_t n);
 char	**ft_split(char const *s, char c);
 void	ft_free_array(void **array);
-void	parse(char **input);
 
+///------------------------Parser/Lexer------------------------///
+void	parse(char **input, t_garbage_collect **gc);
+t_token	*tokenize(char **input, t_garbage_collect **gc);
+void	add_token(t_token **tokenpile, t_token *new_token);
+t_token	*dup_token(t_token *token, t_garbage_collect **gc);
 
 
 

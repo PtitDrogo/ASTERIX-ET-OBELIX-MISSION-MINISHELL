@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/16 20:53:51 by garivo           ###   ########.fr       */
+/*   Updated: 2024/04/22 17:56:24 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,9 @@ int	basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *input
 	if (input == NULL || input[0] == '\0')
 		return (1);
 	split_input = ft_split(input, ' ');
-	parse(split_input);
-	if (ft_strncmp(split_input[0], "unset", ft_strlen("unset")) == 0)
+	setter_double_p_gc((void **)split_input, gc);
+	parse(split_input, gc);
+	/*if (ft_strncmp(split_input[0], "unset", ft_strlen("unset")) == 0)
 		unset(*env_dup_root, split_input[1]);
 	if (ft_strncmp(split_input[0], "export", ft_strlen("export")) == 0)
 	{	
@@ -81,8 +82,8 @@ int	basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *input
 		}
 	}
 	if (ft_strncmp(split_input[0], "env", ft_strlen("env")) == 0)
-		env(*env_dup_root);
-	ft_free_array((void **)split_input);
+		env(*env_dup_root);*/
+	//ft_free_array((void **)split_input); broken af, I need what's inside even after
 	return (0);
 }
 

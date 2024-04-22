@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/22 20:02:02 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/22 20:25:49 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ typedef struct s_garbage_collect
 ///------------------------Defines------------------------///
 
 #define ATOI_ERROR 3000000000
+#define MALLOC_ERROR 42
 
 typedef enum s_tok_val
 {
@@ -77,6 +78,7 @@ void    *malloc_trash(int size, t_garbage_collect **gc);
 int 	empty_trash(t_garbage_collect *gc);
 void	*setter_gc(void *data_to_set, t_garbage_collect **gc);
 void	**setter_double_p_gc(void **data_to_set, t_garbage_collect **gc);
+void	empty_trash_exit(t_garbage_collect *gc, int exit_code);
 
 //BUILT INS
 int	unset(t_env_node *env_dup_root, char *env_to_find);

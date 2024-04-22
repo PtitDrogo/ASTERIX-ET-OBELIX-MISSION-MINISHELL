@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/09 13:11:39 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/03/13 13:34:14 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/22 18:55:31 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ typedef struct s_list
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 10
 # endif
+
+#define ATOI_ERROR 3000000000
 
 ///gnl///
 void	ft_free_array(void **array);

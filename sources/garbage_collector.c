@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   garbage_collector.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 17:32:57 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/22 17:40:49 by garivo           ###   ########.fr       */
+/*   Updated: 2024/04/22 19:42:18 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 int		no_dupplicate_check(void	*data, t_garbage_collect *gc);
 
+//creates a new node to store it into the gc
 int	add_to_trash(t_garbage_collect **root, void *to_free)
 {
 	t_garbage_collect	*new_node;
@@ -59,6 +60,7 @@ int empty_trash(t_garbage_collect *gc)
 	return (1);
 }
 
+//this adds a malloced pointer to garbage collect
 void	*setter_gc(void *data_to_set, t_garbage_collect **gc)
 {
 	if (no_dupplicate_check(data_to_set, *gc) == 1)
@@ -66,6 +68,21 @@ void	*setter_gc(void *data_to_set, t_garbage_collect **gc)
 	return (data_to_set);
 }
 
+void	**setter_double_p_gc(void **data_to_set, t_garbage_collect **gc)
+{
+	int	i;
+	
+	i = 0;
+	while (data_to_set[i])
+	{
+		setter_gc(data_to_set[i], gc);
+		i++;
+	}
+	setter_gc(data_to_set, gc);
+	return (data_to_set);
+}
+
+//so we dont add the same data twice
 int		no_dupplicate_check(void	*data, t_garbage_collect *gc)
 {
 	while (gc)
@@ -77,16 +94,16 @@ int		no_dupplicate_check(void	*data, t_garbage_collect *gc)
 	return (1);
 }
 
-void    *setter_double_p_gc(void **data_to_set, t_garbage_collect **gc)
-{
-    int    i;
-    
-    i = 0;
-    while (data_to_set[i])
-    {
-        setter_gc(data_to_set[i], gc);
-        i++;
-    }
-    setter_gc(data_to_set, gc);
-    return (data_to_set);
-}
+//TODO change this into gc
+/*int	pop(t_env_node *env_dup_root, t_env_node *node_to_pop)
+{	
+	if (!env_dup_root || !node_to_pop)
+		return (0); //gotta check later;
+	while (env_dup_root->next && env_dup_root->next != node_to_pop)	
+		env_dup_root = env_dup_root->next;
+	if (env_dup_root->next == NULL)
+		return (0); // we couldnt find the node to pop
+	env_dup_root->next = env_dup_root->next->next;
+	node_to_pop->variable = NULL;
+	return (1);
+}*/

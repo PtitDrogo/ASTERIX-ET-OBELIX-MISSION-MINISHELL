@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/18 11:16:05 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/22 19:37:11 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,11 @@ typedef struct s_garbage_collect
 {
 	void						*to_free;
 	struct s_garbage_collect	*next;
-}	t_garbage_collect;
+	
+} t_garbage_collect;
+///------------------------Defines------------------------///
+
+#define ATOI_ERROR 3000000000
 
 typedef enum s_tok_val
 {
@@ -72,12 +76,13 @@ int		add_to_trash(t_garbage_collect **root, void *to_free);
 void    *malloc_trash(int size, t_garbage_collect **gc);
 int 	empty_trash(t_garbage_collect *gc);
 void	*setter_gc(void *data_to_set, t_garbage_collect **gc);
-void    *setter_double_p_gc(void **data_to_set, t_garbage_collect **gc);
+void	**setter_double_p_gc(void **data_to_set, t_garbage_collect **gc);
 
 //BUILT INS
 int	unset(t_env_node *env_dup_root, char *env_to_find);
 int	export(t_env_node **root, void *variable, t_garbage_collect **gc);
 int env(t_env_node *env_dup_root);
+int ft_exit(char **args, t_garbage_collect *gc);
 
 //UTILS
 size_t	len_to_char(char *str, char c);
@@ -85,6 +90,7 @@ int	is_char_in_str(char *str, char c);
 int	ft_strcmp(const char *s1, const char *s2);
 int	pop(t_env_node *env_dup_root, t_env_node *node_to_pop);
 int	generate_env_llist(t_env_node **env_dup_root, t_garbage_collect **gc, char **envp);
+int	count_nodes(t_env_node *root);
 
 ///------------------------Libft------------------------///
 char	*get_next_line(int fd);
@@ -97,6 +103,8 @@ int	ft_isdigit(int c);
 int	ft_strncmp(char *s1, char *s2, size_t n);
 char	**ft_split(char const *s, char c);
 void	ft_free_array(void **array);
+int		ft_atoi(const char *nptr);
+long	ft_safe_atoi(const char *nptr);
 
 ///------------------------Parser/Lexer------------------------///
 void	parse(char **input, t_garbage_collect **gc);

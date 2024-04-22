@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 14:47:08 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/16 22:49:27 by garivo           ###   ########.fr       */
+/*   Updated: 2024/04/22 19:43:05 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,20 @@ int	is_char_in_str(char *str, char c)
 		i++;
 	}
 	return (0);
+}
+
+//count what nth node the node is
+int	count_nodes(t_env_node *root)
+{
+	int	i;
+
+	i = 0;
+	while (root)
+	{
+		i++;
+		root = root->next;
+	}
+	return (i);
 }
 
 int	ft_strcmp(const char *s1, const char *s2)

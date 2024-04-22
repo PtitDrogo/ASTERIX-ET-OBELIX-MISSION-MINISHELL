@@ -15,14 +15,17 @@ SRCS =		$(SRCS_DIR)/export.c \
 			$(SRCS_DIR)/garbage_collector.c \
 			$(SRCS_DIR)/unset.c \
 			$(SRCS_DIR)/utils.c \
-			$(SRCS_DIR)/theo_readline.c \
 			$(SRCS_DIR)/env.c \
-			$(SRCS_DIR)/exit.c 
+			$(SRCS_DIR)/exit.c \
+			$(SRCS_DIR)/readline.c \
+      		$(SRCS_DIR)/parser.c \
+			$(SRCS_DIR)/lexer.c
 #------------------------------------------------------------------------#
 
 #---------------------------------Compilation & Linking---------------------------------#
 CC		=	cc
 RM		=	rm -f
+
 CFLAGS	=	-g3 
 LINKLIBS = -L libft/ -lft 
 INCLUDES = -I $(HEADER_DIR) -I libft -MMD -MP

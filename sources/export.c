@@ -157,4 +157,3 @@ int	generate_env_llist(t_env_node **env_dup_root, t_garbage_collect **gc, char *
 	}
 	return (1);
 }
-

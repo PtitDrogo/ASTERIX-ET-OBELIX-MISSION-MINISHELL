@@ -19,7 +19,8 @@ SRCS =		$(SRCS_DIR)/export.c \
 			$(SRCS_DIR)/exit.c \
 			$(SRCS_DIR)/readline.c \
       		$(SRCS_DIR)/parser.c \
-			$(SRCS_DIR)/lexer.c
+			$(SRCS_DIR)/lexer.c \
+			$(SRCS_DIR)/export_utils.c
 #------------------------------------------------------------------------#
 
 #---------------------------------Compilation & Linking---------------------------------#

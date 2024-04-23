@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 16:11:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/22 16:04:31 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/23 18:00:53 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@ int			unset(t_env_node *env_dup_root, char *env_to_find);
 int			export(t_env_node **root, void *variable, t_garbage_collect **gc);
 int			pop(t_env_node *env_dup_root, t_env_node *node_to_pop);
 t_env_node *check_if_variable_exist(t_env_node *root, void *variable);
-int			is_valid_env_name(char *name);
-char		*get_env_name(const char *src);
-char		*get_env_var(const char *src);
+int			is_valid_env_name(char *name, t_garbage_collect *gc);
+char		*get_env_name(const char *src, t_garbage_collect **gc);
+char		*get_env_var(const char *src, t_garbage_collect **gc);
 
 
 //TODO make this universal later
@@ -41,21 +41,21 @@ int	export(t_env_node **root, void *variable, t_garbage_collect **gc)
 	t_env_node	*current;
 	t_env_node	*same_name_node;
 	
-	if (is_valid_env_name(variable) == 0)
+	if (is_valid_env_name(variable, *gc) == 0)
 		return (2); //different error that SHOULDNT terminate the shell
 	same_name_node = check_if_variable_exist(*root, variable);
 	if (same_name_node)
 	{
-		same_name_node->variable_name = (char *)setter_gc(get_env_name(variable), gc);
-		same_name_node->variable = (char *)setter_gc(get_env_var(variable), gc);
+		same_name_node->variable_name = get_env_name(variable, gc);
+		same_name_node->variable = get_env_var(variable, gc);
 		return (1);
 	}
 	new_node = malloc_trash(sizeof(t_env_node), gc);
 	if (!new_node)
 		return (0);
 	new_node->next = NULL;
-	new_node->variable_name = (char *)setter_gc(get_env_name(variable), gc);
-	new_node->variable = (char *)setter_gc(get_env_var(variable), gc);
+	new_node->variable_name = get_env_name(variable, gc);
+	new_node->variable = get_env_var(variable, gc);
 	if ((*root) == NULL)
 	{
 		*root = new_node;
@@ -69,20 +69,27 @@ int	export(t_env_node **root, void *variable, t_garbage_collect **gc)
 }
 
 //this function checks if the env var name is valid;
-int	is_valid_env_name(char *name)
+int	is_valid_env_name(char *name, t_garbage_collect *gc)
 {
 	int	i;
 	
 	if (ft_isalpha(name[0]) == 0 && name[0] != '_')
+	{	
+		if (ft_printf_err("bash: export: `%s': not a valid identifier\n", name) == -1)
+			perror_exit(gc, errno, "Error writing error message\n");
 		return (0);
+	}
 	i = 1; // we start after the first letter;
 	while (name[i] && name[i] != '=')
 	{
 		if (ft_isalnum(name[i]) == 0 && name[i] != '_')
+		{	
+			if (ft_printf_err("bash: export: `%s': not a valid identifier\n", name) == -1)
+				perror_exit(gc, errno, "Error writing error message\n");
 			return (0);
+		}
 		i++;
 	}
-	// printf("name is valid !\n");
 	return (1);
 }
 
@@ -109,7 +116,7 @@ t_env_node *check_if_variable_exist(t_env_node *root, void *variable)
 	return (NULL);
 }
 
-char	*get_env_name(const char *src)
+char	*get_env_name(const char *src, t_garbage_collect **gc)
 {
 	int		i;
 	int		j;
@@ -118,7 +125,7 @@ char	*get_env_name(const char *src)
 	i = 0;
 	while (src[i] != '\0' && src[i] != '=')
 		i++;
-	dest = malloc(sizeof(char) * i + 1);
+	dest = malloc_trash(sizeof(char) * i + 1, gc);
 	if (!dest)
 		return (NULL);
 	dest[i] = '\0';
@@ -132,17 +139,25 @@ char	*get_env_name(const char *src)
 	return (dest);
 }
 
-char	*get_env_var(const char *src)
+char	*get_env_var(const char *src, t_garbage_collect **gc)
 {
 	int i;
-
+	char	*to_return;
 	i = 0;
 	while (src[i] != '\0' && src[i] != '=')
 		i++;
 	if (src[i] == '\0')
 		return (NULL);//Could be return empty malloc(but risk of false positive), would also make it different than failed malloc
 	i++; // to go past the '='
-	return (ft_strdup(&src[i]));
+	to_return = ft_strdup(&src[i]);
+	if (to_return == NULL)
+	{
+		if (ft_printf_err("GC Malloc failed\n") == -1)
+			perror_exit(*gc, errno, "Error writing error message\n");
+		empty_trash_exit(*gc, MALLOC_ERROR);
+	}
+	setter_gc(to_return, gc);
+	return (to_return);
 }
 
 int	generate_env_llist(t_env_node **env_dup_root, t_garbage_collect **gc, char **envp)

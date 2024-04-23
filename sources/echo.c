@@ -6,13 +6,13 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:40:04 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/18 14:57:43 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/23 17:14:02 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// #include "minishell.h"
-#include <stdbool.h>
-#include <stdio.h>
+#include "minishell.h"
+// #include <stdbool.h>
+// #include <stdio.h>
 
 char    *n_flag_logic(char *str, bool *n_flag);
 //I want a function i can just dump all the word content to the
@@ -21,15 +21,19 @@ char    *n_flag_logic(char *str, bool *n_flag);
 
 //Ive coded echo assuming I would get the content of every "Word" to the right of it,
 //that means flag and words to print all in one pointer, i can change that if need be
-int echo(char *to_echo)
+int echo(char *to_echo, t_garbage_collect *gc)
 {
     bool    n_flag;
     
     to_echo = n_flag_logic(to_echo, &n_flag);
     
-    printf("%s", to_echo);
+    if (printf("%s", to_echo) == -1)
+        perror_exit(gc, errno, "Printf failed");
     if (n_flag == false)    
-        printf("\n");
+    {
+        if (printf("\n") == -1)
+            perror_exit(gc, errno, "Printf failed");
+    }
     return (1);
 }
 

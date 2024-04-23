@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 17:32:57 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/22 20:28:50 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/23 17:34:31 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	add_to_trash(t_garbage_collect **root, void *to_free)
 
 	new_node = malloc(sizeof(t_garbage_collect));
 	if (!new_node)
-		return (empty_trash(*root), 0); //write a message maybe ? TODO (this will need to free two gc later);
+		return (0); // will need to empty two trashcans later -- we free memory outside of this function
 	new_node->next = NULL;
 	new_node->to_free = to_free;
 	if ((*root) == NULL)
@@ -42,9 +42,19 @@ void    *malloc_trash(int size, t_garbage_collect **gc)
     void *to_return;
 
     to_return = malloc(size);
-    if (add_to_trash(gc, to_return) == 0)
+	if (!to_return)
+	{	
+		if (ft_printf_err("Malloc failed\n") == -1)
+			perror_exit(*gc, errno, "Error writing error message\n");
+		empty_trash_exit(*gc, MALLOC_ERROR);
+	}
+	if (add_to_trash(gc, to_return) == 0)
 	{
-		write(2, "malloc error\n", 13); //use proper stderror later;
+		if (ft_printf_err("GC Malloc failed\n") == -1)
+		{
+			free(to_return);
+			perror_exit(*gc, errno, "Error writing error message\n");
+		} 
 		free(to_return);
 		empty_trash_exit(*gc, MALLOC_ERROR);
 	}
@@ -65,11 +75,20 @@ int empty_trash(t_garbage_collect *gc)
 	return (1);
 }
 
-//this adds a malloced pointer to garbage collect
+//this adds a malloced pointer to garbage collect and returns the pointer;
 void	*setter_gc(void *data_to_set, t_garbage_collect **gc)
 {
+	if (data_to_set == NULL)
+		return(data_to_set); //Experimental but I think its ok, why would we want to add a NULL to gc ?
 	if (no_dupplicate_check(data_to_set, *gc) == 1)
-		add_to_trash(gc, data_to_set);
+	{	
+		if (add_to_trash(gc, data_to_set) == 0)
+		{
+			if (ft_printf_err("GC Malloc failed\n") == -1)
+				perror_exit(*gc, errno, "Error writing error message\n");
+			empty_trash_exit(*gc, MALLOC_ERROR);
+		}
+	}
 	return (data_to_set);
 }
 

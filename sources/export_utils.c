@@ -6,17 +6,17 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:57:09 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/22 19:01:44 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/23 17:13:56 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 static bool	ft_is_name_lower(t_env_node *new_str, t_env_node *low_str);
-static int		export_print(t_env_node *node_to_print);
+static int	export_print(t_env_node *node_to_print,  t_garbage_collect *gc);
 
 //this prints sorted env for export with no arguments
-void	sorted_env_print(t_env_node *env_dup_root)
+void	sorted_env_print(t_env_node *env_dup_root, t_garbage_collect *gc)
 {
 	t_env_node	*lowest_name;
 	t_env_node	*current;
@@ -38,20 +38,25 @@ void	sorted_env_print(t_env_node *env_dup_root)
 			}
 			current = current->next;
 		}
-		export_print(lowest_name);
+		export_print(lowest_name, gc);
 		n_nodes--;
 		last_node_printed = lowest_name;
 	}
 }
 
-static int  export_print(t_env_node *node_to_print)
+static int  export_print(t_env_node *node_to_print, t_garbage_collect *gc)
 {
 	if (node_to_print == NULL)
 		return (0);
-	printf("declare -x %s", node_to_print->variable_name);
+	if (printf("declare -x %s", node_to_print->variable_name) == -1)
+		perror_exit(gc, errno, "Printf failed");
 	if (node_to_print->variable)
-		printf("=\"%s\"", node_to_print->variable);
-	printf("\n"); //protect printfs later i guess;
+	{	
+		if (printf("=\"%s\"", node_to_print->variable) == -1)
+			perror_exit(gc, errno, "Printf failed");
+	}
+	if (printf("\n") == -1)
+		perror_exit(gc, errno, "Printf failed");
 	node_to_print  = node_to_print->next;
 	return (1);
 }

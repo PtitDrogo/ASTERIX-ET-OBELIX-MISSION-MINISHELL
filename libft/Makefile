@@ -56,7 +56,9 @@ SRCS	=	$(SRCS_DIR)/ft_isalnum.c \
 			$(SRCS_DIR)/ft_putncount_char.c \
 			$(SRCS_DIR)/ft_putnbr.c \
 			$(SRCS_DIR)/ft_print_ptr.c \
-			$(SRCS_DIR)/safe_atoi.c
+			$(SRCS_DIR)/safe_atoi.c \
+			$(SRCS_DIR)/ft_printf_err.c \
+			$(SRCS_DIR)/ft_printf_err_utils.c
 
 
 OBJS			=	$(patsubst $(SRCS_DIR)%.c, $(OBJS_DIR)%.o, $(SRCS))

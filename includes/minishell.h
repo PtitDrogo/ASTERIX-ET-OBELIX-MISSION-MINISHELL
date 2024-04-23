@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/23 13:43:49 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/23 18:02:29 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <unistd.h>
+#include <errno.h>
 
 
 ///------------------------Structs------------------------///
@@ -38,10 +39,6 @@ typedef struct s_garbage_collect
 	struct s_garbage_collect	*next;
 	
 } t_garbage_collect;
-///------------------------Defines------------------------///
-
-#define ATOI_ERROR 3000000000
-#define MALLOC_ERROR 42
 
 typedef enum s_tok_val
 {
@@ -70,6 +67,11 @@ typedef struct s_cmd
 	struct s_cmd			*next;
 }	t_cmd;
 
+///------------------------Defines------------------------///
+
+#define ATOI_ERROR 3000000000
+#define MALLOC_ERROR 42
+
 ///------------------------Functions------------------------///
 
 //garbage collector
@@ -78,14 +80,14 @@ void    *malloc_trash(int size, t_garbage_collect **gc);
 int 	empty_trash(t_garbage_collect *gc);
 void	*setter_gc(void *data_to_set, t_garbage_collect **gc);
 void	**setter_double_p_gc(void **data_to_set, t_garbage_collect **gc);
-void	empty_trash_exit(t_garbage_collect *gc, int exit_code);
+
 
 //BUILT INS
-int	unset(t_env_node *env_dup_root, char *env_to_find);
-int	export(t_env_node **root, void *variable, t_garbage_collect **gc);
-int env(t_env_node *env_dup_root);
-int ft_exit(char **args, t_garbage_collect *gc);
-void	sorted_env_print(t_env_node *env_dup_root);
+int		unset(t_env_node *env_dup_root, char *env_to_find);
+int		export(t_env_node **root, void *variable, t_garbage_collect **gc);
+int 	env(t_env_node *env_dup_root, t_garbage_collect *gc);
+int 	ft_exit(char **args, t_garbage_collect *gc);
+void	sorted_env_print(t_env_node *env_dup_root, t_garbage_collect *gc);
 
 //UTILS
 size_t	len_to_char(char *str, char c);
@@ -94,6 +96,14 @@ int	ft_strcmp(const char *s1, const char *s2);
 int	pop(t_env_node *env_dup_root, t_env_node *node_to_pop);
 int	generate_env_llist(t_env_node **env_dup_root, t_garbage_collect **gc, char **envp);
 int	count_nodes(t_env_node *root);
+
+//errors && exit
+void    perror_exit(t_garbage_collect *gc, int exit_code, char *err_msg);
+void	empty_trash_exit(t_garbage_collect *gc, int exit_code);
+
+///------------------------Execution------------------------///
+char    *expander(t_env_node *env, t_garbage_collect **gc, char *to_expand);
+
 
 ///------------------------Libft------------------------///
 char	*get_next_line(int fd);
@@ -108,6 +118,7 @@ char	**ft_split(char const *s, char c);
 void	ft_free_array(void **array);
 int		ft_atoi(const char *nptr);
 long	ft_safe_atoi(const char *nptr);
+int		ft_printf_err(const char *text, ...);
 
 ///------------------------Parser/Lexer------------------------///
 void	parse(char **input, t_garbage_collect **gc);
@@ -115,28 +126,5 @@ t_token	*tokenize(char **input, t_garbage_collect **gc);
 void	add_token(t_token **tokenpile, t_token *new_token);
 t_token	*dup_token(t_token *token, t_garbage_collect **gc);
 
-
-
-
-////////////////////////////NOTES//////////////////////
-/* Mot mot GREATER mot mot PIPE mot mot GREATER*/
-
-/*hi access(get_env(CMD), F_OK); MIAOU,
-//PREMIER MOT TJ UNE COMMANDE
-// SI CA COMMENCE PAR UN TIRET CEST UN FLAG
-//UNE FILE NE PEUT PAS COMMENCER PAR UN TIRET*/
-
-/*// simple test that show that add history is cursed and will leak;
-// int	main(void)
-// {
-// 	char* input;
-	
-// 	input = readline("myshell> ");
-// 	add_history(input);
-// 	rl_clear_history();
-// 	free(input);
-// 	// test();
-// 	return (0);
-*/
 
 #endif

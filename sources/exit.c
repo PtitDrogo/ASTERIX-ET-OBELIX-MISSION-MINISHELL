@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 14:57:56 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/22 20:24:20 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/23 17:16:27 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,22 +26,19 @@ int ft_exit(char **args, t_garbage_collect *gc)
     if (args == NULL || *args == NULL || *args[0] == '\0')
     {
 		if (printf("exit\n") == -1)
-			empty_trash_exit(gc, EXIT_FAILURE);
-		// printf("exit with code 0\n");
+			perror_exit(gc, errno, "Printf failed");
 		empty_trash_exit(gc, 0); // normal execution
 	}
 	if (is_letter_in_first_arg(*args) == true || ft_safe_atoi(*args) == ATOI_ERROR) //hilarious use of my safe atoi can perfectly replicate bash
 	{
 		if (printf("exit\nbash: exit: %s: numeric argument required\n", args[0]) == -1)
-			empty_trash_exit(gc, EXIT_FAILURE);
-		// printf("exit with code 2\n");
+			perror_exit(gc, errno, "Printf failed");
 		empty_trash_exit(gc, 2);
 	}
     if (too_many_arguments(args) == true)
 	{
 		if (printf("exit\nbash: exit: too many arguments\n") == -1)
-			empty_trash_exit(gc, EXIT_FAILURE);
-		// printf("does not exit with code 1\n");
+			perror_exit(gc, errno, "Printf failed");
 		return (1); // this does NOT exit
 	}
 	empty_trash_exit(gc, get_exit_return_value(*args));
@@ -83,11 +80,4 @@ static bool	too_many_arguments(char **str)
 	if (str[1] == NULL)
 		return (false);
 	return (true);
-}
-
-void	empty_trash_exit(t_garbage_collect *gc, int exit_code)
-{
-	empty_trash(gc);
-	rl_clear_history();
-	exit(exit_code);
 }

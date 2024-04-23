@@ -1,26 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env.c                                              :+:      :+:    :+:   */
+/*   errors.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/15 14:54:23 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/23 16:56:12 by tfreydie         ###   ########.fr       */
+/*   Created: 2024/04/23 16:01:27 by tfreydie          #+#    #+#             */
+/*   Updated: 2024/04/23 17:14:43 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int env(t_env_node *env_dup_root, t_garbage_collect *gc)
+//clear all memory allocation and exit shell with exit_code
+void	empty_trash_exit(t_garbage_collect *gc, int exit_code)
 {
-    while (env_dup_root)
-	{
-		//we only print if the variable actually has a value
-        if (env_dup_root->variable)
-			if (printf("%s=%s\n", env_dup_root->variable_name, env_dup_root->variable) == -1)
-                perror_exit(gc, errno, "Printf failed");
-        env_dup_root = env_dup_root->next;
-	}
-    return (1);
+	empty_trash(gc);
+	rl_clear_history();
+	exit(exit_code);
+    return ;
+}
+//use this for failure of function that update errno (write, printf, dup etc)
+void    perror_exit(t_garbage_collect *gc, int exit_code, char *err_msg)
+{
+    perror(err_msg);
+    empty_trash_exit(gc, exit_code);
+    return ;
 }

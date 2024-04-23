@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 14:47:08 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/22 19:43:05 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/23 18:57:11 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,4 +65,17 @@ int	ft_strcmp(const char *s1, const char *s2)
 		i++;
 	}
 	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+}
+
+t_env_node *get_env_node(t_env_node *root, char *variable_name)
+{
+	if (variable_name == NULL || root == NULL)
+		return (NULL);
+	while (root != NULL)
+	{	
+		if (ft_strcmp(root->variable_name, variable_name) == 0)
+			return (root);
+		root = root->next;
+	}
+	return (NULL); //couldnt find variable with that name
 }

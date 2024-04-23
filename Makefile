@@ -11,18 +11,21 @@ DEPS 	= 	$(OBJS:.o=.d)
 #------------------------------------------------------------------------#
 
 #---------------------------------Sources---------------------------------#
-SRCS =		$(SRCS_DIR)/export.c \
+SRCS =		$(SRCS_DIR)/builtins/export.c \
 			$(SRCS_DIR)/garbage_collector.c \
-			$(SRCS_DIR)/unset.c \
+			$(SRCS_DIR)/builtins/unset.c \
 			$(SRCS_DIR)/utils.c \
-			$(SRCS_DIR)/env.c \
-			$(SRCS_DIR)/exit.c \
+			$(SRCS_DIR)/builtins/env.c \
+			$(SRCS_DIR)/builtins/exit.c \
 			$(SRCS_DIR)/readline.c \
       		$(SRCS_DIR)/parser.c \
 			$(SRCS_DIR)/lexer.c \
-			$(SRCS_DIR)/export_utils.c \
+			$(SRCS_DIR)/builtins/export_utils.c \
 			$(SRCS_DIR)/expander.c \
-			$(SRCS_DIR)/errors.c
+			$(SRCS_DIR)/errors.c \
+			$(SRCS_DIR)/builtins/echo.c \
+			$(SRCS_DIR)/builtins/cd.c \
+			$(SRCS_DIR)/builtins/pwd.c
 #------------------------------------------------------------------------#
 
 #---------------------------------Compilation & Linking---------------------------------#

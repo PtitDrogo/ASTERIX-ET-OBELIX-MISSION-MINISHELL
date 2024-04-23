@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 14:57:56 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/22 18:56:35 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/22 20:24:20 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 static bool	too_many_arguments(char **str);
 static bool	is_letter_in_first_arg(char *str);
 static int	get_exit_return_value(char *arg);
-static void	empty_trash_exit(t_garbage_collect *gc, int exit_code);
 
 int ft_exit(char **args, t_garbage_collect *gc)
 {
@@ -86,7 +85,7 @@ static bool	too_many_arguments(char **str)
 	return (true);
 }
 
-static void	empty_trash_exit(t_garbage_collect *gc, int exit_code)
+void	empty_trash_exit(t_garbage_collect *gc, int exit_code)
 {
 	empty_trash(gc);
 	rl_clear_history();

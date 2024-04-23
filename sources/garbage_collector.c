@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 17:32:57 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/22 19:42:18 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/22 20:28:50 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	add_to_trash(t_garbage_collect **root, void *to_free)
 
 	new_node = malloc(sizeof(t_garbage_collect));
 	if (!new_node)
-		return (0);
+		return (empty_trash(*root), 0); //write a message maybe ? TODO (this will need to free two gc later);
 	new_node->next = NULL;
 	new_node->to_free = to_free;
 	if ((*root) == NULL)
@@ -42,7 +42,12 @@ void    *malloc_trash(int size, t_garbage_collect **gc)
     void *to_return;
 
     to_return = malloc(size);
-    add_to_trash(gc, to_return);
+    if (add_to_trash(gc, to_return) == 0)
+	{
+		write(2, "malloc error\n", 13); //use proper stderror later;
+		free(to_return);
+		empty_trash_exit(*gc, MALLOC_ERROR);
+	}
     return(to_return);
 }
 

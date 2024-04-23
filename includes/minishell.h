@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/22 19:37:11 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/23 13:43:49 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ typedef struct s_garbage_collect
 ///------------------------Defines------------------------///
 
 #define ATOI_ERROR 3000000000
+#define MALLOC_ERROR 42
 
 typedef enum s_tok_val
 {
@@ -77,12 +78,14 @@ void    *malloc_trash(int size, t_garbage_collect **gc);
 int 	empty_trash(t_garbage_collect *gc);
 void	*setter_gc(void *data_to_set, t_garbage_collect **gc);
 void	**setter_double_p_gc(void **data_to_set, t_garbage_collect **gc);
+void	empty_trash_exit(t_garbage_collect *gc, int exit_code);
 
 //BUILT INS
 int	unset(t_env_node *env_dup_root, char *env_to_find);
 int	export(t_env_node **root, void *variable, t_garbage_collect **gc);
 int env(t_env_node *env_dup_root);
 int ft_exit(char **args, t_garbage_collect *gc);
+void	sorted_env_print(t_env_node *env_dup_root);
 
 //UTILS
 size_t	len_to_char(char *str, char c);
@@ -97,10 +100,10 @@ char	*get_next_line(int fd);
 char	*ft_strdup(const char *src);
 size_t	ft_strlen(const char *s);
 char	*ft_strnstr(const char *big, const char *little, size_t len);
-int	ft_isalpha(int c);
-int	ft_isalnum(int c);
-int	ft_isdigit(int c);
-int	ft_strncmp(char *s1, char *s2, size_t n);
+int		ft_isalpha(int c);
+int		ft_isalnum(int c);
+int		ft_isdigit(int c);
+int		ft_strncmp(char *s1, char *s2, size_t n);
 char	**ft_split(char const *s, char c);
 void	ft_free_array(void **array);
 int		ft_atoi(const char *nptr);

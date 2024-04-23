@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/22 20:25:49 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/23 13:43:49 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,7 @@ int	unset(t_env_node *env_dup_root, char *env_to_find);
 int	export(t_env_node **root, void *variable, t_garbage_collect **gc);
 int env(t_env_node *env_dup_root);
 int ft_exit(char **args, t_garbage_collect *gc);
+void	sorted_env_print(t_env_node *env_dup_root);
 
 //UTILS
 size_t	len_to_char(char *str, char c);

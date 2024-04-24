@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 17:32:57 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/23 17:34:31 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/24 20:08:21 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,7 @@ void	*setter_gc(void *data_to_set, t_garbage_collect **gc)
 	{	
 		if (add_to_trash(gc, data_to_set) == 0)
 		{
+			free(data_to_set);
 			if (ft_printf_err("GC Malloc failed\n") == -1)
 				perror_exit(*gc, errno, "Error writing error message\n");
 			empty_trash_exit(*gc, MALLOC_ERROR);

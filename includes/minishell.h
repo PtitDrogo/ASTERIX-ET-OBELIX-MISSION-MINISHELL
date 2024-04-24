@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/23 19:44:49 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/24 19:20:08 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,12 +65,16 @@ typedef struct s_cmd
 	char					*hd_file_name;
 	t_token					*redirections;
 	struct s_cmd			*next;
+	int		input;
 }	t_cmd;
 
 ///------------------------Defines------------------------///
 
 #define ATOI_ERROR 3000000000
 #define MALLOC_ERROR 42
+#define MALLOC_ERR_MSG "Error : Malloc failed\n"
+#define PRINTF_ERR_MSG "Error : Writing failed\n"
+#define PERROR_ERR_MSG "Error : "
 
 ///------------------------Functions------------------------///
 
@@ -89,6 +93,8 @@ int 	env(t_env_node *env_dup_root, t_garbage_collect *gc);
 int 	ft_exit(char **args, t_garbage_collect *gc);
 void	sorted_env_print(t_env_node *env_dup_root, t_garbage_collect *gc);
 int		pwd(t_garbage_collect **gc);
+int		echo(char *to_echo, t_garbage_collect *gc);
+int cd(char *dir_path, t_garbage_collect **gc, t_env_node *env);
 
 //UTILS
 size_t	len_to_char(char *str, char c);
@@ -121,6 +127,7 @@ void	ft_free_array(void **array);
 int		ft_atoi(const char *nptr);
 long	ft_safe_atoi(const char *nptr);
 int		ft_printf_err(const char *text, ...);
+char	*ft_strjoin(char const *s1, char const *s2);
 
 ///------------------------Parser/Lexer------------------------///
 void	parse(char **input, t_garbage_collect **gc);

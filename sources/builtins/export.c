@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 16:11:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/23 18:00:53 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/25 14:41:27 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ int	is_valid_env_name(char *name, t_garbage_collect *gc)
 	if (ft_isalpha(name[0]) == 0 && name[0] != '_')
 	{	
 		if (ft_printf_err("bash: export: `%s': not a valid identifier\n", name) == -1)
-			perror_exit(gc, errno, "Error writing error message\n");
+			perror_exit(gc, errno, WRITE_ERR_MSG);
 		return (0);
 	}
 	i = 1; // we start after the first letter;
@@ -85,7 +85,7 @@ int	is_valid_env_name(char *name, t_garbage_collect *gc)
 		if (ft_isalnum(name[i]) == 0 && name[i] != '_')
 		{	
 			if (ft_printf_err("bash: export: `%s': not a valid identifier\n", name) == -1)
-				perror_exit(gc, errno, "Error writing error message\n");
+				perror_exit(gc, errno, WRITE_ERR_MSG);
 			return (0);
 		}
 		i++;
@@ -153,7 +153,7 @@ char	*get_env_var(const char *src, t_garbage_collect **gc)
 	if (to_return == NULL)
 	{
 		if (ft_printf_err("GC Malloc failed\n") == -1)
-			perror_exit(*gc, errno, "Error writing error message\n");
+			perror_exit(*gc, errno, WRITE_ERR_MSG);
 		empty_trash_exit(*gc, MALLOC_ERROR);
 	}
 	setter_gc(to_return, gc);

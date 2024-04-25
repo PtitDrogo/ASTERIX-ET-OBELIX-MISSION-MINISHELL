@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:54:37 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/24 20:04:26 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/25 14:39:55 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,27 +39,27 @@ static void	handle_error(char *dir_path, t_garbage_collect *gc)
 	if (errno == EACCES)
 	{	
 		if (ft_printf_err("bash: cd: %s: Permission denied\n", dir_path) == -1)
-			perror_exit(gc, errno, "Failed to write error message");
+			perror_exit(gc, errno, WRITE_ERR_MSG);
 	}
 	else if (errno == ENOENT)
 	{	
 		if (ft_printf_err("bash: cd: %s: No such file or directory\n",  dir_path) == -1)
-			perror_exit(gc, errno, "Failed to write error message");
+			perror_exit(gc, errno, WRITE_ERR_MSG);
 	}
 	else if (errno == ENOTDIR)
 	{	
 		if (ft_printf_err("bash: cd: %s: Not a directory\n", dir_path) == -1)
-			perror_exit(gc, errno, "Failed to write error message");
+			perror_exit(gc, errno, WRITE_ERR_MSG);
 	}
 	else if (errno == EFAULT)
 	{
 		if (ft_printf_err("bash: cd: %s: Path outside of range of process\n", dir_path) == -1)
-			perror_exit(gc, errno, "Failed to write error message");
+			perror_exit(gc, errno, WRITE_ERR_MSG);
 	}
 	else
 	{    
 		if (ft_printf_err("bash: cd: %s: Couldn't change directory\n", dir_path) == -1)
-			perror_exit(gc, errno, "Failed to write error message");
+			perror_exit(gc, errno, WRITE_ERR_MSG);
 	}
 }
 

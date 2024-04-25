@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/24 19:20:08 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/25 20:35:34 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 #include <readline/history.h>
 #include <unistd.h>
 #include <errno.h>
-
+#include <fcntl.h>
 
 ///------------------------Structs------------------------///
 
@@ -71,9 +71,10 @@ typedef struct s_cmd
 ///------------------------Defines------------------------///
 
 #define ATOI_ERROR 3000000000
+#define	SYNTAX_ERROR 2
 #define MALLOC_ERROR 42
 #define MALLOC_ERR_MSG "Error : Malloc failed\n"
-#define PRINTF_ERR_MSG "Error : Writing failed\n"
+#define WRITE_ERR_MSG "Error : Writing failed"
 #define PERROR_ERR_MSG "Error : "
 
 ///------------------------Functions------------------------///
@@ -84,7 +85,10 @@ void    *malloc_trash(int size, t_garbage_collect **gc);
 int 	empty_trash(t_garbage_collect *gc);
 void	*setter_gc(void *data_to_set, t_garbage_collect **gc);
 void	**setter_double_p_gc(void **data_to_set, t_garbage_collect **gc);
+void    malloc_check(void *ptr, t_garbage_collect *gc);
 
+//Here_doc
+int		here_doc(char *delimiter, t_garbage_collect **gc, int fd, char *history);
 
 //BUILT INS
 int		unset(t_env_node *env_dup_root, char *env_to_find);
@@ -94,20 +98,22 @@ int 	ft_exit(char **args, t_garbage_collect *gc);
 void	sorted_env_print(t_env_node *env_dup_root, t_garbage_collect *gc);
 int		pwd(t_garbage_collect **gc);
 int		echo(char *to_echo, t_garbage_collect *gc);
-int cd(char *dir_path, t_garbage_collect **gc, t_env_node *env);
+int 	cd(char *dir_path, t_garbage_collect **gc, t_env_node *env);
+int		ls();
 
 //UTILS
-size_t	len_to_char(char *str, char c);
-int	is_char_in_str(char *str, char c);
-int	ft_strcmp(const char *s1, const char *s2);
-int	pop(t_env_node *env_dup_root, t_env_node *node_to_pop);
-int	generate_env_llist(t_env_node **env_dup_root, t_garbage_collect **gc, char **envp);
-int	count_nodes(t_env_node *root);
+size_t		len_to_char(char *str, char c);
+int			is_char_in_str(char *str, char c);
+int			ft_strcmp(const char *s1, const char *s2);
+int			pop(t_env_node *env_dup_root, t_env_node *node_to_pop);
+int			generate_env_llist(t_env_node **env_dup_root, t_garbage_collect **gc, char **envp);
+int			count_nodes(t_env_node *root);
 t_env_node *get_env_node(t_env_node *root, char *variable_name);
 
 //errors && exit
 void    perror_exit(t_garbage_collect *gc, int exit_code, char *err_msg);
 void	empty_trash_exit(t_garbage_collect *gc, int exit_code);
+
 
 ///------------------------Execution------------------------///
 char    *expander(t_env_node *env, t_garbage_collect **gc, char *to_expand);
@@ -128,6 +134,10 @@ int		ft_atoi(const char *nptr);
 long	ft_safe_atoi(const char *nptr);
 int		ft_printf_err(const char *text, ...);
 char	*ft_strjoin(char const *s1, char const *s2);
+void	*free_and_null(char *line);
+char	*final_check(char *line);
+void	*ft_memmove(void *dest, const void *src, size_t n);
+void	*ft_memset(void *s, int c, size_t n);
 
 ///------------------------Parser/Lexer------------------------///
 void	parse(char **input, t_garbage_collect **gc);

@@ -6,25 +6,26 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/24 19:20:47 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/26 20:11:25 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 // compile this code with cc readline.c -lreadline
-int empty_trash(t_garbage_collect *gc);
-int	add_to_trash(t_garbage_collect **root, void *to_free);
-int	basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *input);
-int	theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *input);
+int 	empty_trash(t_garbage_collect *gc);
+int		add_to_trash(t_garbage_collect **root, void *to_free);
+int		basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *input);
+int		theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *input);
+char	*accurate_shell(t_garbage_collect **gc, t_env_node *env);
 
 
-int main(int argc, char const *argv[], char **envp) 
+int main(int argc, char const *argv[], char **envp)
 {
 	t_env_node *env_dup_root;
 	t_garbage_collect *gc;
 	char	*input;
-
+	char	*history;
 	
 	gc = NULL;
 	env_dup_root = NULL;
@@ -42,13 +43,11 @@ int main(int argc, char const *argv[], char **envp)
 			exit(EXIT_FAILURE); // do cleanup later
 		if (!input)
 			break;
+		// Check for EOF (Ctrl+D)
+		
 		// basic_parsing(&env_dup_root, &gc, input);
 		theo_basic_parsing(&env_dup_root, &gc, input); //comment this out 
-		// Check for EOF (Ctrl+D)
-
-		// Skip empty commands
-		if (*input) 
-			add_history(input);
+		add_history(input);
 	}
 	
 	printf("Exit.\n");
@@ -89,10 +88,11 @@ int	basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *input
 int	theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *input)
 {
 	char	**split_input;
-
+	
 	if (input == NULL || input[0] == '\0')
 		return (1);
 	split_input = (char **)setter_double_p_gc((void **)ft_split(input, ' '), gc);
+	
 	if (ft_strcmp(split_input[0], "unset") == 0)
 		unset(*env_dup_root, split_input[1]);
 	if (ft_strcmp(split_input[0], "export") == 0)
@@ -113,10 +113,44 @@ int	theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *
 		pwd(gc);
 	if (ft_strcmp(split_input[0], "cd") == 0)
 		cd(split_input[1], gc, *env_dup_root);
+	if (ft_strcmp(split_input[0], "<<") == 0)
+		here_doc(split_input[1] ,gc, 1);
 	// if (ft_strcmp(split_input[0], "echo") == 0)
 	// 	echo(split_input[1], *gc); //this will only print the first arg for now;
+	
 	return (0);
 }
 
+
+
+//Ignore ca c'est une experience mais remplacer le home par ~ c'est chiant
+char	*prompt(t_garbage_collect **gc, t_env_node *env)
+{
+	char *pwd;
+
+	pwd = accurate_shell(gc, env);
+	
+
+	return (NULL);
+}
+
+char	*accurate_shell(t_garbage_collect **gc, t_env_node *env)
+{
+	t_env_node *pwd;
+	char		*backup_pwd;
+	
+	pwd = get_env_node(env, "PWD");
+ 	if (pwd != NULL)
+		return (pwd->variable);
+	else
+	{
+		backup_pwd = getcwd(NULL, 0);
+		if (backup_pwd == NULL)
+			perror_exit(*gc, errno, "Failed to get current path");
+		setter_gc(backup_pwd, gc);
+		return (backup_pwd);
+	}
+}
+///FIN EXPERIENCE
 
 

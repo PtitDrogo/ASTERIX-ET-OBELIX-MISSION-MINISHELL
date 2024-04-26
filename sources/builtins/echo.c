@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:40:04 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/24 13:58:55 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/25 14:40:12 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,17 +31,17 @@ int echo(char *to_echo, t_garbage_collect *gc)
     if (to_echo == NULL)
     {
         if (printf("\n") == -1)
-            perror_exit(gc, errno, "Printf failed");
+            perror_exit(gc, errno, WRITE_ERR_MSG);
         return (1);
     }
     to_echo = n_flag_logic(to_echo, &n_flag);
     
     if (printf("%s", to_echo) == -1)
-        perror_exit(gc, errno, "Printf failed");
+        perror_exit(gc, errno, WRITE_ERR_MSG);
     if (n_flag == false)    
     {
         if (printf("\n") == -1)
-            perror_exit(gc, errno, "Printf failed");
+            perror_exit(gc, errno, WRITE_ERR_MSG);
     }
     return (1);
 }

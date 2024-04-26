@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/23 18:02:54 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/25 14:41:53 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ char    *expander(t_env_node *env, t_garbage_collect **gc, char *to_expand)
 			if (!str_to_return)
 			{    
 				if (ft_printf_err("Malloc failed\n") == -1)
-					perror_exit(*gc, errno, "Failed to write error message");
+					perror_exit(*gc, errno, WRITE_ERR_MSG);
 				empty_trash_exit(*gc, MALLOC_ERROR);
 			}
 			setter_gc(str_to_return, gc);

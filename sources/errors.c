@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 16:01:27 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/23 17:14:43 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/25 19:53:16 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,3 +27,4 @@ void    perror_exit(t_garbage_collect *gc, int exit_code, char *err_msg)
     empty_trash_exit(gc, exit_code);
     return ;
 }
+

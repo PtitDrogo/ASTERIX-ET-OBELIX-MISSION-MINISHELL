@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:57:09 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/23 17:13:56 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/25 14:40:37 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,14 +49,14 @@ static int  export_print(t_env_node *node_to_print, t_garbage_collect *gc)
 	if (node_to_print == NULL)
 		return (0);
 	if (printf("declare -x %s", node_to_print->variable_name) == -1)
-		perror_exit(gc, errno, "Printf failed");
+		perror_exit(gc, errno, WRITE_ERR_MSG);
 	if (node_to_print->variable)
 	{	
 		if (printf("=\"%s\"", node_to_print->variable) == -1)
-			perror_exit(gc, errno, "Printf failed");
+			perror_exit(gc, errno, WRITE_ERR_MSG);
 	}
 	if (printf("\n") == -1)
-		perror_exit(gc, errno, "Printf failed");
+		perror_exit(gc, errno, WRITE_ERR_MSG);
 	node_to_print  = node_to_print->next;
 	return (1);
 }

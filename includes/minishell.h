@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/25 20:35:34 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/26 20:08:44 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ void	**setter_double_p_gc(void **data_to_set, t_garbage_collect **gc);
 void    malloc_check(void *ptr, t_garbage_collect *gc);
 
 //Here_doc
-int		here_doc(char *delimiter, t_garbage_collect **gc, int fd, char *history);
+int		here_doc(char *delimiter, t_garbage_collect **gc, int fd);
 
 //BUILT INS
 int		unset(t_env_node *env_dup_root, char *env_to_find);
@@ -99,7 +99,6 @@ void	sorted_env_print(t_env_node *env_dup_root, t_garbage_collect *gc);
 int		pwd(t_garbage_collect **gc);
 int		echo(char *to_echo, t_garbage_collect *gc);
 int 	cd(char *dir_path, t_garbage_collect **gc, t_env_node *env);
-int		ls();
 
 //UTILS
 size_t		len_to_char(char *str, char c);

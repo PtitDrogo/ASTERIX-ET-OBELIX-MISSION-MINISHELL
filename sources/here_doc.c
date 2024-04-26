@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/25 20:37:19 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/26 20:13:44 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,31 +16,22 @@
 static char		*readline_n_add_n(char *readline, t_garbage_collect **gc);
 static int		ft_strncmp_n(char *input, char *delimiter, size_t n);
 
-int	here_doc(char *delimiter, t_garbage_collect **gc, int fd, char *tmp_history)
+//here_doc that will write into the fd we give it, it doesnt update history because life is hard.
+int	here_doc(char *delimiter, t_garbage_collect **gc, int fd)
 {
-	//fonction prise de tete parce que je veux que ca update l'history comme bash PLEASE;
 	char	*input;
-	char	*history;
-	int		here_doc_fd;
 
-	input = readline_n_add_n(readline("heredoc> "), gc);
-	if (input == NULL)
-		if (ft_printf_err("bash: warning: here-document delimited by end-of-file (wanted `%s')\n", delimiter) == -1)
-			return (0); //CTRL D doesnt exit shell just the current heredoc; (if its the last here_doc it exits the shell tho);
-    history = input;
-    while (ft_strncmp_n(input, delimiter, ft_strlen(input)))
+    while (1)
 	{
-        input = readline_n_add_n(readline("heredoc> "), gc);
+		input = readline_n_add_n(readline("heredoc> "), gc);
 		if (input == NULL)
 			if (ft_printf_err("bash: warning: here-document delimited by end-of-file (wanted `%s')\n", delimiter) == -1)
-				return (0); //CTRL D doesnt exit shell just the current heredoc;
-		// if (write(fd, input, ft_strlen(input)) == -1) //TODO uncomment this in final code so it works;
-        //     perror_exit(*gc, errno, WRITE_ERR_MSG);
-        history = ft_strjoin(history, input);
-        malloc_check(history, *gc);
-        setter_gc(history, gc);
+				return (0); //CTRL D doesnt exit shell just the current heredoc; (if its the last here_doc it exits the shell tho);
+        if (ft_strncmp_n(input, delimiter, ft_strlen(input)))
+			break ;
+		if (write(fd, input, ft_strlen(input)) == -1)
+            perror_exit(*gc, errno, WRITE_ERR_MSG);
 	}
-    add_history(ft_strjoin(tmp_history, history)); //TODO SECURE
 	return (1);
 }
 

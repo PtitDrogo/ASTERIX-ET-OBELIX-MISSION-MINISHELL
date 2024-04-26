@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 17:32:57 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/25 20:24:56 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/26 20:07:48 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,17 +131,3 @@ void    malloc_check(void *ptr, t_garbage_collect *gc)
     }
     return ;
 }
-
-//TODO change this into gc
-/*int	pop(t_env_node *env_dup_root, t_env_node *node_to_pop)
-{	
-	if (!env_dup_root || !node_to_pop)
-		return (0); //gotta check later;
-	while (env_dup_root->next && env_dup_root->next != node_to_pop)	
-		env_dup_root = env_dup_root->next;
-	if (env_dup_root->next == NULL)
-		return (0); // we couldnt find the node to pop
-	env_dup_root->next = env_dup_root->next->next;
-	node_to_pop->variable = NULL;
-	return (1);
-}*/

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/23 19:44:49 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/26 23:15:00 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,15 @@
 # define MINISHELL_H
 
 ///------------------------Includes------------------------///
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h> 
-#include <stdlib.h>
-#include <readline/readline.h>
-#include <readline/history.h>
-#include <unistd.h>
-#include <errno.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <stdbool.h> 
+# include <stdlib.h>
+# include <readline/readline.h>
+# include <readline/history.h>
+# include <unistd.h>
+# include <errno.h>
+# include "../libft/includes/libft.h"
 
 
 ///------------------------Structs------------------------///
@@ -62,7 +63,6 @@ typedef struct s_cmd
 	char					**str;
 	//int						(*builtin)(t_tools *, struct s_simple_cmds *);
 	int						num_redirections;
-	char					*hd_file_name;
 	t_token					*redirections;
 	struct s_cmd			*next;
 }	t_cmd;
@@ -102,6 +102,7 @@ t_env_node *get_env_node(t_env_node *root, char *variable_name);
 //errors && exit
 void    perror_exit(t_garbage_collect *gc, int exit_code, char *err_msg);
 void	empty_trash_exit(t_garbage_collect *gc, int exit_code);
+void    ft_error(char *error, t_garbage_collect *gc);
 
 ///------------------------Execution------------------------///
 char    *expander(t_env_node *env, t_garbage_collect **gc, char *to_expand);
@@ -127,6 +128,5 @@ void	parse(char **input, t_garbage_collect **gc);
 t_token	*tokenize(char **input, t_garbage_collect **gc);
 void	add_token(t_token **tokenpile, t_token *new_token);
 t_token	*dup_token(t_token *token, t_garbage_collect **gc);
-
-
+char	**quote_split(char *input, t_garbage_collect **gc);
 #endif

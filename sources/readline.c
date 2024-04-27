@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/23 19:45:40 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/26 19:07:02 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,8 @@ int main(int argc, char const *argv[], char **envp)
 			exit(EXIT_FAILURE); // do cleanup later
 		if (!input)
 			break;
-		// basic_parsing(&env_dup_root, &gc, input);
-		theo_basic_parsing(&env_dup_root, &gc, input); //comment this out 
+		 basic_parsing(&env_dup_root, &gc, input);
+		//theo_basic_parsing(&env_dup_root, &gc, input); //comment this out 
 		// Check for EOF (Ctrl+D)
 
 		// Skip empty commands
@@ -64,9 +64,10 @@ int	basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *input
 
 	if (input == NULL || input[0] == '\0')
 		return (1);
-	split_input = ft_split(input, ' ');
-
-	setter_double_p_gc((void **)split_input, gc);
+	split_input = quote_split(input, gc);//ft_split(input, ' ');
+	if (!split_input)
+		return (0);
+	//setter_double_p_gc((void **)split_input, gc);
 	parse(split_input, gc);
 	/*if (ft_strncmp(split_input[0], "unset", ft_strlen("unset")) == 0)
 		unset(*env_dup_root, split_input[1]);

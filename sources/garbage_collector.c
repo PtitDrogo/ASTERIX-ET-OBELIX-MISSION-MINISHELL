@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   garbage_collector.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 17:32:57 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/23 17:34:31 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/24 16:59:04 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,9 +81,10 @@ void	*setter_gc(void *data_to_set, t_garbage_collect **gc)
 	if (data_to_set == NULL)
 		return(data_to_set); //Experimental but I think its ok, why would we want to add a NULL to gc ?
 	if (no_dupplicate_check(data_to_set, *gc) == 1)
-	{	
+	{
 		if (add_to_trash(gc, data_to_set) == 0)
 		{
+			free(data_to_set);
 			if (ft_printf_err("GC Malloc failed\n") == -1)
 				perror_exit(*gc, errno, "Error writing error message\n");
 			empty_trash_exit(*gc, MALLOC_ERROR);

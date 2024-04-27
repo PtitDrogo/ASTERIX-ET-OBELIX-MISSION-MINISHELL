@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:48:23 by garivo            #+#    #+#             */
-/*   Updated: 2024/04/22 17:46:34 by garivo           ###   ########.fr       */
+/*   Updated: 2024/04/26 19:22:48 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,14 +39,12 @@ static char	**add_str(char ***list, char *str, t_garbage_collect **gc)
 	while (list && *list && (*list)[i])
 		i++;
 	new_list = malloc_trash((i + 2) * sizeof(char *), gc);
-	if (!new_list)
-		return (NULL);
 	i = 0;
 	while (list && *list && (*list)[i])
 	{
 		new_list[i] = (char *)setter_gc(ft_strdup((*list)[i]), gc);
 		if (!new_list[i++])
-			return (NULL);
+			empty_trash_exit(*gc, EXIT_FAILURE);
 	}
 	new_list[i++] = str;
 	new_list[i] = NULL;
@@ -60,8 +58,6 @@ static t_cmd	*create_command(t_token **tokenpile, t_garbage_collect **gc)
 	t_token	*token;
 
 	cmd = malloc_trash(sizeof(t_cmd), gc);
-	if (!cmd)
-		return (NULL);
 	cmd->redirections = NULL;
 	cmd->str = NULL;
 	token = *tokenpile;
@@ -105,18 +101,19 @@ void	parse(char **input, t_garbage_collect **gc)
 			start = 1;
 		token = token->next;
 	}
-	/*while (cmd_chain)
+	
+	while (cmd_chain)
 	{
 		printf("new cmd :\n");
 		int i = 0;
 		while (cmd_chain->str && cmd_chain->str[i])
 			printf("cmd : %s\n", cmd_chain->str[i++]);
-		t_token	*redir = cmd->redirections;
+		t_token	*redir = cmd_chain->redirections;
 		while (redir)
 		{
 			printf("redir : %s\n", redir->str);
 			redir = redir->next;
 		}
 		cmd_chain = cmd_chain->next;
-	}*/
+	}
 }

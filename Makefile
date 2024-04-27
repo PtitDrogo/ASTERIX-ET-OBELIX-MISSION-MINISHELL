@@ -23,6 +23,7 @@ SRCS =		$(SRCS_DIR)/builtins/export.c \
 			$(SRCS_DIR)/builtins/export_utils.c \
 			$(SRCS_DIR)/expander.c \
 			$(SRCS_DIR)/errors.c \
+			$(SRCS_DIR)/quote_split.c \
 			$(SRCS_DIR)/builtins/echo.c \
 			$(SRCS_DIR)/builtins/cd.c \
 			$(SRCS_DIR)/builtins/pwd.c

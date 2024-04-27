@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 16:11:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/25 14:41:27 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/26 20:28:56 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,14 +149,8 @@ char	*get_env_var(const char *src, t_garbage_collect **gc)
 	if (src[i] == '\0')
 		return (NULL);//Could be return empty malloc(but risk of false positive), would also make it different than failed malloc
 	i++; // to go past the '='
-	to_return = ft_strdup(&src[i]);
-	if (to_return == NULL)
-	{
-		if (ft_printf_err("GC Malloc failed\n") == -1)
-			perror_exit(*gc, errno, WRITE_ERR_MSG);
-		empty_trash_exit(*gc, MALLOC_ERROR);
-	}
-	setter_gc(to_return, gc);
+	to_return = setter_gc(ft_strdup(&src[i]), gc);
+	malloc_check(to_return, *gc);
 	return (to_return);
 }
 

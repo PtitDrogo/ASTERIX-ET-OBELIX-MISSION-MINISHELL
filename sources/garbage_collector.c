@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 17:32:57 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/26 20:07:48 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/26 20:43:27 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,13 +79,13 @@ int empty_trash(t_garbage_collect *gc)
 void	*setter_gc(void *data_to_set, t_garbage_collect **gc)
 {
 	if (data_to_set == NULL)
-		return(data_to_set); //Experimental but I think its ok, why would we want to add a NULL to gc ?
+		return(data_to_set);
 	if (no_dupplicate_check(data_to_set, *gc) == 1)
 	{	
 		if (add_to_trash(gc, data_to_set) == 0)
 		{
 			free(data_to_set);
-			if (ft_printf_err("GC Malloc failed\n") == -1)
+			if (ft_printf_err(MALLOC_ERR_MSG) == -1)
 				perror_exit(*gc, errno, WRITE_ERR_MSG);
 			empty_trash_exit(*gc, MALLOC_ERROR);
 		}

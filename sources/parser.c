@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:48:23 by garivo            #+#    #+#             */
-/*   Updated: 2024/04/26 19:22:48 by garivo           ###   ########.fr       */
+/*   Updated: 2024/04/30 00:36:53 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,9 +56,11 @@ static t_cmd	*create_command(t_token **tokenpile, t_garbage_collect **gc)
 {
 	t_cmd	*cmd;
 	t_token	*token;
+	t_token	**redir;
 
 	cmd = malloc_trash(sizeof(t_cmd), gc);
-	cmd->redirections = NULL;
+	cmd->redirection_in = NULL;
+	cmd->redirection_out = NULL;
 	cmd->str = NULL;
 	token = *tokenpile;
 	while (token && token->type != PIPE)
@@ -66,14 +68,21 @@ static t_cmd	*create_command(t_token **tokenpile, t_garbage_collect **gc)
 		if (token->type == GREAT || token->type == D_GREAT
 			|| token->type == LESS || token->type == D_LESS)
 		{
-			add_token(&cmd->redirections, dup_token(token, gc));
+			redir = &cmd->redirection_in;
+			if (token->type == GREAT || token->type == D_GREAT)
+				redir = &cmd->redirection_out;
+			add_token(redir, dup_token(token, gc));
 			token = token->next;
-			add_token(&cmd->redirections, dup_token(token, gc));
+			add_token(redir, dup_token(token, gc));
 		}
 		else
 			add_str(&cmd->str, token->str, gc);
 		token = token->next;
 	}
+	set_to_last_redir(&cmd->redirection_in);
+	set_to_last_redir(&cmd->redirection_out);
+	if (token && token->type == PIPE && cmd->redirection_out == NULL)
+		add_token(&cmd->redirection_out, dup_token(token, gc));
 	return (cmd);
 }
 
@@ -108,11 +117,17 @@ void	parse(char **input, t_garbage_collect **gc)
 		int i = 0;
 		while (cmd_chain->str && cmd_chain->str[i])
 			printf("cmd : %s\n", cmd_chain->str[i++]);
-		t_token	*redir = cmd_chain->redirections;
-		while (redir)
+		t_token	*redir_in = cmd_chain->redirection_in;
+		t_token	*redir_out = cmd_chain->redirection_out;
+		while (redir_in)
 		{
-			printf("redir : %s\n", redir->str);
-			redir = redir->next;
+			printf("redir_in : %s\n", redir_in->str);
+			redir_in = redir_in->next;
+		}
+		while (redir_out)
+		{
+			printf("redir_out : %s\n", redir_out->str);
+			redir_out = redir_out->next;
 		}
 		cmd_chain = cmd_chain->next;
 	}

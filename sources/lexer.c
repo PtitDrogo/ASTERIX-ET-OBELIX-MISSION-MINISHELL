@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:15:09 by garivo            #+#    #+#             */
-/*   Updated: 2024/04/24 19:03:24 by garivo           ###   ########.fr       */
+/*   Updated: 2024/04/30 00:36:15 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,12 @@ Parse : Reorganize said tokens into commands*/
 
 //#include "minishell_parsing.h"
 #include "minishell.h"
+
+void	set_to_last_redir(t_token **tokenpile)
+{
+	while (*tokenpile && (*tokenpile)->next && (*tokenpile)->next->next)
+		*tokenpile = (*tokenpile)->next;
+}
 
 t_token	*dup_token(t_token *token, t_garbage_collect **gc)
 {

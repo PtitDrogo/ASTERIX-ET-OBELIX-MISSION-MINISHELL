@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/26 23:15:00 by garivo           ###   ########.fr       */
+/*   Updated: 2024/04/30 00:36:43 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,8 +62,8 @@ typedef struct s_cmd
 {
 	char					**str;
 	//int						(*builtin)(t_tools *, struct s_simple_cmds *);
-	int						num_redirections;
-	t_token					*redirections;
+	t_token					*redirection_in;
+	t_token					*redirection_out;
 	struct s_cmd			*next;
 }	t_cmd;
 
@@ -128,5 +128,6 @@ void	parse(char **input, t_garbage_collect **gc);
 t_token	*tokenize(char **input, t_garbage_collect **gc);
 void	add_token(t_token **tokenpile, t_token *new_token);
 t_token	*dup_token(t_token *token, t_garbage_collect **gc);
+void	set_to_last_redir(t_token **tokenpile);
 char	**quote_split(char *input, t_garbage_collect **gc);
 #endif

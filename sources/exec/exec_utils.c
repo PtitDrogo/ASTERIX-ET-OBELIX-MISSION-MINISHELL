@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/27 06:51:06 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/29 17:10:05 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,22 @@
 //tmp struct for me to play with while not breaking your stuff
 
 //WE populate the redirection before exec;
+
+/*
+typedef struct s_token
+{
+	char			*str;
+	t_tok_val		type;
+	struct s_token	*next;
+}	t_token;
+*/
 typedef struct s_cmd_theo
 {
-	char						**str;
-    int					    	*redirection_in;
-	int					    	*redirections_out;
+	char						**str; //la commande et ses flags/argument
+    t_token					    *redirection_in;
+	t_token					    *redirection_out;
 	struct s_cmd_theo			*next;
-	int							cmd_id;
+	int							cmd_id; //l'int qui va stock la valeur de retour de la cmd
 }	my_cmd;
 
 int         count_pipes(my_cmd *cmds);
@@ -32,26 +41,34 @@ int			count_valid_nodes(t_env_node *root);
 void		close_all_pipes(int **pipes_fds, t_garbage_collect *gc);
 char		*find_env_variable(char **envp, char *env_to_find);
 static char	*ft_strjoin_and_add(char const *s1, char const *s2, char c);
+void		secure_dup2(int mew_fd, int olc_fd, int **pipes, t_garbage_collect *gc);
 
 //execve a besoin de deux choses, le char ** de la commande, et envp avec un path valide;
 int exec(t_env_node *root, my_cmd *cmds, t_garbage_collect **gc)
 {
-    int number_of_pipes;
-    int **pipes_fds;
+    int 	number_of_pipes;
+    int 	**pipes_fds;
+	char	**envp;
 
+	envp = rebuild_env(root, gc);
+	//Pipes should be generated outside of exec so I can then
+	//populate each cmd with the correct redirection;
+	
+	//TODO MOVE BELOW
     number_of_pipes = count_pipes(cmds);
-
     pipes_fds = malloc_pipes_fds(number_of_pipes, gc);
     init_pipes(pipes_fds, number_of_pipes, *gc);
+	//TODO move above
     
 	my_cmd *current = root;
     while (current)
 	{
-		
-		child_process(rebuild_env(root, gc), current, gc); //giving current!!
+		child_process(envp, current, gc); //giving current command !!
 		current = current->next;
 	}
-	close_all_pipes(pipes_fds, *gc);
+	//I still think feeding the malloc of the **pipes is the easiest way to clean
+	//them up
+	close_all_pipes(pipes_fds, *gc);//TODO, MOVE this
     current = root;
 	int	status;
 	while (current)
@@ -73,8 +90,8 @@ void	child_process(char **envp, my_cmd *cmds, t_garbage_collect **gc)
 		perror_exit(gc, errno, "Error creating subshell");
 	if (cmds->cmd_id == 0)
 	{
-		process_behavior();
-		close_all_pipes(); //Faut que je trimballle le pointeur des pipes rompiche;
+		process_behavior(13123);
+		close_all_pipes(123123, 123123123); //Faut que je trimballle le pointeur des pipes rompiche;
 		//Si j'ouvre des fichiers faut que je me demmerde pour les closes apres;
 		
 		valid_path = find_valid_path(cmds, envp, gc);
@@ -89,9 +106,41 @@ void	child_process(char **envp, my_cmd *cmds, t_garbage_collect **gc)
 	}
 }
 
-void	process_behavior(my_cmd *cmds)
+void	process_behavior(my_cmd *cmds, t_garbage_collect **gc, int **pipes)
 {
+	//je veux just dup les redirections;
+	t_token	*in;
+	t_token	*out;
+	int		tmp_fd;
+
+	in = cmds->redirection_in;
+	out = cmds->redirection_out;
 	
+	if (in && (in->type == LESS || in->type == D_LESS))
+	{	
+		//I think this is useless and we should check this before exec
+		if (in->next == NULL || in->next->type != STR)
+		{
+			ft_printf_err(SYNTAX_ERROR_MSG); //for cases like < | or < <
+			empty_trash_exit(*gc, SYNTAX_ERROR);
+		}
+		if (in->type == LESS)
+		{
+			tmp_fd = open(in->next->str, O_RDONLY);
+			secure_dup2(tmp_fd, STDIN_FILENO, pipes, *gc);
+		}
+		if (in->type == D_LESS)
+		{
+			tmp_fd = open(".ft_heredoc", O_CREAT | O_WRONLY | O_TRUNC, 0777);
+			if (here_doc(in->next->str, gc, tmp_fd) == 0);
+				exit(42); //MIGHT HAVE TO HANDLE SEVERAL HEREDOCS;
+			secure_dup2(tmp_fd, STDIN_FILENO, pipes, *gc);
+		}
+	}
+	if (out && (out->type == GREAT || out->type == D_GREAT))
+		secure_dup2(out, STDOUT_FILENO, pipes, *gc);
+	
+	return ; // if theres no redirection we just go to exec as usual;
 	
 }
 
@@ -130,7 +179,7 @@ int count_pipes(my_cmd *cmds)
     pipe_count = 0;
     while (cmds)
     {
-        if (cmds->redirections_out == PIPE)
+        if (cmds->redirection_out == PIPE)
             pipe_count++;
         cmds = cmds->next;
     }
@@ -262,4 +311,14 @@ char	*find_env_variable(char **envp, char *env_to_find)
 		i++;
 	}
 	return (NULL);
+}
+
+void	secure_dup2(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc)
+{
+	if (dup2(new_fd, old_fd) == -1)
+	{	
+		close_all_pipes(pipes, gc);
+		perror_exit(gc, errno, "Error duplicating file descriptor");
+	}
+	return ;
 }

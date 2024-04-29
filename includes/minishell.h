@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/26 23:45:22 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/29 16:35:25 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ typedef struct s_garbage_collect
 {
 	void						*to_free;
 	struct s_garbage_collect	*next;
-	
 } t_garbage_collect;
 
 typedef enum e_tok_val //
@@ -76,6 +75,7 @@ typedef struct s_cmd
 #define MALLOC_ERROR 42
 #define MALLOC_ERR_MSG "Error : Malloc failed\n"
 #define WRITE_ERR_MSG "Error : Writing failed"
+#define	SYNTAX_ERROR_MSG "bash: syntax error near unexpected token"
 #define PERROR_ERR_MSG "Error : "
 
 ///------------------------Functions------------------------///

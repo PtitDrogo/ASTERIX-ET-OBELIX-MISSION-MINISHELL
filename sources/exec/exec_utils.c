@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/29 17:10:05 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/30 18:18:21 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,15 +42,17 @@ void		close_all_pipes(int **pipes_fds, t_garbage_collect *gc);
 char		*find_env_variable(char **envp, char *env_to_find);
 static char	*ft_strjoin_and_add(char const *s1, char const *s2, char c);
 void		secure_dup2(int mew_fd, int olc_fd, int **pipes, t_garbage_collect *gc);
+void		child_process(char **envp, my_cmd *cmds, t_garbage_collect **gc, int **pipes);
+void		print_open_err_msg_exit(int errno, char *file, t_garbage_collect *gc);
 
 //execve a besoin de deux choses, le char ** de la commande, et envp avec un path valide;
-int exec(t_env_node *root, my_cmd *cmds, t_garbage_collect **gc)
+int exec(t_env_node *root_env, my_cmd *cmds, t_garbage_collect **gc)
 {
     int 	number_of_pipes;
     int 	**pipes_fds;
 	char	**envp;
 
-	envp = rebuild_env(root, gc);
+	envp = rebuild_env(root_env, gc);
 	//Pipes should be generated outside of exec so I can then
 	//populate each cmd with the correct redirection;
 	
@@ -60,16 +62,14 @@ int exec(t_env_node *root, my_cmd *cmds, t_garbage_collect **gc)
     init_pipes(pipes_fds, number_of_pipes, *gc);
 	//TODO move above
     
-	my_cmd *current = root;
+	my_cmd *current = cmds;
     while (current)
 	{
-		child_process(envp, current, gc); //giving current command !!
+		child_process(envp, current, gc, pipes_fds); //giving current command !!
 		current = current->next;
 	}
-	//I still think feeding the malloc of the **pipes is the easiest way to clean
-	//them up
 	close_all_pipes(pipes_fds, *gc);//TODO, MOVE this
-    current = root;
+    current = cmds;
 	int	status;
 	while (current)
 	{
@@ -81,7 +81,7 @@ int exec(t_env_node *root, my_cmd *cmds, t_garbage_collect **gc)
 //plusieurs moyen de compter le nombre de commande, je peux le faire avec le nombre
 // de Pipe token, ou a priori je peux le faire juste en comptant le nombre de nodes commandes
 //a voir lequel est le plus pertinent
-void	child_process(char **envp, my_cmd *cmds, t_garbage_collect **gc)
+void	child_process(char **envp, my_cmd *cmds, t_garbage_collect **gc, int **pipes)
 {
 	char	*valid_path;
 	
@@ -90,8 +90,8 @@ void	child_process(char **envp, my_cmd *cmds, t_garbage_collect **gc)
 		perror_exit(gc, errno, "Error creating subshell");
 	if (cmds->cmd_id == 0)
 	{
-		process_behavior(13123);
-		close_all_pipes(123123, 123123123); //Faut que je trimballle le pointeur des pipes rompiche;
+		process_behavior(cmds, gc, pipes);	
+		close_all_pipes(pipes, gc);
 		//Si j'ouvre des fichiers faut que je me demmerde pour les closes apres;
 		
 		valid_path = find_valid_path(cmds, envp, gc);
@@ -116,32 +116,51 @@ void	process_behavior(my_cmd *cmds, t_garbage_collect **gc, int **pipes)
 	in = cmds->redirection_in;
 	out = cmds->redirection_out;
 	
-	if (in && (in->type == LESS || in->type == D_LESS))
+	if (in)
 	{	
-		//I think this is useless and we should check this before exec
-		if (in->next == NULL || in->next->type != STR)
-		{
-			ft_printf_err(SYNTAX_ERROR_MSG); //for cases like < | or < <
-			empty_trash_exit(*gc, SYNTAX_ERROR);
-		}
 		if (in->type == LESS)
-		{
+		{	
 			tmp_fd = open(in->next->str, O_RDONLY);
-			secure_dup2(tmp_fd, STDIN_FILENO, pipes, *gc);
+			if (tmp_fd == -1)
+				print_open_err_msg_exit(errno, in->next->str, *gc);
 		}
 		if (in->type == D_LESS)
 		{
 			tmp_fd = open(".ft_heredoc", O_CREAT | O_WRONLY | O_TRUNC, 0777);
+			if (tmp_fd == -1)
+				print_open_err_msg_exit(errno, in->next->str, *gc);
 			if (here_doc(in->next->str, gc, tmp_fd) == 0);
-				exit(42); //MIGHT HAVE TO HANDLE SEVERAL HEREDOCS;
-			secure_dup2(tmp_fd, STDIN_FILENO, pipes, *gc);
+				exit(42); //WILL HAVE TO HANDLE MANY HERE_DOC LATER
 		}
+		if (in->type == PIPE)
+			tmp_fd = out->str; //str[0]somewhere else//get the already open read pipe fd; // GOTTA CHANGE STR
+		secure_dup2(tmp_fd, STDIN_FILENO, pipes, *gc);
+		if (in->type == LESS || in->type == D_LESS)
+			if (close(in->next->str) == -1)
+				perror_exit(*gc, errno, "Failed to close opened file");
 	}
-	if (out && (out->type == GREAT || out->type == D_GREAT))
-		secure_dup2(out, STDOUT_FILENO, pipes, *gc);
-	
+	if (out)
+	{
+		if (out->type == GREAT)
+		{	
+			tmp_fd = open(out->next->str, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+			if (tmp_fd == -1)
+				print_open_err_msg_exit(errno, out->next->str, *gc);
+		}
+		if (out->type == D_GREAT)
+		{	
+			tmp_fd = open(out->next->str, O_WRONLY | O_APPEND | O_CREAT, 0644);
+			if (tmp_fd == -1)
+				print_open_err_msg_exit(errno, out->next->str, *gc);
+		}	
+		if (out->type == PIPE)
+			tmp_fd = out->str; //str[1]somewhere else//assuming we change token so str has the pipe end;
+		secure_dup2(tmp_fd, STDOUT_FILENO, pipes, *gc);
+		if (out->type == GREAT || out->type == D_GREAT)
+			if (close(out->next->str) == -1)
+				perror_exit(*gc, errno, "Failed to close opened file");
+	}
 	return ; // if theres no redirection we just go to exec as usual;
-	
 }
 
 static char	*ft_strjoin_and_add(char const *s1, char const *s2, char c)
@@ -322,3 +341,36 @@ void	secure_dup2(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc)
 	}
 	return ;
 }
+
+void	print_open_err_msg_exit(int errno, char *file, t_garbage_collect *gc)
+{
+	if (errno = ENOENT)
+		if (ft_printf_err("bash: %s: No such file or directory\n", file) == -1)
+			perror_exit(gc, errno, WRITE_ERR_MSG);
+	if (errno = EACCES)
+		if (ft_printf_err("bash: %s: Permission denied\n", file) == -1)
+			perror_exit(gc, errno, WRITE_ERR_MSG);
+	if (errno = EISDIR)
+		if (ft_printf_err("bash: %s: Is a directory\n", file) == -1)
+			perror_exit(gc, errno, WRITE_ERR_MSG);
+	if (errno = EMFILE)
+		if (ft_printf_err("bash: %s: Too many files opened", file) == -1)
+			perror_exit(gc, errno, WRITE_ERR_MSG);
+	empty_trash_exit(gc, errno);
+}
+
+/*  ENOENT: No such file or directory. The specified file or directory does not exist.
+    EACCES: Permission denied. The requested access to the file is not allowed.
+    EEXIST: File exists. The file to be created already exists and the O_CREAT and O_EXCL flags were used.
+    EISDIR: Is a directory. Attempting to open a directory for writing or reading when the operation requires a regular file.
+    EMFILE: Too many open files. The process has reached its limit for open file descriptors.
+    ENFILE: File table overflow. The system's file table is full, indicating that the system limit on the total number of open files has been reached.
+    EFAULT: Bad address. The pathname argument points outside the accessible address space.*/
+//Random syntax check function
+
+//I think this is useless and we should check this before e	xec
+// if (in->next == NULL || in->next->type != STR)
+// {
+// 	ft_printf_err(SYNTAX_ERROR_MSG); //for cases like < | or < <
+// 	empty_trash_exit(*gc, SYNTAX_ERROR);
+// }

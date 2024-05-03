@@ -1,21 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/09 18:27:36 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/25 14:10:21 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/02/03 18:41:50 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "pipex_bonus.h"
 
 static void	*secure_init(int *line_status, int fd);
 static char	*line_check(char *line, char *buffer, int *line_status);
-static int	safe_read(char *line, char *buffer, int fd);
 static char	*join_and_free(char *line, char *buffer);
+static int	safe_read(char *line, char *buffer, int fd);
 
 char	*get_next_line(int fd)
 {
@@ -46,7 +46,7 @@ char	*get_next_line(int fd)
 	return (final_check(line));
 }
 
-static void	*secure_init(int *line_status, int fd)
+void	*secure_init(int *line_status, int fd)
 {
 	char	*line;
 
@@ -62,7 +62,7 @@ static void	*secure_init(int *line_status, int fd)
 	return (line);
 }
 
-static char	*line_check(char *line, char *buffer, int *line_status)
+char	*line_check(char *line, char *buffer, int *line_status)
 {
 	int	i;
 
@@ -76,14 +76,14 @@ static char	*line_check(char *line, char *buffer, int *line_status)
 	if (buffer[i] == '\n')
 	{
 		i++;
-		ft_memmove(buffer, &buffer[i], ft_strlen(&buffer[i]) + 1);
+		ft_memmove(buffer, &buffer[i], gnl_strlen(&buffer[i]) + 1);
 		return (line);
 	}
 	*line_status = 0;
 	return (line);
 }
 
-static int	safe_read(char *line, char *buffer, int fd)
+int	safe_read(char *line, char *buffer, int fd)
 {
 	int	bytes_read;
 
@@ -98,7 +98,7 @@ static int	safe_read(char *line, char *buffer, int fd)
 	return (bytes_read);
 }
 
-static char	*join_and_free(char *line, char *buffer)
+char	*join_and_free(char *line, char *buffer)
 {
 	char	*new_line;
 	int		linelen;
@@ -110,7 +110,7 @@ static char	*join_and_free(char *line, char *buffer)
 	while (buffer[i] != '\n' && buffer[i] != '\0')
 		i++;
 	effective_bufferlen = i + (buffer[i] == '\n');
-	linelen = ft_strlen(line);
+	linelen = gnl_strlen(line);
 	new_line = malloc(sizeof(char) * (linelen + effective_bufferlen + 1));
 	if (!new_line)
 		return (free_and_null(line));

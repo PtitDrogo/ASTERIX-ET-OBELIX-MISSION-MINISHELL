@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 16:11:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/23 18:00:53 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/26 20:28:56 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ int	is_valid_env_name(char *name, t_garbage_collect *gc)
 	if (ft_isalpha(name[0]) == 0 && name[0] != '_')
 	{	
 		if (ft_printf_err("bash: export: `%s': not a valid identifier\n", name) == -1)
-			perror_exit(gc, errno, "Error writing error message\n");
+			perror_exit(gc, errno, WRITE_ERR_MSG);
 		return (0);
 	}
 	i = 1; // we start after the first letter;
@@ -85,7 +85,7 @@ int	is_valid_env_name(char *name, t_garbage_collect *gc)
 		if (ft_isalnum(name[i]) == 0 && name[i] != '_')
 		{	
 			if (ft_printf_err("bash: export: `%s': not a valid identifier\n", name) == -1)
-				perror_exit(gc, errno, "Error writing error message\n");
+				perror_exit(gc, errno, WRITE_ERR_MSG);
 			return (0);
 		}
 		i++;
@@ -149,14 +149,8 @@ char	*get_env_var(const char *src, t_garbage_collect **gc)
 	if (src[i] == '\0')
 		return (NULL);//Could be return empty malloc(but risk of false positive), would also make it different than failed malloc
 	i++; // to go past the '='
-	to_return = ft_strdup(&src[i]);
-	if (to_return == NULL)
-	{
-		if (ft_printf_err("GC Malloc failed\n") == -1)
-			perror_exit(*gc, errno, "Error writing error message\n");
-		empty_trash_exit(*gc, MALLOC_ERROR);
-	}
-	setter_gc(to_return, gc);
+	to_return = setter_gc(ft_strdup(&src[i]), gc);
+	malloc_check(to_return, *gc);
 	return (to_return);
 }
 

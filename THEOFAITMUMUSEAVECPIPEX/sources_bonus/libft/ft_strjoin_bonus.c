@@ -1,26 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env.c                                              :+:      :+:    :+:   */
+/*   ft_strjoin_bonus.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/15 14:54:23 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/25 14:40:16 by tfreydie         ###   ########.fr       */
+/*   Created: 2024/02/02 16:46:27 by tfreydie          #+#    #+#             */
+/*   Updated: 2024/02/03 18:46:30 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "pipex_bonus.h"
 
-int env(t_env_node *env_dup_root, t_garbage_collect *gc)
+char	*ft_strjoin(const char *s1, const char *s2)
 {
-    while (env_dup_root)
+	char	*joined;
+	size_t	i;
+	size_t	j;
+
+	if (!s1 || !s2)
+		return (NULL);
+	i = 0;
+	j = 0;
+	joined = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
+	if (!joined)
+		return (NULL);
+	while (i < ft_strlen(s1))
 	{
-		//we only print if the variable actually has a value
-        if (env_dup_root->variable)
-			if (printf("%s=%s\n", env_dup_root->variable_name, env_dup_root->variable) == -1)
-                perror_exit(gc, errno, WRITE_ERR_MSG);
-        env_dup_root = env_dup_root->next;
+		joined[i] = s1[i];
+		i++;
 	}
-    return (1);
+	while (j < ft_strlen(s2))
+	{
+		joined[i++] = s2[j++];
+	}
+	joined[i] = '\0';
+	return (joined);
 }

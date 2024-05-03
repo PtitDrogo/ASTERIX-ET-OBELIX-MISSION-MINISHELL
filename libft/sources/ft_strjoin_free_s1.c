@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/07 11:02:44 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/03/13 13:58:44 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/25 17:33:32 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,23 +17,22 @@ char	*ft_strjoin_free_s1(char *s1, char const *s2)
 	char	*joined;
 	size_t	i;
 	size_t	j;
+    size_t  s1_len;
+    size_t  s2_len;
 
 	if (!s1 || !s2)
 		return (NULL);
-	i = 0;
+    s1_len = ft_strlen(s1);
+    s2_len = ft_strlen(s2);
+	i = -1;
 	j = 0;
-	joined = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
+	joined = malloc(sizeof(char) * (s1_len + s2_len + 1));
 	if (!joined)
 		return (free(s1), NULL);
-	while (i < ft_strlen(s1))
-	{
+	while (++i < s1_len)
 		joined[i] = s1[i];
-		i++;
-	}
-	while (j < ft_strlen(s2))
-	{
+	while (j < s2_len)
 		joined[i++] = s2[j++];
-	}
 	joined[i] = '\0';
 	free(s1);
 	return (joined);

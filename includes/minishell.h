@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/30 00:36:43 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/03 13:32:21 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,16 @@
 # define MINISHELL_H
 
 ///------------------------Includes------------------------///
-# include <stdio.h>
-# include <stdlib.h>
-# include <stdbool.h> 
-# include <stdlib.h>
-# include <readline/readline.h>
-# include <readline/history.h>
-# include <unistd.h>
-# include <errno.h>
-# include "../libft/includes/libft.h"
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h> 
+#include <stdlib.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+#include <unistd.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <../libft/includes/libft.h>
 
 ///------------------------Structs------------------------///
 
@@ -38,10 +38,9 @@ typedef struct s_garbage_collect
 {
 	void						*to_free;
 	struct s_garbage_collect	*next;
-	
 } t_garbage_collect;
 
-typedef enum s_tok_val
+typedef enum e_tok_val //
 {
 	PIPE = 1,
 	GREAT,
@@ -65,12 +64,18 @@ typedef struct s_cmd
 	t_token					*redirection_in;
 	t_token					*redirection_out;
 	struct s_cmd			*next;
+	int		input;
 }	t_cmd;
 
 ///------------------------Defines------------------------///
 
 #define ATOI_ERROR 3000000000
+#define	SYNTAX_ERROR 2
 #define MALLOC_ERROR 42
+#define MALLOC_ERR_MSG "Error : Malloc failed\n"
+#define WRITE_ERR_MSG "Error : Writing failed"
+#define	SYNTAX_ERROR_MSG "bash: syntax error near unexpected token"
+#define PERROR_ERR_MSG "Error : "
 
 ///------------------------Functions------------------------///
 
@@ -80,7 +85,10 @@ void    *malloc_trash(int size, t_garbage_collect **gc);
 int 	empty_trash(t_garbage_collect *gc);
 void	*setter_gc(void *data_to_set, t_garbage_collect **gc);
 void	**setter_double_p_gc(void **data_to_set, t_garbage_collect **gc);
+void    malloc_check(void *ptr, t_garbage_collect *gc);
 
+//Here_doc
+int		here_doc(char *delimiter, t_garbage_collect **gc, int fd);
 
 //BUILT INS
 int		unset(t_env_node *env_dup_root, char *env_to_find);
@@ -89,14 +97,16 @@ int 	env(t_env_node *env_dup_root, t_garbage_collect *gc);
 int 	ft_exit(char **args, t_garbage_collect *gc);
 void	sorted_env_print(t_env_node *env_dup_root, t_garbage_collect *gc);
 int		pwd(t_garbage_collect **gc);
+int		echo(char *to_echo, t_garbage_collect *gc);
+int 	cd(char *dir_path, t_garbage_collect **gc, t_env_node *env);
 
 //UTILS
-size_t	len_to_char(char *str, char c);
-int	is_char_in_str(char *str, char c);
-int	ft_strcmp(const char *s1, const char *s2);
-int	pop(t_env_node *env_dup_root, t_env_node *node_to_pop);
-int	generate_env_llist(t_env_node **env_dup_root, t_garbage_collect **gc, char **envp);
-int	count_nodes(t_env_node *root);
+size_t		len_to_char(char *str, char c);
+int			is_char_in_str(char *str, char c);
+int			ft_strcmp(const char *s1, const char *s2);
+int			pop(t_env_node *env_dup_root, t_env_node *node_to_pop);
+int			generate_env_llist(t_env_node **env_dup_root, t_garbage_collect **gc, char **envp);
+int			count_nodes(t_env_node *root);
 t_env_node *get_env_node(t_env_node *root, char *variable_name);
 
 //errors && exit
@@ -104,24 +114,31 @@ void    perror_exit(t_garbage_collect *gc, int exit_code, char *err_msg);
 void	empty_trash_exit(t_garbage_collect *gc, int exit_code);
 void    ft_error(char *error, t_garbage_collect *gc);
 
+
 ///------------------------Execution------------------------///
 char    *expander(t_env_node *env, t_garbage_collect **gc, char *to_expand);
 
+//Je laisse ici c'est un testament d'une ancienne epoque
 
-///------------------------Libft------------------------///
-char	*get_next_line(int fd);
-char	*ft_strdup(const char *src);
-size_t	ft_strlen(const char *s);
-char	*ft_strnstr(const char *big, const char *little, size_t len);
-int		ft_isalpha(int c);
-int		ft_isalnum(int c);
-int		ft_isdigit(int c);
-int		ft_strncmp(char *s1, char *s2, size_t n);
-char	**ft_split(char const *s, char c);
-void	ft_free_array(void **array);
-int		ft_atoi(const char *nptr);
-long	ft_safe_atoi(const char *nptr);
-int		ft_printf_err(const char *text, ...);
+// ///------------------------Libft------------------------///
+// char	*get_next_line(int fd);
+// char	*ft_strdup(const char *src);
+// size_t	ft_strlen(const char *s);
+// char	*ft_strnstr(const char *big, const char *little, size_t len);
+// int		ft_isalpha(int c);
+// int		ft_isalnum(int c);
+// int		ft_isdigit(int c);
+// int		ft_strncmp(char *s1, char *s2, size_t n);
+// char	**ft_split(char const *s, char c);
+// void	ft_free_array(void **array);
+// int		ft_atoi(const char *nptr);
+// long	ft_safe_atoi(const char *nptr);
+// int		ft_printf_err(const char *text, ...);
+// char	*ft_strjoin(char const *s1, char const *s2);
+// void	*free_and_null(char *line);
+// char	*final_check(char *line);
+// void	*ft_memmove(void *dest, const void *src, size_t n);
+// void	*ft_memset(void *s, int c, size_t n);
 
 ///------------------------Parser/Lexer------------------------///
 void	parse(char **input, t_garbage_collect **gc);

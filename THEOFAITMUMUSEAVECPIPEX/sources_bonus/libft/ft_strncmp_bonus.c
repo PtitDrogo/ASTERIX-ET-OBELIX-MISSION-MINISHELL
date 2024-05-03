@@ -1,26 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env.c                                              :+:      :+:    :+:   */
+/*   ft_strncmp_bonus.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/15 14:54:23 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/25 14:40:16 by tfreydie         ###   ########.fr       */
+/*   Created: 2024/02/03 17:36:21 by tfreydie          #+#    #+#             */
+/*   Updated: 2024/02/03 18:46:38 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "pipex_bonus.h"
 
-int env(t_env_node *env_dup_root, t_garbage_collect *gc)
+int	ft_strncmp(char *s1, char *s2, size_t n)
 {
-    while (env_dup_root)
+	size_t	i;
+
+	i = 0;
+	while (s1[i] == s2[i] && s1[i] && i < n)
 	{
-		//we only print if the variable actually has a value
-        if (env_dup_root->variable)
-			if (printf("%s=%s\n", env_dup_root->variable_name, env_dup_root->variable) == -1)
-                perror_exit(gc, errno, WRITE_ERR_MSG);
-        env_dup_root = env_dup_root->next;
+		i++;
 	}
-    return (1);
+	if (i == n)
+		return (0);
+	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }

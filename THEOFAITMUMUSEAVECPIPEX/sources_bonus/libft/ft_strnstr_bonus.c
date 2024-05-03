@@ -1,38 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strjoin.c                                       :+:      :+:    :+:   */
+/*   ft_strnstr_bonus.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/09 11:56:36 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/25 17:30:48 by tfreydie         ###   ########.fr       */
+/*   Created: 2024/02/02 16:53:17 by tfreydie          #+#    #+#             */
+/*   Updated: 2024/02/03 18:46:40 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "pipex_bonus.h"
 
-char	*ft_strjoin(char const *s1, char const *s2)
+char	*ft_strnstr(const char *big, const char *little, size_t len)
 {
-	char	*joined;
 	size_t	i;
 	size_t	j;
-    size_t  s1_len;
-    size_t  s2_len;
 
-	if (!s1 || !s2)
-		return (NULL);
-    s1_len = ft_strlen(s1);
-    s2_len = ft_strlen(s2);
-	i = -1;
 	j = 0;
-	joined = malloc(sizeof(char) * (s1_len + s2_len + 1));
-	if (!joined)
-		return (NULL);
-	while (++i < s1_len)
-		joined[i] = s1[i];
-	while (j < s2_len)
-		joined[i++] = s2[j++];
-	joined[i] = '\0';
-	return (joined);
+	if (little[0] == '\0')
+		return ((char *)big);
+	while (big[j] != '\0' && j < len)
+	{
+		i = 0;
+		if (big[j] == little[i])
+		{
+			while (big[i + j] == little[i] && big[i + j] && (j + i) < len)
+			{
+				i++;
+			}
+			if (little[i] == '\0')
+				return ((char *)(big + j));
+		}
+		j++;
+	}
+	return (NULL);
 }

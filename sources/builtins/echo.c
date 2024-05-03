@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:40:04 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/23 17:14:02 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/25 14:40:12 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,18 +21,27 @@ char    *n_flag_logic(char *str, bool *n_flag);
 
 //Ive coded echo assuming I would get the content of every "Word" to the right of it,
 //that means flag and words to print all in one pointer, i can change that if need be
+
+//This is coded like trash im touching it again when im sure of the type
+//of input i will get.
 int echo(char *to_echo, t_garbage_collect *gc)
 {
     bool    n_flag;
     
+    if (to_echo == NULL)
+    {
+        if (printf("\n") == -1)
+            perror_exit(gc, errno, WRITE_ERR_MSG);
+        return (1);
+    }
     to_echo = n_flag_logic(to_echo, &n_flag);
     
     if (printf("%s", to_echo) == -1)
-        perror_exit(gc, errno, "Printf failed");
+        perror_exit(gc, errno, WRITE_ERR_MSG);
     if (n_flag == false)    
     {
         if (printf("\n") == -1)
-            perror_exit(gc, errno, "Printf failed");
+            perror_exit(gc, errno, WRITE_ERR_MSG);
     }
     return (1);
 }
@@ -42,7 +51,7 @@ int echo(char *to_echo, t_garbage_collect *gc)
 char    *n_flag_logic(char *str, bool *n_flag)
 {
     int i;
-
+    
     if (str[0] != '-' && str[1] != 'n')
     {
         *n_flag = false;

@@ -26,7 +26,8 @@ SRCS =		$(SRCS_DIR)/builtins/export.c \
 			$(SRCS_DIR)/quote_split.c \
 			$(SRCS_DIR)/builtins/echo.c \
 			$(SRCS_DIR)/builtins/cd.c \
-			$(SRCS_DIR)/builtins/pwd.c
+			$(SRCS_DIR)/builtins/pwd.c \
+			$(SRCS_DIR)/here_doc.c 
 #------------------------------------------------------------------------#
 
 #---------------------------------Compilation & Linking---------------------------------#

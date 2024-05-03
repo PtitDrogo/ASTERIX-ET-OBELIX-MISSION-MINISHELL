@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/26 20:08:44 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/29 16:35:25 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <../libft/includes/libft.h>
 
 ///------------------------Structs------------------------///
 
@@ -37,10 +38,9 @@ typedef struct s_garbage_collect
 {
 	void						*to_free;
 	struct s_garbage_collect	*next;
-	
 } t_garbage_collect;
 
-typedef enum s_tok_val
+typedef enum e_tok_val //
 {
 	PIPE = 1,
 	GREAT,
@@ -75,6 +75,7 @@ typedef struct s_cmd
 #define MALLOC_ERROR 42
 #define MALLOC_ERR_MSG "Error : Malloc failed\n"
 #define WRITE_ERR_MSG "Error : Writing failed"
+#define	SYNTAX_ERROR_MSG "bash: syntax error near unexpected token"
 #define PERROR_ERR_MSG "Error : "
 
 ///------------------------Functions------------------------///
@@ -117,26 +118,27 @@ void	empty_trash_exit(t_garbage_collect *gc, int exit_code);
 ///------------------------Execution------------------------///
 char    *expander(t_env_node *env, t_garbage_collect **gc, char *to_expand);
 
+//Je laisse ici c'est un testament d'une ancienne epoque
 
-///------------------------Libft------------------------///
-char	*get_next_line(int fd);
-char	*ft_strdup(const char *src);
-size_t	ft_strlen(const char *s);
-char	*ft_strnstr(const char *big, const char *little, size_t len);
-int		ft_isalpha(int c);
-int		ft_isalnum(int c);
-int		ft_isdigit(int c);
-int		ft_strncmp(char *s1, char *s2, size_t n);
-char	**ft_split(char const *s, char c);
-void	ft_free_array(void **array);
-int		ft_atoi(const char *nptr);
-long	ft_safe_atoi(const char *nptr);
-int		ft_printf_err(const char *text, ...);
-char	*ft_strjoin(char const *s1, char const *s2);
-void	*free_and_null(char *line);
-char	*final_check(char *line);
-void	*ft_memmove(void *dest, const void *src, size_t n);
-void	*ft_memset(void *s, int c, size_t n);
+// ///------------------------Libft------------------------///
+// char	*get_next_line(int fd);
+// char	*ft_strdup(const char *src);
+// size_t	ft_strlen(const char *s);
+// char	*ft_strnstr(const char *big, const char *little, size_t len);
+// int		ft_isalpha(int c);
+// int		ft_isalnum(int c);
+// int		ft_isdigit(int c);
+// int		ft_strncmp(char *s1, char *s2, size_t n);
+// char	**ft_split(char const *s, char c);
+// void	ft_free_array(void **array);
+// int		ft_atoi(const char *nptr);
+// long	ft_safe_atoi(const char *nptr);
+// int		ft_printf_err(const char *text, ...);
+// char	*ft_strjoin(char const *s1, char const *s2);
+// void	*free_and_null(char *line);
+// char	*final_check(char *line);
+// void	*ft_memmove(void *dest, const void *src, size_t n);
+// void	*ft_memset(void *s, int c, size_t n);
 
 ///------------------------Parser/Lexer------------------------///
 void	parse(char **input, t_garbage_collect **gc);

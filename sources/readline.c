@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/26 20:11:25 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/04/26 20:59:41 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ int	theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *
 	if (input == NULL || input[0] == '\0')
 		return (1);
 	split_input = (char **)setter_double_p_gc((void **)ft_split(input, ' '), gc);
-	
+	//this is temp so i dont check if its null
 	if (ft_strcmp(split_input[0], "unset") == 0)
 		unset(*env_dup_root, split_input[1]);
 	if (ft_strcmp(split_input[0], "export") == 0)
@@ -105,10 +105,7 @@ int	theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *
 	if (ft_strcmp(split_input[0], "env") == 0)
 		env(*env_dup_root, *gc);
 	if (ft_strcmp(split_input[0], "exit") == 0)
-	{	
-		printf("feeding into exit %s\n", split_input[1]);
 		ft_exit(&split_input[1], *gc);
-	}
 	if (ft_strcmp(split_input[0], "pwd") == 0)
 		pwd(gc);
 	if (ft_strcmp(split_input[0], "cd") == 0)

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:48:23 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/03 16:57:36 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/03 17:00:33 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,24 +112,24 @@ void	parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cm
 		token = token->next;
 	}
 	
-	while ((*cmd_chain))
-	{
-		printf("new cmd :\n");
-		int i = 0;
-		while ((*cmd_chain)->str && (*cmd_chain)->str[i])
-			printf("cmd : %s\n", (*cmd_chain)->str[i++]);
-		t_token	*redir_in = (*cmd_chain)->redirection_in;
-		t_token	*redir_out = (*cmd_chain)->redirection_out;
-		while (redir_in)
-		{
-			printf("redir_in : %s\n", redir_in->str);
-			redir_in = redir_in->next;
-		}
-		while (redir_out)
-		{
-			printf("redir_out : %s\n", redir_out->str);
-			redir_out = redir_out->next;
-		}
-		(*cmd_chain) = (*cmd_chain)->next;
-	}
+	// while ((*cmd_chain))
+	// {
+	// 	printf("new cmd :\n");
+	// 	int i = 0;
+	// 	while ((*cmd_chain)->str && (*cmd_chain)->str[i])
+	// 		printf("cmd : %s\n", (*cmd_chain)->str[i++]);
+	// 	t_token	*redir_in = (*cmd_chain)->redirection_in;
+	// 	t_token	*redir_out = (*cmd_chain)->redirection_out;
+	// 	while (redir_in)
+	// 	{
+	// 		printf("redir_in : %s\n", redir_in->str);
+	// 		redir_in = redir_in->next;
+	// 	}
+	// 	while (redir_out)
+	// 	{
+	// 		printf("redir_out : %s\n", redir_out->str);
+	// 		redir_out = redir_out->next;
+	// 	}
+	// 	(*cmd_chain) = (*cmd_chain)->next;
+	// }
 }

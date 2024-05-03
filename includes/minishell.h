@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/03 16:37:21 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/03 17:57:13 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <../libft/includes/libft.h>
+#include <sys/wait.h>
 
 ///------------------------Structs------------------------///
 
@@ -53,7 +54,7 @@ typedef enum e_tok_val //
 typedef struct s_token
 {
 	char			*str;
-	int				*pipe_fd; //maybe fuse this and str later idk;
+	int				pipe_fd; //maybe fuse this and str later idk;
 	t_tok_val		type;
 	struct s_token	*next;
 }	t_token;
@@ -119,8 +120,9 @@ void    ft_error(char *error, t_garbage_collect *gc);
 
 ///------------------------Execution------------------------///
 char    *expander(t_env_node *env, t_garbage_collect **gc, char *to_expand);
-int **open_pipes(t_cmd *cmds, t_garbage_collect **gc, t_token *token_list);
-
+int		**open_pipes(t_cmd *cmds, t_garbage_collect **gc, int number_of_pipes);
+int 	exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes);
+int		count_pipes(t_token *token_list);
 
 ///------------------------Parser/Lexer------------------------///
 void	parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cmd_chain);

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/03 16:46:58 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/03 17:56:43 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,14 @@ int main(int argc, char const *argv[], char **envp)
 		// Check for EOF (Ctrl+D)
 		
 		basic_parsing(&gc, input, &token, &cmds);
-		// pipes = open_pipes(cmds, &gc, token);
+		// while (token)
+		// {
+		// 	printf("Token of type %u has value %s\n", token->type, token->str);
+		// 	token = token->next;
+		// }
+		int number_of_pipes = count_pipes(token);
+		pipes = open_pipes(cmds, &gc, number_of_pipes);
+		exec(env_dup_root, cmds, &gc, pipes, number_of_pipes);
 		// theo_basic_parsing(&env_dup_root, &gc, input); //comment this out 
 		add_history(input);
 	}

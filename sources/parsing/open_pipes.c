@@ -6,24 +6,22 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 13:59:06 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/03 16:17:44 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/03 17:57:30 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	count_pipes(t_token *token_list);
+int	count_pipes(t_token *token_list);
 static void	init_pipes(int **pipes,int pipe_number, t_garbage_collect *gc);
 static int	**malloc_pipes_fds(int pipe_number, t_garbage_collect **gc);
 static void	fill_pipes_in_token(t_cmd *cmds, int **pipes_fds);
 
 //open all pipes, fill cmd with proper pipes and return the **ptr to close them easily later;
-int **open_pipes(t_cmd *cmds, t_garbage_collect **gc, t_token *token_list)
+int **open_pipes(t_cmd *cmds, t_garbage_collect **gc, int number_of_pipes)
 {
-	int 	number_of_pipes;
 	int 	**pipes_fds;
 
-	number_of_pipes = count_pipes(cmds);
 	pipes_fds = malloc_pipes_fds(number_of_pipes, gc);
 	init_pipes(pipes_fds, number_of_pipes, *gc);
 	fill_pipes_in_token(cmds, pipes_fds);
@@ -39,16 +37,16 @@ static void fill_pipes_in_token(t_cmd *cmds, int **pipes_fds)
 	i = -1; //je suis remplis de sournoiseries;
 	while (cmds)
 	{
-		if (cmds->redirection_in->type = PIPE)
+		if (cmds->redirection_in && cmds->redirection_in->type == PIPE)
 			cmds->redirection_in->pipe_fd = pipes_fds[i][0];
 		i++; // C'est de la triche mais en theorie ca passe;
-		if (cmds->redirection_out->type = PIPE)
+		if (cmds->redirection_out && cmds->redirection_out->type == PIPE)
 			cmds->redirection_out->pipe_fd = pipes_fds[i][1];
 		cmds = cmds->next;
 	}  
 }
 
-static int count_pipes(t_token *token_list)
+int count_pipes(t_token *token_list)
 {
 	int pipe_count;
 	

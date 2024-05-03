@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:15:09 by garivo            #+#    #+#             */
-/*   Updated: 2024/04/24 17:37:06 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/03 13:33:19 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,12 @@ Parse : Reorganize said tokens into commands*/
 //#include "minishell_parsing.h"
 #include "minishell.h"
 
+void	set_to_last_redir(t_token **tokenpile)
+{
+	while (*tokenpile && (*tokenpile)->next && (*tokenpile)->next->next)
+		*tokenpile = (*tokenpile)->next;
+}
+
 t_token	*dup_token(t_token *token, t_garbage_collect **gc)
 {
 	t_token	*dup;
@@ -30,7 +36,7 @@ t_token	*dup_token(t_token *token, t_garbage_collect **gc)
 		return (NULL);
 	dup->str = setter_gc(ft_strdup(token->str), gc);
 	if (!dup->str)
-		return (NULL);
+		empty_trash_exit(*gc, EXIT_FAILURE);
 	dup->type = token->type;
 	dup->next = NULL;
 	return (dup);
@@ -58,8 +64,6 @@ static t_token	*create_token(char *str, t_garbage_collect **gc)
 	t_token	*token;
 
 	token = malloc_trash(sizeof(t_token), gc);
-	if (!token)
-		return (NULL);
 	if (!ft_strcmp(str, "|"))
 		token->type = PIPE;
 	else if (!ft_strcmp(str, ">"))

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 17:32:57 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/26 20:43:27 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/03 13:33:11 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ void	*setter_gc(void *data_to_set, t_garbage_collect **gc)
 	if (data_to_set == NULL)
 		return(data_to_set);
 	if (no_dupplicate_check(data_to_set, *gc) == 1)
-	{	
+	{
 		if (add_to_trash(gc, data_to_set) == 0)
 		{
 			free(data_to_set);

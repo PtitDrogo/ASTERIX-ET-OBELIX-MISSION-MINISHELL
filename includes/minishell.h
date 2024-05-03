@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/29 16:35:25 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/03 13:32:21 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,9 +61,8 @@ typedef struct s_cmd
 {
 	char					**str;
 	//int						(*builtin)(t_tools *, struct s_simple_cmds *);
-	int						num_redirections;
-	char					*hd_file_name;
-	t_token					*redirections;
+	t_token					*redirection_in;
+	t_token					*redirection_out;
 	struct s_cmd			*next;
 	int		input;
 }	t_cmd;
@@ -113,6 +112,7 @@ t_env_node *get_env_node(t_env_node *root, char *variable_name);
 //errors && exit
 void    perror_exit(t_garbage_collect *gc, int exit_code, char *err_msg);
 void	empty_trash_exit(t_garbage_collect *gc, int exit_code);
+void    ft_error(char *error, t_garbage_collect *gc);
 
 
 ///------------------------Execution------------------------///
@@ -145,6 +145,6 @@ void	parse(char **input, t_garbage_collect **gc);
 t_token	*tokenize(char **input, t_garbage_collect **gc);
 void	add_token(t_token **tokenpile, t_token *new_token);
 t_token	*dup_token(t_token *token, t_garbage_collect **gc);
-
-
+void	set_to_last_redir(t_token **tokenpile);
+char	**quote_split(char *input, t_garbage_collect **gc);
 #endif

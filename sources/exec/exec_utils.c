@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/03 18:52:11 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/03 19:58:22 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,13 +62,14 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 		child_process(envp, current, gc, pipes_fds, number_of_pipes); //giving current command !!
 		current = current->next;
 	}
-	// close_all_pipes(pipes_fds, *gc); // WE WILL CLOSE OUTSIDE OF FUNCTION;
+	close_all_pipes(pipes_fds, *gc, number_of_pipes);
     current = cmds;
-	printf("in parent, ID of child is %i\n", current->cmd_id);
 	while (current)
 	{
+		printf("in parent, ID of child is %i\n", current->cmd_id);
 		if (waitpid(current->cmd_id, &status, 0) == -1)
 			perror_exit(*gc, errno, "Error waiting for process");
+		current = current->next;
 	}
 	return (WEXITSTATUS(1)); //replace by exit status;
 }
@@ -80,6 +81,7 @@ void	child_process(char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes
 	char	*valid_path;
 	
 	cmds->cmd_id = fork();
+	printf("in child Id of child is %i\n", cmds->cmd_id);
 	if (cmds->cmd_id == -1)
 		perror_exit(*gc, errno, "Error creating subshell");
 	if (cmds->cmd_id == 0)
@@ -127,7 +129,7 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 				exit(42); //WILL HAVE TO HANDLE MANY HERE_DOC LATER
 		}
 		if (in->type == PIPE)
-			tmp_fd = out->pipe_fd; //str[0]somewhere else//get the already open read pipe fd; // GOTTA CHANGE STR
+			tmp_fd = out->pipe_fd;
 		secure_dup2(tmp_fd, STDIN_FILENO, pipes, *gc, number_of_pipes);
 		if (in->type == LESS || in->type == D_LESS)
 			if (close(tmp_fd) == -1)
@@ -193,7 +195,7 @@ char    **rebuild_env(t_env_node *root, t_garbage_collect **gc)
 	
 	i = 0;
 	number_of_variables = count_valid_nodes(root);
-	printf("number of variable is %i\n", number_of_variables);
+	// printf("number of variable is %i\n", number_of_variables);
     envp = malloc_trash(sizeof(char *) * (number_of_variables + 1), gc);
 	while (root)
     {
@@ -206,7 +208,7 @@ char    **rebuild_env(t_env_node *root, t_garbage_collect **gc)
 		// printf("current var being set is %s\n", envp[i]);
 		i++;
     }
-	printf("i is equal to %i (we expect var)\n", i);
+	// printf("i is equal to %i (we expect var)\n", i);
 	envp[i] = NULL;
 	return (envp);
 }
@@ -258,7 +260,7 @@ char	*find_valid_path(t_cmd *cmds, char **envp, t_garbage_collect **gc)
 	// printf("is path null %p\n", path);
 	if (path == NULL)
 		return (NULL);
-	printf("path is %s\n", path);
+	// printf("path is %s\n", path);
 	possible_paths = (char **)setter_double_p_gc((void **)ft_split(path, ':'), gc);
 	malloc_check(possible_paths, *gc);
 	i = -1;

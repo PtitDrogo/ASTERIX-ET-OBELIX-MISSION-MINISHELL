@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/03 17:57:13 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/03 19:39:10 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 #include <fcntl.h>
 #include <../libft/includes/libft.h>
 #include <sys/wait.h>
+#include <signal.h>
 
 ///------------------------Structs------------------------///
 

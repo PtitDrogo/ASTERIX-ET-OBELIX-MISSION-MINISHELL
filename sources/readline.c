@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/03 17:56:43 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/03 19:51:08 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,12 @@ int main(int argc, char const *argv[], char **envp)
 	char				*history;
 	int					**pipes;
 	
+	// struct sigaction sa;
+	// sa.sa_handler = SIG_IGN;  // Ignore SIGPIPE
+	// sigemptyset(&sa.sa_mask);
+	// sa.sa_flags = 0;
+	// sigaction(SIGPIPE, &sa, NULL);
+
 	gc = NULL;
 	env_dup_root = NULL;
 	if (envp == NULL)

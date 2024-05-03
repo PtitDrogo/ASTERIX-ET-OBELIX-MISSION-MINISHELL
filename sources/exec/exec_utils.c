@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/30 18:18:21 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/03 14:57:59 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,45 +32,34 @@ typedef struct s_cmd_theo
 	t_token					    *redirection_out;
 	struct s_cmd_theo			*next;
 	int							cmd_id; //l'int qui va stock la valeur de retour de la cmd
-}	my_cmd;
+}	t_cmd;
 
-int         count_pipes(my_cmd *cmds);
-static void	init_pipes(int **pipes,int pipe_number, t_garbage_collect *gc);
-static int	**malloc_pipes_fds(int pipe_number, t_garbage_collect **gc);
+
+
 int			count_valid_nodes(t_env_node *root);
 void		close_all_pipes(int **pipes_fds, t_garbage_collect *gc);
 char		*find_env_variable(char **envp, char *env_to_find);
 static char	*ft_strjoin_and_add(char const *s1, char const *s2, char c);
 void		secure_dup2(int mew_fd, int olc_fd, int **pipes, t_garbage_collect *gc);
-void		child_process(char **envp, my_cmd *cmds, t_garbage_collect **gc, int **pipes);
+void		child_process(char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes);
 void		print_open_err_msg_exit(int errno, char *file, t_garbage_collect *gc);
 
 //execve a besoin de deux choses, le char ** de la commande, et envp avec un path valide;
-int exec(t_env_node *root_env, my_cmd *cmds, t_garbage_collect **gc)
+int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds)
 {
-    int 	number_of_pipes;
-    int 	**pipes_fds;
+
 	char	**envp;
+	t_cmd *current = cmds;
+	int	status;
 
 	envp = rebuild_env(root_env, gc);
-	//Pipes should be generated outside of exec so I can then
-	//populate each cmd with the correct redirection;
-	
-	//TODO MOVE BELOW
-    number_of_pipes = count_pipes(cmds);
-    pipes_fds = malloc_pipes_fds(number_of_pipes, gc);
-    init_pipes(pipes_fds, number_of_pipes, *gc);
-	//TODO move above
-    
-	my_cmd *current = cmds;
     while (current)
 	{
 		child_process(envp, current, gc, pipes_fds); //giving current command !!
 		current = current->next;
 	}
-	close_all_pipes(pipes_fds, *gc);//TODO, MOVE this
+	close_all_pipes(pipes_fds, *gc);
     current = cmds;
-	int	status;
 	while (current)
 	{
 		if (waitpid(current->cmd_id, &status, 0) == -1)
@@ -81,7 +70,7 @@ int exec(t_env_node *root_env, my_cmd *cmds, t_garbage_collect **gc)
 //plusieurs moyen de compter le nombre de commande, je peux le faire avec le nombre
 // de Pipe token, ou a priori je peux le faire juste en comptant le nombre de nodes commandes
 //a voir lequel est le plus pertinent
-void	child_process(char **envp, my_cmd *cmds, t_garbage_collect **gc, int **pipes)
+void	child_process(char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes)
 {
 	char	*valid_path;
 	
@@ -106,7 +95,7 @@ void	child_process(char **envp, my_cmd *cmds, t_garbage_collect **gc, int **pipe
 	}
 }
 
-void	process_behavior(my_cmd *cmds, t_garbage_collect **gc, int **pipes)
+void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes)
 {
 	//je veux just dup les redirections;
 	t_token	*in;
@@ -191,49 +180,6 @@ static char	*ft_strjoin_and_add(char const *s1, char const *s2, char c)
 	return (joined);
 }
 
-int count_pipes(my_cmd *cmds)
-{
-    int pipe_count;
-    
-    pipe_count = 0;
-    while (cmds)
-    {
-        if (cmds->redirection_out == PIPE)
-            pipe_count++;
-        cmds = cmds->next;
-    }
-    return (pipe_count);
-}
-
-static void	init_pipes(int **pipes,int pipe_number, t_garbage_collect *gc)
-{
-	int	i;
-
-	i = 0;
-	while (i < pipe_number)
-	{
-		if (pipe(pipes[i]) == -1)
-			perror_exit(gc, errno, "Failed to open pipe");
-		i++;
-	}
-	return ;
-}
-
-static int	**malloc_pipes_fds(int pipe_number, t_garbage_collect **gc)
-{
-	int	i;
-    int **pipe_fds;
-
-	i = 0;
-	pipe_fds = (int **)malloc_trash(sizeof(int *) * pipe_number, gc);
-	while (i < pipe_number)
-	{
-		pipe_fds[i] = (int *)malloc_trash(sizeof(int) * 2, gc);
-		i++;
-	}
-	return (pipe_fds);
-}
-
 char    **rebuild_env(t_env_node *root, t_garbage_collect **gc)
 {
     int		number_of_variables;
@@ -288,7 +234,7 @@ void	close_all_pipes(int **pipes_fds, t_garbage_collect *gc)
 
 //J'ai besoin du char de base pour test si c'est un path.
 //puis j'ai besoin de l'env reconstruit;
-char	*find_valid_path(my_cmd *cmds, char **envp, t_garbage_collect **gc)
+char	*find_valid_path(t_cmd *cmds, char **envp, t_garbage_collect **gc)
 {
 	char *path;
 	char **possible_paths;

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:15:09 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/03 13:33:19 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/03 13:43:20 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,10 @@ t_token	*dup_token(t_token *token, t_garbage_collect **gc)
 		return (NULL);
 	dup = malloc_trash(sizeof(t_token), gc);
 	if (!dup)
-		return (NULL);
+		return (NULL); // in theorythis is useless since a NULL exits the shell;
 	dup->str = setter_gc(ft_strdup(token->str), gc);
 	if (!dup->str)
-		empty_trash_exit(*gc, EXIT_FAILURE);
+		empty_trash_exit(*gc, EXIT_FAILURE); // use malloc check function later;
 	dup->type = token->type;
 	dup->next = NULL;
 	return (dup);

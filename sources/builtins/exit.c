@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 14:57:56 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/25 14:40:27 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/03 15:46:23 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ static int		get_exit_return_value(char *arg)
 	}
 	else
 		result = result % 256;
-	// printf("exit with code %i\n", result);
+	printf("exit with code %i\n", result);
 	return (result);
 	
 }
@@ -66,6 +66,8 @@ static bool	is_letter_in_first_arg(char *str)
 	int i;
 
 	i = 0;
+	if (str[i] == '-')
+		i++;
 	while (str[i] && str[i] != ' ')
 	{
 		if (ft_isdigit(str[i]) == false)

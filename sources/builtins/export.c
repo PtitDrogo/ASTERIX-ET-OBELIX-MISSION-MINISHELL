@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 16:11:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/26 20:28:56 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/03 16:22:45 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,11 +154,14 @@ char	*get_env_var(const char *src, t_garbage_collect **gc)
 	return (to_return);
 }
 
+//returns 0 is envp is NULL, but no env doesnt exit shell so we dont do anything
 int	generate_env_llist(t_env_node **env_dup_root, t_garbage_collect **gc, char **envp)
 {
 	int i;
 
 	i = -1;
+	if (envp == NULL)
+		return (0);
 	while (envp[++i])
 	{	
 		if (export(env_dup_root, (void *)envp[i], gc) == 0)

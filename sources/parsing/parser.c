@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:48:23 by garivo            #+#    #+#             */
-/*   Updated: 2024/04/30 00:36:53 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/03 16:57:36 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ static char	**add_str(char ***list, char *str, t_garbage_collect **gc)
 	return (new_list);
 }
 
-static t_cmd	*create_command(t_token **tokenpile, t_garbage_collect **gc)
+static t_cmd	*create_command(t_token *tokenpile, t_garbage_collect **gc)
 {
 	t_cmd	*cmd;
 	t_token	*token;
@@ -62,7 +62,7 @@ static t_cmd	*create_command(t_token **tokenpile, t_garbage_collect **gc)
 	cmd->redirection_in = NULL;
 	cmd->redirection_out = NULL;
 	cmd->str = NULL;
-	token = *tokenpile;
+	token = tokenpile;
 	while (token && token->type != PIPE)
 	{
 		if (token->type == GREAT || token->type == D_GREAT
@@ -85,25 +85,26 @@ static t_cmd	*create_command(t_token **tokenpile, t_garbage_collect **gc)
 		add_token(&cmd->redirection_out, dup_token(token, gc));
 	return (cmd);
 }
-
-void	parse(char **input, t_garbage_collect **gc)
+// DOESNT WORK WITH PIPE, ONE PIPE CAN BE BOTH REDIR IN AND REDIR OUT OF 2 CMD
+// Return value The cmd list and a pointer that gets filled with the pipe number ?
+//changed it so it fills pointers token and cmd given to it instead of doing it in the
+//fucking void of space;
+void	parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cmd_chain)
 {
-	t_token	*tokenpile;
 	t_token	*token;
-	t_cmd	*cmd_chain;
 	t_cmd	*cmd;
 	int		start;
 
-	cmd_chain = NULL;
-	tokenpile = tokenize(input, gc);
-	token = tokenpile;
+	*cmd_chain = NULL;
+	*tokenpile = tokenize(input, gc);
+	token = *tokenpile;
 	start = 1;
 	while (token)
 	{
 		if (start)
 		{
-			cmd = create_command(&token, gc);
-			add_command(&cmd_chain, cmd);
+			cmd = create_command(token, gc);
+			add_command(cmd_chain, cmd);
 			start = 0;
 		}
 		if (token->type == PIPE)
@@ -111,14 +112,14 @@ void	parse(char **input, t_garbage_collect **gc)
 		token = token->next;
 	}
 	
-	while (cmd_chain)
+	while ((*cmd_chain))
 	{
 		printf("new cmd :\n");
 		int i = 0;
-		while (cmd_chain->str && cmd_chain->str[i])
-			printf("cmd : %s\n", cmd_chain->str[i++]);
-		t_token	*redir_in = cmd_chain->redirection_in;
-		t_token	*redir_out = cmd_chain->redirection_out;
+		while ((*cmd_chain)->str && (*cmd_chain)->str[i])
+			printf("cmd : %s\n", (*cmd_chain)->str[i++]);
+		t_token	*redir_in = (*cmd_chain)->redirection_in;
+		t_token	*redir_out = (*cmd_chain)->redirection_out;
 		while (redir_in)
 		{
 			printf("redir_in : %s\n", redir_in->str);
@@ -129,6 +130,6 @@ void	parse(char **input, t_garbage_collect **gc)
 			printf("redir_out : %s\n", redir_out->str);
 			redir_out = redir_out->next;
 		}
-		cmd_chain = cmd_chain->next;
+		(*cmd_chain) = (*cmd_chain)->next;
 	}
 }

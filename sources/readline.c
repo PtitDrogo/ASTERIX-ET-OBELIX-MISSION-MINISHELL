@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/03 13:33:55 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/03 16:46:58 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,27 +15,26 @@
 // compile this code with cc readline.c -lreadline
 int 	empty_trash(t_garbage_collect *gc);
 int		add_to_trash(t_garbage_collect **root, void *to_free);
-int		basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *input);
+int		basic_parsing(t_garbage_collect **gc, char *input, t_token **token, t_cmd **cmds);
 int		theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *input);
 char	*accurate_shell(t_garbage_collect **gc, t_env_node *env);
 
 
 int main(int argc, char const *argv[], char **envp)
 {
-	t_env_node *env_dup_root;
-	t_garbage_collect *gc;
-	char	*input;
-	char	*history;
+	t_env_node			*env_dup_root;
+	t_garbage_collect	*gc;
+	t_token				*token;
+	t_cmd				*cmds;
+	char				*input;
+	char				*history;
+	int					**pipes;
 	
 	gc = NULL;
 	env_dup_root = NULL;
 	if (envp == NULL)
 		return (1);
-	if (generate_env_llist(&env_dup_root, &gc, envp) == 0) // in theory this cant happen since it exits if it fails;
-	{
-		ft_printf_err("failed to generate env\n");
-		empty_trash_exit(gc, 1);
-	}
+	generate_env_llist(&env_dup_root, &gc, envp);
 	while (1) 
 	{
 		input = readline("myshell> ");	
@@ -45,8 +44,9 @@ int main(int argc, char const *argv[], char **envp)
 			break;
 		// Check for EOF (Ctrl+D)
 		
-		// basic_parsing(&env_dup_root, &gc, input);
-		theo_basic_parsing(&env_dup_root, &gc, input); //comment this out 
+		basic_parsing(&gc, input, &token, &cmds);
+		// pipes = open_pipes(cmds, &gc, token);
+		// theo_basic_parsing(&env_dup_root, &gc, input); //comment this out 
 		add_history(input);
 	}
 	
@@ -56,8 +56,10 @@ int main(int argc, char const *argv[], char **envp)
 	return 0;
 }
 
+
+
 //This is just basic parsing to be able to test my builtins
-int	basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *input)
+int	basic_parsing(t_garbage_collect **gc, char *input, t_token **token, t_cmd **cmds)
 {
 	char	**split_input;
 
@@ -67,21 +69,7 @@ int	basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *input
 	if (!split_input)
 		return (0);
 	//setter_double_p_gc((void **)split_input, gc);
-	parse(split_input, gc);
-	/*if (ft_strncmp(split_input[0], "unset", ft_strlen("unset")) == 0)
-		unset(*env_dup_root, split_input[1]);
-	if (ft_strncmp(split_input[0], "export", ft_strlen("export")) == 0)
-	{	
-		if (split_input[1] == NULL)
-			sorted_env_print(*env_dup_root);
-		else
-		{
-			export(env_dup_root, (void *)split_input[1], gc);
-		}
-	}
-	if (ft_strncmp(split_input[0], "env", ft_strlen("env")) == 0)
-		env(*env_dup_root);*/
-	//ft_free_array((void **)split_input); broken af, I need what's inside even after
+	parse(split_input, gc, token, cmds);
 	return (0);
 }
 

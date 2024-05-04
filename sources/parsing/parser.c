@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:48:23 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/03 19:10:54 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/04 22:54:08 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,8 @@ static char	**add_str(char ***list, char *str, t_garbage_collect **gc)
 	*list = new_list; 
 	return (new_list);
 }
-
+// DOESNT WORK WITH PIPE, ONE PIPE CAN BE BOTH REDIR IN AND REDIR OUT OF 2 CMD
+// Why are we Duping the tokens ?????
 static t_cmd	*create_command(t_token *tokenpile, t_garbage_collect **gc)
 {
 	t_cmd	*cmd;
@@ -63,6 +64,10 @@ static t_cmd	*create_command(t_token *tokenpile, t_garbage_collect **gc)
 	cmd->redirection_out = NULL;
 	cmd->str = NULL;
 	token = tokenpile;
+	// //BANDAID//
+	// if (token && token->prev && token->prev->type == PIPE)
+	// 	add_token(&cmd->redirection_in, dup_token(token, gc));
+	// //BANDAID//
 	while (token && token->type != PIPE)
 	{
 		if (token->type == GREAT || token->type == D_GREAT
@@ -85,10 +90,7 @@ static t_cmd	*create_command(t_token *tokenpile, t_garbage_collect **gc)
 		add_token(&cmd->redirection_out, dup_token(token, gc));
 	return (cmd);
 }
-// DOESNT WORK WITH PIPE, ONE PIPE CAN BE BOTH REDIR IN AND REDIR OUT OF 2 CMD
-// Return value The cmd list and a pointer that gets filled with the pipe number ?
-//changed it so it fills pointers token and cmd given to it instead of doing it in the
-//fucking void of space;
+//changed it so it fills pointers token and cmd given to it
 void	parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cmd_chain)
 {
 	t_token	*token;

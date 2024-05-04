@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 13:59:06 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/03 17:57:30 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/04 20:16:30 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,10 @@ static void fill_pipes_in_token(t_cmd *cmds, int **pipes_fds)
 			cmds->redirection_in->pipe_fd = pipes_fds[i][0];
 		i++; // C'est de la triche mais en theorie ca passe;
 		if (cmds->redirection_out && cmds->redirection_out->type == PIPE)
+		{	
+			printf("current cmd is %s\n", cmds->str[0]);
 			cmds->redirection_out->pipe_fd = pipes_fds[i][1];
+		}
 		cmds = cmds->next;
 	}  
 }

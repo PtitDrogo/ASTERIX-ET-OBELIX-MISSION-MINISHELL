@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/03 19:51:08 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/04 22:40:50 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ int main(int argc, char const *argv[], char **envp)
 
 	gc = NULL;
 	env_dup_root = NULL;
+	printf("launched shell\n");
 	if (envp == NULL)
 		return (1);
 	generate_env_llist(&env_dup_root, &gc, envp);
@@ -56,6 +57,7 @@ int main(int argc, char const *argv[], char **envp)
 		// 	printf("Token of type %u has value %s\n", token->type, token->str);
 		// 	token = token->next;
 		// }
+		syntax_error(token, gc);
 		int number_of_pipes = count_pipes(token);
 		pipes = open_pipes(cmds, &gc, number_of_pipes);
 		exec(env_dup_root, cmds, &gc, pipes, number_of_pipes);

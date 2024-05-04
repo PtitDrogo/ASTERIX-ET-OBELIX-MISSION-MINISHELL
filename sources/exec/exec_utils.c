@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/03 19:58:22 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/04 22:42:57 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,9 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 	t_cmd *current = cmds;
 	int	status;
 
+
 	envp = rebuild_env(root_env, gc);
-	printf("envp after rebuild is %p and first var is %s\n", envp, envp[0]);
+	// printf("envp after rebuild is %p and first var is %s\n", envp, envp[0]);
     while (current)
 	{
 		child_process(envp, current, gc, pipes_fds, number_of_pipes); //giving current command !!
@@ -66,7 +67,7 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
     current = cmds;
 	while (current)
 	{
-		printf("in parent, ID of child is %i\n", current->cmd_id);
+		// printf("in parent, ID of child is %i\n", current->cmd_id);
 		if (waitpid(current->cmd_id, &status, 0) == -1)
 			perror_exit(*gc, errno, "Error waiting for process");
 		current = current->next;
@@ -81,7 +82,7 @@ void	child_process(char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes
 	char	*valid_path;
 	
 	cmds->cmd_id = fork();
-	printf("in child Id of child is %i\n", cmds->cmd_id);
+	// printf("in child Id of child is %i\n", cmds->cmd_id);
 	if (cmds->cmd_id == -1)
 		perror_exit(*gc, errno, "Error creating subshell");
 	if (cmds->cmd_id == 0)
@@ -201,7 +202,7 @@ char    **rebuild_env(t_env_node *root, t_garbage_collect **gc)
     {
         if (root->variable)
 		{
-			envp[i] = setter_gc(ft_strjoin(root->variable_name, root->variable), gc);
+			envp[i] = setter_gc(ft_strjoin_and_add(root->variable_name, root->variable, '='), gc);
 			malloc_check(envp[i], *gc);
 		}
         root = root->next;
@@ -283,7 +284,7 @@ char	*find_env_variable(char **envp, char *env_to_find)
 
 	if (!env_to_find || !envp || !envp[0]) // uh ?
 		return (NULL);
-	printf("hi\n");
+	// printf("hi\n");
 	len_env = ft_strlen(env_to_find);
 	i = 0;
 	while (envp[i])

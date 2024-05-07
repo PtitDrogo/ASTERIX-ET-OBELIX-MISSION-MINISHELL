@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/07 17:51:54 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/07 19:59:23 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ int 	env(t_env_node *env_dup_root, t_garbage_collect *gc);
 int 	ft_exit(char **args, t_garbage_collect *gc);
 void	sorted_env_print(t_env_node *env_dup_root, t_garbage_collect *gc);
 int		pwd(t_garbage_collect **gc);
-int		echo(char *to_echo, t_garbage_collect *gc);
+int		echo(char **to_echo, t_garbage_collect **gc);
 int 	cd(char **cmd, t_garbage_collect **gc, t_env_node *env);
 
 //UTILS

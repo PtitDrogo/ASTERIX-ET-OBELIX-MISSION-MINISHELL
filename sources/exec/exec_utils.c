@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/07 15:22:15 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/07 19:35:54 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,7 +192,7 @@ static char	*ft_strjoin_and_add(char const *s1, char const *s2, char c)
 	joined[i] = '\0';
 	return (joined);
 }
-
+//Rebuild env from the list, adding correctly the var if its set;
 char    **rebuild_env(t_env_node *root, t_garbage_collect **gc)
 {
     int		number_of_variables;
@@ -200,7 +200,7 @@ char    **rebuild_env(t_env_node *root, t_garbage_collect **gc)
 	int		i;	
 	
 	i = 0;
-	number_of_variables = count_valid_nodes(root);
+	number_of_variables = count_nodes(root);
     envp = malloc_trash(sizeof(char *) * (number_of_variables + 1), gc);
 	while (root)
     {
@@ -209,13 +209,19 @@ char    **rebuild_env(t_env_node *root, t_garbage_collect **gc)
 			envp[i] = setter_gc(ft_strjoin_and_add(root->variable_name, root->variable, '='), gc);
 			malloc_check(envp[i], *gc);
 		}
+		else
+		{
+			envp[i] = setter_gc(ft_strdup(root->variable_name), gc);
+			malloc_check(envp[i], *gc);
+		}
         root = root->next;
 		i++;
     }
 	envp[i] = NULL;
 	return (envp);
 }
-
+//En fait ca sert a rien les nodes non set sont quand meme dans le env
+//je laisse la fonction au cas ou
 int	count_valid_nodes(t_env_node *root)
 {
     int valid_nodes;

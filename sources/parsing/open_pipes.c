@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   open_pipes.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 13:59:06 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/04 20:16:30 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/07 04:10:25 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,14 @@ static void fill_pipes_in_token(t_cmd *cmds, int **pipes_fds)
 	i = -1; //je suis remplis de sournoiseries;
 	while (cmds)
 	{
+		printf("hihi current cmds is %s and cmd in is %p\n", cmds->str[0], cmds->redirection_in);
+		if ( cmds->redirection_in)
+			printf("cnd redir in type is %u\n", cmds->redirection_in->type);
 		if (cmds->redirection_in && cmds->redirection_in->type == PIPE)
+		{	
 			cmds->redirection_in->pipe_fd = pipes_fds[i][0];
+			printf("cmd %s has redirection fd of type %u and of fd %i\n", cmds->str[0], cmds->redirection_in->type, cmds->redirection_in->pipe_fd);
+		}
 		i++; // C'est de la triche mais en theorie ca passe;
 		if (cmds->redirection_out && cmds->redirection_out->type == PIPE)
 		{	

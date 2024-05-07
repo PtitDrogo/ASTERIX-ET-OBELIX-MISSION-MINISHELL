@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:48:23 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/04 22:54:08 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/07 04:14:00 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,25 +64,27 @@ static t_cmd	*create_command(t_token *tokenpile, t_garbage_collect **gc)
 	cmd->redirection_out = NULL;
 	cmd->str = NULL;
 	token = tokenpile;
-	// //BANDAID//
-	// if (token && token->prev && token->prev->type == PIPE)
-	// 	add_token(&cmd->redirection_in, dup_token(token, gc));
-	// //BANDAID//
+	
+	// BANDAID//
+	if (token && token->prev && token->prev->type == PIPE)
+		add_token(&cmd->redirection_in, dup_token(token->prev, gc));
+	// BANDAID//
 	while (token && token->type != PIPE)
 	{
-		if (token->type == GREAT || token->type == D_GREAT
-			|| token->type == LESS || token->type == D_LESS)
+		if (token->type == GREAT || token->type == D_GREAT || token->type == LESS || token->type == D_LESS)
 		{
 			redir = &cmd->redirection_in;
 			if (token->type == GREAT || token->type == D_GREAT)
 				redir = &cmd->redirection_out;
 			add_token(redir, dup_token(token, gc));
 			token = token->next;
-			add_token(redir, dup_token(token, gc));
+			if (token) //added this otherwise segfault on solo token
+				add_token(redir, dup_token(token, gc));
 		}
 		else
 			add_str(&cmd->str, token->str, gc);
-		token = token->next;
+		if (token) //added this for same reason as above
+			token = token->next;
 	}
 	set_to_last_redir(&cmd->redirection_in);
 	set_to_last_redir(&cmd->redirection_out);
@@ -105,6 +107,7 @@ void	parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cm
 	{
 		if (start)
 		{
+			printf("in parsetoken = %p\n", token);
 			cmd = create_command(token, gc);
 			add_command(cmd_chain, cmd);
 			start = 0;
@@ -114,14 +117,15 @@ void	parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cm
 		token = token->next;
 	}
 	
-	// while ((*cmd_chain))
+	//this print fucks with the code woopsi
+	// while ((*current_chain))
 	// {
 	// 	printf("new cmd :\n");
 	// 	int i = 0;
-	// 	while ((*cmd_chain)->str && (*cmd_chain)->str[i])
-	// 		printf("cmd : %s\n", (*cmd_chain)->str[i++]);
-	// 	t_token	*redir_in = (*cmd_chain)->redirection_in;
-	// 	t_token	*redir_out = (*cmd_chain)->redirection_out;
+	// 	while ((*current_chain)->str && (*current_chain)->str[i])
+	// 		printf("cmd : %s\n", (*current_chain)->str[i++]);
+	// 	t_token	*redir_in = (*current_chain)->redirection_in;
+	// 	t_token	*redir_out = (*current_chain)->redirection_out;
 	// 	while (redir_in)
 	// 	{
 	// 		printf("redir_in : %s\n", redir_in->str);
@@ -132,6 +136,6 @@ void	parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cm
 	// 		printf("redir_out : %s\n", redir_out->str);
 	// 		redir_out = redir_out->next;
 	// 	}
-	// 	(*cmd_chain) = (*cmd_chain)->next;
+	// 	(*current_chain) = (*current_chain)->next;
 	// }
 }

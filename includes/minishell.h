@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/04 22:38:10 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/07 01:36:39 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ typedef struct s_token
 	int				pipe_fd; //maybe fuse this and str later idk;
 	t_tok_val		type;
 	struct s_token	*next;
+	struct s_token	*prev;
 }	t_token;
 
 typedef struct s_cmd
@@ -132,6 +133,6 @@ void	add_token(t_token **tokenpile, t_token *new_token);
 t_token	*dup_token(t_token *token, t_garbage_collect **gc);
 void	set_to_last_redir(t_token **tokenpile);
 char	**quote_split(char *input, t_garbage_collect **gc);
-void    syntax_error(t_token *token, t_garbage_collect *gc);
+int    syntax_error(t_token *token, t_garbage_collect *gc);
 
 #endif

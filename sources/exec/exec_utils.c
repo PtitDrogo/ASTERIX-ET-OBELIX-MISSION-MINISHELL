@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/04 22:42:57 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/07 04:26:30 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,8 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 
 	envp = rebuild_env(root_env, gc);
 	// printf("envp after rebuild is %p and first var is %s\n", envp, envp[0]);
-    while (current)
+    printf("current = %p\n", current);
+	while (current)
 	{
 		child_process(envp, current, gc, pipes_fds, number_of_pipes); //giving current command !!
 		current = current->next;
@@ -85,6 +86,7 @@ void	child_process(char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes
 	// printf("in child Id of child is %i\n", cmds->cmd_id);
 	if (cmds->cmd_id == -1)
 		perror_exit(*gc, errno, "Error creating subshell");
+	// il faudra vider les pipes ici chef;
 	if (cmds->cmd_id == 0)
 	{
 		process_behavior(cmds, gc, pipes, number_of_pipes);	
@@ -130,7 +132,7 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 				exit(42); //WILL HAVE TO HANDLE MANY HERE_DOC LATER
 		}
 		if (in->type == PIPE)
-			tmp_fd = out->pipe_fd;
+			tmp_fd = in->pipe_fd;
 		secure_dup2(tmp_fd, STDIN_FILENO, pipes, *gc, number_of_pipes);
 		if (in->type == LESS || in->type == D_LESS)
 			if (close(tmp_fd) == -1)
@@ -151,12 +153,13 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 				print_open_err_msg_exit(errno, out->next->str, *gc);
 		}	
 		if (out->type == PIPE)
-			tmp_fd = out->pipe_fd; //str[1]somewhere else//assuming we change token so str has the pipe end;
+			tmp_fd = out->pipe_fd;
 		secure_dup2(tmp_fd, STDOUT_FILENO, pipes, *gc, number_of_pipes);
 		if (out->type == GREAT || out->type == D_GREAT)
 			if (close(tmp_fd) == -1)
 				perror_exit(*gc, errno, "Failed to close opened file");
 	}
+	//Je peux fermer les fichiers ici apres avoir fait les redirections;
 	return ; // if theres no redirection we just go to exec as usual;
 }
 
@@ -196,7 +199,6 @@ char    **rebuild_env(t_env_node *root, t_garbage_collect **gc)
 	
 	i = 0;
 	number_of_variables = count_valid_nodes(root);
-	// printf("number of variable is %i\n", number_of_variables);
     envp = malloc_trash(sizeof(char *) * (number_of_variables + 1), gc);
 	while (root)
     {
@@ -206,10 +208,8 @@ char    **rebuild_env(t_env_node *root, t_garbage_collect **gc)
 			malloc_check(envp[i], *gc);
 		}
         root = root->next;
-		// printf("current var being set is %s\n", envp[i]);
 		i++;
     }
-	// printf("i is equal to %i (we expect var)\n", i);
 	envp[i] = NULL;
 	return (envp);
 }
@@ -252,24 +252,19 @@ char	*find_valid_path(t_cmd *cmds, char **envp, t_garbage_collect **gc)
 	char **possible_paths;
 	int i;
 	
-	// printf("in valid path, envp = %p first env is %s\n", envp, envp[0]);
 	if (envp == NULL)
 		return (NULL);
 	if (access(*(cmds->str), X_OK) == 0)
 		return (*(cmds->str));
 	path = find_env_variable(envp, "PATH");
-	// printf("is path null %p\n", path);
 	if (path == NULL)
 		return (NULL);
-	// printf("path is %s\n", path);
 	possible_paths = (char **)setter_double_p_gc((void **)ft_split(path, ':'), gc);
 	malloc_check(possible_paths, *gc);
 	i = -1;
 	while(possible_paths[++i])
 	{
-		// printf("possible path is %s\n", possible_paths[i]);
 		path = setter_gc(ft_strjoin_and_add(possible_paths[i], cmds->str[0], '/'), gc);
-		// printf("testing path = %s\n", path);
 		malloc_check(path, *gc);
 		if (access(path, X_OK) == 0)
 			return (path);
@@ -284,17 +279,15 @@ char	*find_env_variable(char **envp, char *env_to_find)
 
 	if (!env_to_find || !envp || !envp[0]) // uh ?
 		return (NULL);
-	// printf("hi\n");
 	len_env = ft_strlen(env_to_find);
 	i = 0;
 	while (envp[i])
 	{
 		
 		if (ft_strnstr(envp[i], env_to_find, len_env))
-			return (envp[i] + len_env); // this is so i just get the content
+			return (envp[i] + len_env);
 		i++;
 	}
-	printf("double hi\n");
 	return (NULL);
 }
 
@@ -324,46 +317,3 @@ void	print_open_err_msg_exit(int errnumber, char *file, t_garbage_collect *gc)
 			perror_exit(gc, errnumber, WRITE_ERR_MSG);
 	empty_trash_exit(gc, errnumber);
 }
-
-
-
-// char	*ft_strnstr(const char *big, const char *little, size_t len)
-// {
-// 	size_t	i;
-// 	size_t	j;
-
-// 	j = 0;
-// 	if (little[0] == '\0')
-// 		return ((char *)big);
-// 	while (big[j] != '\0' && j < len)
-// 	{
-// 		i = 0;
-// 		if (big[j] == little[i])
-// 		{
-// 			while (big[i + j] == little[i] && big[i + j] && (j + i) < len)
-// 			{
-// 				i++;
-// 			}
-// 			if (little[i] == '\0')
-// 				return ((char *)(big + j));
-// 		}
-// 		j++;
-// 	}
-// 	return (NULL);
-// }
-
-/*  ENOENT: No such file or directory. The specified file or directory does not exist.
-    EACCES: Permission denied. The requested access to the file is not allowed.
-    EEXIST: File exists. The file to be created already exists and the O_CREAT and O_EXCL flags were used.
-    EISDIR: Is a directory. Attempting to open a directory for writing or reading when the operation requires a regular file.
-    EMFILE: Too many open files. The process has reached its limit for open file descriptors.
-    ENFILE: File table overflow. The system's file table is full, indicating that the system limit on the total number of open files has been reached.
-    EFAULT: Bad address. The pathname argument points outside the accessible address space.*/
-//Random syntax check function
-
-//I think this is useless and we should check this before e	xec
-// if (in->next == NULL || in->next->type != STR)
-// {
-// 	ft_printf_err(SYNTAX_ERROR_MSG); //for cases like < | or < <
-// 	empty_trash_exit(*gc, SYNTAX_ERROR);
-// }

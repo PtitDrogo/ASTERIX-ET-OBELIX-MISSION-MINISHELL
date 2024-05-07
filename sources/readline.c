@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/04 22:40:50 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/07 04:25:56 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,16 +52,19 @@ int main(int argc, char const *argv[], char **envp)
 		// Check for EOF (Ctrl+D)
 		
 		basic_parsing(&gc, input, &token, &cmds);
+		printf("after basic parsing first cmd is %p\n", cmds);
 		// while (token)
 		// {
 		// 	printf("Token of type %u has value %s\n", token->type, token->str);
 		// 	token = token->next;
 		// }
-		syntax_error(token, gc);
-		int number_of_pipes = count_pipes(token);
-		pipes = open_pipes(cmds, &gc, number_of_pipes);
-		exec(env_dup_root, cmds, &gc, pipes, number_of_pipes);
-		// theo_basic_parsing(&env_dup_root, &gc, input); //comment this out 
+		if (syntax_error(token, gc) == 0)
+		{
+			int number_of_pipes = count_pipes(token);
+			pipes = open_pipes(cmds, &gc, number_of_pipes);
+			exec(env_dup_root, cmds, &gc, pipes, number_of_pipes);
+			// theo_basic_parsing(&env_dup_root, &gc, input); //comment this out 
+		}
 		add_history(input);
 	}
 	
@@ -88,7 +91,7 @@ int	basic_parsing(t_garbage_collect **gc, char *input, t_token **token, t_cmd **
 	return (0);
 }
 
-//This is just basic parsing to be able to test my builtins
+//En vrai je peux garder cette fonction pour run les builtins;
 int	theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *input)
 {
 	char	**split_input;

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 14:47:08 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/04 22:38:00 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/07 18:02:55 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,4 +78,46 @@ t_env_node *get_env_node(t_env_node *root, char *variable_name)
 		root = root->next;
 	}
 	return (NULL); //couldnt find variable with that name
+}
+//gets the ->variable of a node
+char	*get_env_variable(t_env_node *root, char *variable_name)
+{
+	t_env_node *home_node;
+	
+	home_node = get_env_node(root, variable_name);
+	if (home_node == NULL)
+		return (NULL);
+	return (home_node->variable);
+}
+
+//returns true if cmd is a builtin
+bool	is_builtin(char **cmd)
+{
+	static char *builtins[] = {"unset", "export", "env", "exit", "pwd", "cd", NULL};
+	int	i;
+	
+	i = 0;
+	if (cmd == NULL)
+		return (false);
+	while (builtins[i])
+	{
+		if (ft_strcmp(cmd[0], builtins[i]) == 0)
+			return (true);
+		i++;
+	}
+	return (false);
+}
+
+int	count_arrays_in_doubleptr(void **array)
+{
+	int	i;
+
+	i = 0;
+	if (array == NULL)
+		return (0);
+	while (array[i])
+	{
+		i++;
+	}
+	return(i);
 }

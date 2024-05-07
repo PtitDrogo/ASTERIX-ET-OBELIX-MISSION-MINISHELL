@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/07 04:25:56 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/07 17:47:18 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 int 	empty_trash(t_garbage_collect *gc);
 int		add_to_trash(t_garbage_collect **root, void *to_free);
 int		basic_parsing(t_garbage_collect **gc, char *input, t_token **token, t_cmd **cmds);
-int		theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *input);
+int		theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char **input);
 char	*accurate_shell(t_garbage_collect **gc, t_env_node *env);
 
 
@@ -53,17 +53,16 @@ int main(int argc, char const *argv[], char **envp)
 		
 		basic_parsing(&gc, input, &token, &cmds);
 		printf("after basic parsing first cmd is %p\n", cmds);
-		// while (token)
-		// {
-		// 	printf("Token of type %u has value %s\n", token->type, token->str);
-		// 	token = token->next;
-		// }
+		
+		//TODO LATER, fix syntax error;
 		if (syntax_error(token, gc) == 0)
 		{
 			int number_of_pipes = count_pipes(token);
 			pipes = open_pipes(cmds, &gc, number_of_pipes);
-			exec(env_dup_root, cmds, &gc, pipes, number_of_pipes);
-			// theo_basic_parsing(&env_dup_root, &gc, input); //comment this out 
+			if (number_of_pipes == 0 && is_builtin(cmds->str))
+				theo_basic_parsing(&env_dup_root, &gc, cmds->str);
+			else
+				exec(env_dup_root, cmds, &gc, pipes, number_of_pipes);
 		}
 		add_history(input);
 	}
@@ -92,38 +91,44 @@ int	basic_parsing(t_garbage_collect **gc, char *input, t_token **token, t_cmd **
 }
 
 //En vrai je peux garder cette fonction pour run les builtins;
-int	theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *input)
+int	theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char **cmd)
 {
-	char	**split_input;
-	
-	if (input == NULL || input[0] == '\0')
+	if (cmd == NULL || cmd[0] == NULL)
 		return (1);
-	split_input = (char **)setter_double_p_gc((void **)ft_split(input, ' '), gc);
-	//this is temp so i dont check if its null
-	if (ft_strcmp(split_input[0], "unset") == 0)
-		unset(*env_dup_root, split_input[1]);
-	if (ft_strcmp(split_input[0], "export") == 0)
+	if (ft_strcmp(cmd[0], "unset") == 0)
+		unset(*env_dup_root, cmd[1]);
+	if (ft_strcmp(cmd[0], "export") == 0)
 	{	
-		if (split_input[1] == NULL)
+		if (cmd[1] == NULL)
 			sorted_env_print(*env_dup_root, *gc);
 		else
-			export(env_dup_root, (void *)split_input[1], gc);
+			export(env_dup_root, (void *)cmd[1], gc);
 	}
-	if (ft_strcmp(split_input[0], "env") == 0)
+	if (ft_strcmp(cmd[0], "env") == 0)
 		env(*env_dup_root, *gc);
-	if (ft_strcmp(split_input[0], "exit") == 0)
-		ft_exit(&split_input[1], *gc);
-	if (ft_strcmp(split_input[0], "pwd") == 0)
+	if (ft_strcmp(cmd[0], "exit") == 0)
+		ft_exit(&cmd[1], *gc);
+	if (ft_strcmp(cmd[0], "pwd") == 0)
 		pwd(gc);
-	if (ft_strcmp(split_input[0], "cd") == 0)
-		cd(split_input[1], gc, *env_dup_root);
-	if (ft_strcmp(split_input[0], "<<") == 0)
-		here_doc(split_input[1] ,gc, 1);
-	// if (ft_strcmp(split_input[0], "echo") == 0)
-	// 	echo(split_input[1], *gc); //this will only print the first arg for now;
+	if (ft_strcmp(cmd[0], "cd") == 0)
+		cd(cmd, gc, *env_dup_root);
+	if (ft_strcmp(cmd[0], "<<") == 0)
+		here_doc(cmd[1] ,gc, 1);
+	// if (ft_strcmp(input[0], "echo") == 0)
+	// 	echo(input[1], *gc); //this will only print the first arg for now;
 	
 	return (0);
 }
+
+
+
+
+
+
+
+
+
+
 
 
 

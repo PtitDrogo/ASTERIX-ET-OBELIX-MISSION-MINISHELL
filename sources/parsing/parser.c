@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:48:23 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/07 04:14:00 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/07 17:28:12 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ static t_cmd	*create_command(t_token *tokenpile, t_garbage_collect **gc)
 	token = tokenpile;
 	
 	// BANDAID//
-	if (token && token->prev && token->prev->type == PIPE)
+	if (token && token->prev && token->prev->type == PIPE)                       
 		add_token(&cmd->redirection_in, dup_token(token->prev, gc));
 	// BANDAID//
 	while (token && token->type != PIPE)

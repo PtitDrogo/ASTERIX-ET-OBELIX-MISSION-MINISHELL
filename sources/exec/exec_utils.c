@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/07 04:26:30 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/07 15:22:15 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,12 +45,14 @@ void		print_open_err_msg_exit(int errnumber, char *file, t_garbage_collect *gc);
 char		**rebuild_env(t_env_node *root, t_garbage_collect **gc);
 void		process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes);
 char		*find_valid_path(t_cmd *cmds, char **envp, t_garbage_collect **gc);
-void	child_process(char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes);
+void		child_process(char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes);
 
 //execve a besoin de deux choses, le char ** de la commande, et envp avec un path valide;
 int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes)
 {
 
+	//BUILTIN ARE MAIN PROCESS ALONE
+	//CHILDREN PROCESS OTHERWISE
 	char	**envp;
 	t_cmd *current = cmds;
 	int	status;

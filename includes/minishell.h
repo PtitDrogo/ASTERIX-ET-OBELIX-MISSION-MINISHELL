@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/07 01:36:39 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/07 17:51:54 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ int 	ft_exit(char **args, t_garbage_collect *gc);
 void	sorted_env_print(t_env_node *env_dup_root, t_garbage_collect *gc);
 int		pwd(t_garbage_collect **gc);
 int		echo(char *to_echo, t_garbage_collect *gc);
-int 	cd(char *dir_path, t_garbage_collect **gc, t_env_node *env);
+int 	cd(char **cmd, t_garbage_collect **gc, t_env_node *env);
 
 //UTILS
 size_t		len_to_char(char *str, char c);
@@ -113,6 +113,9 @@ int			pop(t_env_node *env_dup_root, t_env_node *node_to_pop);
 int			generate_env_llist(t_env_node **env_dup_root, t_garbage_collect **gc, char **envp);
 int			count_nodes(t_env_node *root);
 t_env_node *get_env_node(t_env_node *root, char *variable_name);
+bool		is_builtin(char **cmd);
+int			count_arrays_in_doubleptr(void **array);
+char		*get_env_variable(t_env_node *root, char *variable_name);
 
 //errors && exit
 void    perror_exit(t_garbage_collect *gc, int exit_code, char *err_msg);

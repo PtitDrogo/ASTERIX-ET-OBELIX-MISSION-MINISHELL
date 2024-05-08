@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:40:04 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/07 20:00:54 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/08 16:06:58 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,11 @@ int echo(char **to_echo, t_garbage_collect **gc)
 			perror_exit(*gc, errno, WRITE_ERR_MSG);
 		return (1);
 	}
-	//Need to string join all the strings into one actually
+	printf("toecho [1] == %s, to echo 2 = %s\n\n\n", to_echo[1],to_echo[2]);
 	joined_string = join_echo(&to_echo[1], gc);
 	joined_string = n_flag_logic(joined_string, &n_flag);
 	
-	if (printf("%s", to_echo) == -1)
+	if (printf("%s", joined_string) == -1)
 		perror_exit(*gc, errno, WRITE_ERR_MSG);
 	if (n_flag == false)    
 	{
@@ -55,38 +55,31 @@ static	char	*join_echo(char **to_echo, t_garbage_collect **gc)
 {
 	int		letters;
 	int		i;
+	int 	j;
 	char	*str_to_return;
 	
 	if (to_echo == NULL)
 		return (NULL);
-	i = 0;
+	i = -1;
 	letters = 0;
 
-	while (to_echo[i])
-	{
+	while (to_echo[++i])
 		letters += ft_strlen(to_echo[i]);
-		i++;
-	}
+	letters += count_arrays_in_doubleptr((void **)to_echo) - 1;
 	str_to_return = malloc_trash(letters, gc);
 	str_to_return[letters] = '\0';
 	i = 0;
 	letters = 0;
-	int j;
 	while (to_echo[i])
 	{
 		j = 0;
 		while (to_echo[i][j])
 			str_to_return[letters++] = to_echo[i][j++];
+		str_to_return[letters++] = ' ';
 		i++;
 	}
 	return (str_to_return);
-
-	
 }
-
-
-
-
 
 //this function will update the bool pointer depending if its a valid flag
 //it will return the pointer where we should start printing (as in, we dont print the flag !)

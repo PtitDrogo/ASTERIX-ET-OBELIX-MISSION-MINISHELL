@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/07 17:47:18 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/08 13:11:40 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,8 +114,8 @@ int	theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *
 		cd(cmd, gc, *env_dup_root);
 	if (ft_strcmp(cmd[0], "<<") == 0)
 		here_doc(cmd[1] ,gc, 1);
-	// if (ft_strcmp(input[0], "echo") == 0)
-	// 	echo(input[1], *gc); //this will only print the first arg for now;
+	if (ft_strcmp(cmd[0], "echo") == 0)
+		echo(cmd, gc); //this will only print the first arg for now;
 	
 	return (0);
 }

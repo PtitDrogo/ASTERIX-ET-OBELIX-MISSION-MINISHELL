@@ -21,7 +21,6 @@ SRCS =		$(SRCS_DIR)/builtins/export.c \
       		$(SRCS_DIR)/parsing/parser.c \
 			$(SRCS_DIR)/parsing/lexer.c \
 			$(SRCS_DIR)/builtins/export_utils.c \
-			$(SRCS_DIR)/expander.c \
 			$(SRCS_DIR)/errors.c \
 			$(SRCS_DIR)/parsing/quote_split.c \
 			$(SRCS_DIR)/builtins/echo.c \
@@ -31,6 +30,7 @@ SRCS =		$(SRCS_DIR)/builtins/export.c \
 			$(SRCS_DIR)/parsing/open_pipes.c \
 			$(SRCS_DIR)/exec/exec_utils.c \
 			$(SRCS_DIR)/parsing/syntax_error.c 
+			# $(SRCS_DIR)/expander.c \
 #------------------------------------------------------------------------#
 
 #---------------------------------Compilation & Linking---------------------------------#

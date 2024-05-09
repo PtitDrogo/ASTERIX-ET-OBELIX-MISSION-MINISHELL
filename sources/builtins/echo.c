@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:40:04 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/25 14:40:12 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/08 16:06:58 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 // #include <stdbool.h>
 // #include <stdio.h>
 
-char    *n_flag_logic(char *str, bool *n_flag);
+static	char    *n_flag_logic(char *str, bool *n_flag);
+static	char	*join_echo(char **to_echo, t_garbage_collect **gc);
 //I want a function i can just dump all the word content to the
 //right of echo and be happy with my life
 
@@ -24,60 +25,89 @@ char    *n_flag_logic(char *str, bool *n_flag);
 
 //This is coded like trash im touching it again when im sure of the type
 //of input i will get.
-int echo(char *to_echo, t_garbage_collect *gc)
+int echo(char **to_echo, t_garbage_collect **gc)
 {
-    bool    n_flag;
-    
-    if (to_echo == NULL)
-    {
-        if (printf("\n") == -1)
-            perror_exit(gc, errno, WRITE_ERR_MSG);
-        return (1);
-    }
-    to_echo = n_flag_logic(to_echo, &n_flag);
-    
-    if (printf("%s", to_echo) == -1)
-        perror_exit(gc, errno, WRITE_ERR_MSG);
-    if (n_flag == false)    
-    {
-        if (printf("\n") == -1)
-            perror_exit(gc, errno, WRITE_ERR_MSG);
-    }
-    return (1);
+	bool    n_flag;
+	char	*joined_string;
+	
+	if (to_echo == NULL)
+		return (1);
+	if (to_echo[1] == NULL)
+	{
+		if (printf("\n") == -1)
+			perror_exit(*gc, errno, WRITE_ERR_MSG);
+		return (1);
+	}
+	printf("toecho [1] == %s, to echo 2 = %s\n\n\n", to_echo[1],to_echo[2]);
+	joined_string = join_echo(&to_echo[1], gc);
+	joined_string = n_flag_logic(joined_string, &n_flag);
+	
+	if (printf("%s", joined_string) == -1)
+		perror_exit(*gc, errno, WRITE_ERR_MSG);
+	if (n_flag == false)    
+	{
+		if (printf("\n") == -1)
+			perror_exit(*gc, errno, WRITE_ERR_MSG);
+	}
+	return (1);
+}
+static	char	*join_echo(char **to_echo, t_garbage_collect **gc)
+{
+	int		letters;
+	int		i;
+	int 	j;
+	char	*str_to_return;
+	
+	if (to_echo == NULL)
+		return (NULL);
+	i = -1;
+	letters = 0;
+
+	while (to_echo[++i])
+		letters += ft_strlen(to_echo[i]);
+	letters += count_arrays_in_doubleptr((void **)to_echo) - 1;
+	str_to_return = malloc_trash(letters, gc);
+	str_to_return[letters] = '\0';
+	i = 0;
+	letters = 0;
+	while (to_echo[i])
+	{
+		j = 0;
+		while (to_echo[i][j])
+			str_to_return[letters++] = to_echo[i][j++];
+		str_to_return[letters++] = ' ';
+		i++;
+	}
+	return (str_to_return);
 }
 
 //this function will update the bool pointer depending if its a valid flag
 //it will return the pointer where we should start printing (as in, we dont print the flag !)
-char    *n_flag_logic(char *str, bool *n_flag)
+static	char    *n_flag_logic(char *str, bool *n_flag)
 {
-    int i;
-    
-    if (str[0] != '-' && str[1] != 'n')
-    {
-        *n_flag = false;
-        return (str);
-    }
-    i = 2;
-    while (str[i] && str[i] != ' ')
-    {
-        if (str[i] != 'n')
-        {
-            *n_flag = false;
-            return (str);
-        }
-        i++;
-    }
-    *n_flag = true;
-    return (&str[++i]);
+	int i;
+	
+	if (ft_strlen(str) <= 2)
+	{	
+		*n_flag = false;
+		return (str);
+	}
+	if (str[0] != '-' && str[1] != 'n')
+	{
+		*n_flag = false;
+		return (str);
+	}
+	i = 2;
+	while (str[i] && str[i] != ' ')
+	{
+		if (str[i] != 'n')
+		{
+			*n_flag = false;
+			return (str);
+		}
+		i++;
+	}
+	*n_flag = true;
+	return (&str[++i]);
 }
 
-//this code is a bit confusing but it copies bash behavior, -nnnnnnnnn is considered valid
-
-// //test main
-// int main(int argc, char *argv[])
-// {
-//     if (argc != 2)
-//         return (1);
-//     echo(argv[1]);
-//     return 0;
-// }

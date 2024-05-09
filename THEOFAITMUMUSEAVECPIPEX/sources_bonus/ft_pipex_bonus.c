@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/17 18:40:58 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/30 16:12:25 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/05 00:15:41 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,9 @@ static void	child_process(int argc, char *argv[], char **envp, t_cmd *cmd)
 		}
 		////NEW ABOVE^^^^
 		cmd->valid_path = find_valid_path(cmd);
+		char	*test;
+		test = malloc(1000);
+		test = malloc(100);
 		if (cmd->valid_path)
 			execve(cmd->valid_path, cmd->commands[cmd->current_process], envp);
 		free(cmd->valid_path);

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 12:48:32 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/27 10:04:55 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/07 15:44:16 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,16 +19,11 @@ int	unset(t_env_node *env_dup_root, char *env_to_find)
 	
 	current = env_dup_root;
 	if (!env_to_find || !env_dup_root) // uh ?
-	{
-		// perror("Environnement does not exist");
-		// exit(EXIT_FAILURE);
-		return (0); //not 100% sure i let the other option above;
-	}
+		return (0);
 	while (current)
 	{
 		if (ft_strcmp(current->variable_name, env_to_find) == 0)
 		{	
-			// printf("\n\nI found th	e variable\n\n");
 			pop(env_dup_root, current);
 			return (1);
 		}

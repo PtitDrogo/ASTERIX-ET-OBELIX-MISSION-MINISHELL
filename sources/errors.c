@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   errors.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 16:01:27 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/03 13:32:49 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/07 04:36:53 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void    perror_exit(t_garbage_collect *gc, int exit_code, char *err_msg)
 	empty_trash_exit(gc, exit_code);
 	return ;
 }
-
+//TODO replace with with my error;
 void    ft_error(char *error, t_garbage_collect *gc)
 {
 	if (error)

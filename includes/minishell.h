@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/03 13:32:21 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/09 14:04:25 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <../libft/includes/libft.h>
+#include <sys/wait.h>
+#include <signal.h>
 
 ///------------------------Structs------------------------///
 
@@ -53,18 +55,21 @@ typedef enum e_tok_val //
 typedef struct s_token
 {
 	char			*str;
+	int				pipe_fd; //maybe fuse this and str later idk;
 	t_tok_val		type;
 	struct s_token	*next;
+	struct s_token	*prev;
 }	t_token;
 
 typedef struct s_cmd
 {
 	char					**str;
-	//int						(*builtin)(t_tools *, struct s_simple_cmds *);
 	t_token					*redirection_in;
 	t_token					*redirection_out;
 	struct s_cmd			*next;
-	int		input;
+	int						cmd_id;
+	//int						(*builtin)(t_tools *, struct s_simple_cmds *);
+	// int		input;
 }	t_cmd;
 
 ///------------------------Defines------------------------///
@@ -97,8 +102,8 @@ int 	env(t_env_node *env_dup_root, t_garbage_collect *gc);
 int 	ft_exit(char **args, t_garbage_collect *gc);
 void	sorted_env_print(t_env_node *env_dup_root, t_garbage_collect *gc);
 int		pwd(t_garbage_collect **gc);
-int		echo(char *to_echo, t_garbage_collect *gc);
-int 	cd(char *dir_path, t_garbage_collect **gc, t_env_node *env);
+int		echo(char **to_echo, t_garbage_collect **gc);
+int 	cd(char **cmd, t_garbage_collect **gc, t_env_node *env);
 
 //UTILS
 size_t		len_to_char(char *str, char c);
@@ -108,6 +113,9 @@ int			pop(t_env_node *env_dup_root, t_env_node *node_to_pop);
 int			generate_env_llist(t_env_node **env_dup_root, t_garbage_collect **gc, char **envp);
 int			count_nodes(t_env_node *root);
 t_env_node *get_env_node(t_env_node *root, char *variable_name);
+bool		is_builtin(char **cmd);
+int			count_arrays_in_doubleptr(void **array);
+char		*get_env_variable(t_env_node *root, char *variable_name);
 
 //errors && exit
 void    perror_exit(t_garbage_collect *gc, int exit_code, char *err_msg);
@@ -116,35 +124,18 @@ void    ft_error(char *error, t_garbage_collect *gc);
 
 
 ///------------------------Execution------------------------///
-char    *expander(t_env_node *env, t_garbage_collect **gc, char *to_expand);
-
-//Je laisse ici c'est un testament d'une ancienne epoque
-
-// ///------------------------Libft------------------------///
-// char	*get_next_line(int fd);
-// char	*ft_strdup(const char *src);
-// size_t	ft_strlen(const char *s);
-// char	*ft_strnstr(const char *big, const char *little, size_t len);
-// int		ft_isalpha(int c);
-// int		ft_isalnum(int c);
-// int		ft_isdigit(int c);
-// int		ft_strncmp(char *s1, char *s2, size_t n);
-// char	**ft_split(char const *s, char c);
-// void	ft_free_array(void **array);
-// int		ft_atoi(const char *nptr);
-// long	ft_safe_atoi(const char *nptr);
-// int		ft_printf_err(const char *text, ...);
-// char	*ft_strjoin(char const *s1, char const *s2);
-// void	*free_and_null(char *line);
-// char	*final_check(char *line);
-// void	*ft_memmove(void *dest, const void *src, size_t n);
-// void	*ft_memset(void *s, int c, size_t n);
+void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds);
+int		**open_pipes(t_cmd *cmds, t_garbage_collect **gc, int number_of_pipes);
+int 	exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes);
+int		count_pipes(t_token *token_list);
 
 ///------------------------Parser/Lexer------------------------///
-void	parse(char **input, t_garbage_collect **gc);
+void	parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cmd_chain);
 t_token	*tokenize(char **input, t_garbage_collect **gc);
 void	add_token(t_token **tokenpile, t_token *new_token);
 t_token	*dup_token(t_token *token, t_garbage_collect **gc);
 void	set_to_last_redir(t_token **tokenpile);
 char	**quote_split(char *input, t_garbage_collect **gc);
+int    syntax_error(t_token *token, t_garbage_collect *gc);
+
 #endif

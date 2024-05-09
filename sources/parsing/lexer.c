@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:15:09 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/03 13:33:19 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/07 02:58:36 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ void	set_to_last_redir(t_token **tokenpile)
 		*tokenpile = (*tokenpile)->next;
 }
 
+//why are we duping
 t_token	*dup_token(t_token *token, t_garbage_collect **gc)
 {
 	t_token	*dup;
@@ -33,10 +34,10 @@ t_token	*dup_token(t_token *token, t_garbage_collect **gc)
 		return (NULL);
 	dup = malloc_trash(sizeof(t_token), gc);
 	if (!dup)
-		return (NULL);
+		return (NULL); // in theorythis is useless since a NULL exits the shell;
 	dup->str = setter_gc(ft_strdup(token->str), gc);
 	if (!dup->str)
-		empty_trash_exit(*gc, EXIT_FAILURE);
+		empty_trash_exit(*gc, EXIT_FAILURE); // use malloc check function later;
 	dup->type = token->type;
 	dup->next = NULL;
 	return (dup);
@@ -49,6 +50,7 @@ void	add_token(t_token **tokenpile, t_token *new_token)
 	new_token->next = NULL;
 	if (tokenpile && *tokenpile == NULL)
 	{
+		new_token->prev = NULL;
 		*tokenpile = new_token;
 		return ;
 	}
@@ -56,6 +58,7 @@ void	add_token(t_token **tokenpile, t_token *new_token)
 	while (current->next)
 		current = current->next;
 	current->next = new_token;
+	new_token->prev = current; 
 	return ;
 }
 
@@ -90,9 +93,13 @@ t_token	*tokenize(char **input, t_garbage_collect **gc)
 	tokenpile = NULL;
 	while (input[i])
 	{
-		token = create_token(input[i++], gc);
-		//printf("token : %s\n", token->str);
+		token = create_token(input[i], gc);
 		add_token(&tokenpile, token);
+		// printf("token : %s and input[i] is %s\n", token->str, input[i]);
+		// printf("token prev is %p\n", token->prev);
+		// if (token->prev)
+		// 	printf("content of token prev is %s\n", token->prev->str);
+		i++;
 	}
 	return (tokenpile);
 }

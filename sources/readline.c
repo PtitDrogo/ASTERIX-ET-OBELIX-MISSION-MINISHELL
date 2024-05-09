@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/08 13:11:40 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/09 14:30:34 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,6 @@ int main(int argc, char const *argv[], char **envp)
 	char				*history;
 	int					**pipes;
 	
-	// struct sigaction sa;
-	// sa.sa_handler = SIG_IGN;  // Ignore SIGPIPE
-	// sigemptyset(&sa.sa_mask);
-	// sa.sa_flags = 0;
-	// sigaction(SIGPIPE, &sa, NULL);
-
 	gc = NULL;
 	env_dup_root = NULL;
 	printf("launched shell\n");
@@ -57,6 +51,7 @@ int main(int argc, char const *argv[], char **envp)
 		//TODO LATER, fix syntax error;
 		if (syntax_error(token, gc) == 0)
 		{
+			// expander(env_dup_root, &gc, cmds);
 			int number_of_pipes = count_pipes(token);
 			pipes = open_pipes(cmds, &gc, number_of_pipes);
 			if (number_of_pipes == 0 && is_builtin(cmds->str))
@@ -72,8 +67,6 @@ int main(int argc, char const *argv[], char **envp)
 	empty_trash(gc);
 	return 0;
 }
-
-
 
 //This is just basic parsing to be able to test my builtins
 int	basic_parsing(t_garbage_collect **gc, char *input, t_token **token, t_cmd **cmds)

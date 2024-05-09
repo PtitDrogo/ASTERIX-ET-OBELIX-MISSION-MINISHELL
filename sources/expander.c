@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/08 16:04:47 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/09 14:16:42 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,26 @@
 //Bash essaye d'expand PUIS il vire les quotes;
 //en theorie si j'enleve juste les quotes au debut et a la fin je suis gucci
 
+int		count_new_size_of_array(char *array, t_env_node *env, t_garbage_collect **gc);
+bool	can_expand(bool in_single_quotes, bool in_double_quotes);
+char	*create_string_until_space(char *str, t_garbage_collect **gc);
+void	update_quotes_bools(char c, bool *in_single_quotes, bool *in_double_quotes);
+char    *expand_var(t_env_node *env, t_garbage_collect **gc, char *to_expand);
+char **expand(t_env_node *env, t_garbage_collect **gc, char **arrays);
+
+
+void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds)
+{
+	while (cmds)
+	{
+		cmds->str = expand(env, gc, cmds->str);
+		// remove_quotes();
+		cmds = cmds->next;
+	}
+	return ;
+}
+
+//not using this atm but maybe i will eventually
 char    *expand_var(t_env_node *env, t_garbage_collect **gc, char *to_expand)
 {
 	char    *str_to_return;
@@ -42,18 +62,20 @@ char    *expand_var(t_env_node *env, t_garbage_collect **gc, char *to_expand)
 }
 
 //Takes a double pointer and return its with ENV var expanded and quotes removed;
-char **expander_n_remove_quotes(t_env_node *env, t_garbage_collect **gc, char **arrays)
+char **expand(t_env_node *env, t_garbage_collect **gc, char **arrays)
 {
 	int	i;
 	int j;
 	int size;
 	
 	bool in_single_quotes;
+	bool in_double_quotes;
 	char *expanded_var;
 	char *tmp;
 	i = 0;
 	j = 0;
-	
+	in_single_quotes = false;
+	in_double_quotes = false;
 	//Try to expand first
 	//then get rid of quotes;
 	
@@ -64,11 +86,13 @@ char **expander_n_remove_quotes(t_env_node *env, t_garbage_collect **gc, char **
 		size = 0;
 		while (arrays[i][j])
 		{
-			if (arrays[i][j] == '$')
+			if (arrays[i][j] == '\'' || arrays[i][j] == '\"')
+				update_quotes_bools(arrays[i][j], &in_single_quotes, &in_double_quotes);
+			if (arrays[i][j] == '$' && can_expand(in_single_quotes, in_double_quotes))
 			{
 				tmp = get_env_variable(env, create_string_until_space(&arrays[i][j], gc));
 				while (tmp)
-					arrays[i][j++] = *tmp++;
+					arrays[i][j++] = *tmp++; //not ++j so we write over the $
 				arrays[i][j] = '\0';
 			}
 			expanded_var[size] = arrays[i][j];
@@ -76,8 +100,7 @@ char **expander_n_remove_quotes(t_env_node *env, t_garbage_collect **gc, char **
 		}
 		i++;
 	}
-	remove_quotes();
-
+	return (arrays);
 }
 
 int	count_new_size_of_array(char *array, t_env_node *env, t_garbage_collect **gc)
@@ -86,19 +109,21 @@ int	count_new_size_of_array(char *array, t_env_node *env, t_garbage_collect **gc
 	int size;
 	char *cur_var;
 	bool in_single_quotes;
+	bool in_double_quotes;
 
 	i = 0;
 	size = 0;
-	in_single_quotes == false;
+	in_single_quotes = false;
+	in_double_quotes = false;
 	while (array[i])
 	{
-		if (array[i] == '\'')
-			in_single_quotes == !in_single_quotes; // clever trick to switch on/off
-		else if (array[i] == '$' && in_single_quotes == false)
+		if (array[i] == '\'' || array[i] == '\"')
+			update_quotes_bools(array[i], &in_single_quotes, &in_double_quotes);
+		if (array[i] == '$' && can_expand(in_single_quotes, in_double_quotes) == true)
 		{
 			cur_var = create_string_until_space(&array[i], gc);
-			size += ft_strlen(get_env_variable(env, cur_var));
-			i += ft_strlen(cur_var);
+			size += ft_strlen(get_env_variable(env, cur_var)) - 1; //substract $ and add VAR
+			i += ft_strlen(cur_var) - 1;
 			//STEP 1 = JE CREE UNE STRING AVEC LE $ ET les chars jusqu'a un espace ou fin
 			//STEP 1.5 = Je stock la taille de la str $TESTEST;
 			//STEP 2 = Je compte la taille de la VAR ENV et je rajoute ca a size;
@@ -112,6 +137,24 @@ int	count_new_size_of_array(char *array, t_env_node *env, t_garbage_collect **gc
 		}
 	}
 	return (size);
+}
+
+bool	can_expand(bool in_single_quotes, bool in_double_quotes)
+{
+	if (in_double_quotes == false && in_single_quotes == true)
+		return (false);
+	else
+		return (true);
+}
+
+
+void	update_quotes_bools(char c, bool *in_single_quotes, bool *in_double_quotes)
+{
+	if (c == '\'')
+		*in_single_quotes = !(*in_single_quotes); // clever trick to switch on/off
+	if (c == '\"')
+		*in_double_quotes = !(*in_double_quotes);	
+	return ;
 }
 
 char	*create_string_until_space(char *str, t_garbage_collect **gc)
@@ -128,7 +171,7 @@ char	*create_string_until_space(char *str, t_garbage_collect **gc)
 	new_str[size] = '\0';
 	i = -1;
 	while(++i < size)
-		new_str[i] == str[i];
+		new_str[i] = str[i];
 	return(new_str);
 }
 

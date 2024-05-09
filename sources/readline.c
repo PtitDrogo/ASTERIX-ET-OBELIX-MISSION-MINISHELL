@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/09 14:30:34 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/09 20:55:27 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,9 @@ int main(int argc, char const *argv[], char **envp)
 	char				*input;
 	char				*history;
 	int					**pipes;
-	
+
+	token = NULL;
+	cmds = NULL;
 	gc = NULL;
 	env_dup_root = NULL;
 	printf("launched shell\n");
@@ -49,9 +51,9 @@ int main(int argc, char const *argv[], char **envp)
 		printf("after basic parsing first cmd is %p\n", cmds);
 		
 		//TODO LATER, fix syntax error;
-		if (syntax_error(token, gc) == 0)
+		if (token && syntax_error(token, gc) == 0)
 		{
-			// expander(env_dup_root, &gc, cmds);
+			expander(env_dup_root, &gc, cmds);
 			int number_of_pipes = count_pipes(token);
 			pipes = open_pipes(cmds, &gc, number_of_pipes);
 			if (number_of_pipes == 0 && is_builtin(cmds->str))

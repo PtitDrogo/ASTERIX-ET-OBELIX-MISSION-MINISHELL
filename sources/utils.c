@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 14:47:08 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/08 16:08:14 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/09 17:16:45 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,8 @@ t_env_node *get_env_node(t_env_node *root, char *variable_name)
 		return (NULL);
 	while (root != NULL)
 	{	
+		// printf("get_env_node is searching for a match to %s\n", variable_name);
+		// printf("current testing vs %s\n", root->variable_name);
 		if (ft_strcmp(root->variable_name, variable_name) == 0)
 			return (root);
 		root = root->next;

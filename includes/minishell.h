@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/09 14:04:25 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/09 19:40:13 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,7 @@ t_env_node *get_env_node(t_env_node *root, char *variable_name);
 bool		is_builtin(char **cmd);
 int			count_arrays_in_doubleptr(void **array);
 char		*get_env_variable(t_env_node *root, char *variable_name);
+
 
 //errors && exit
 void    perror_exit(t_garbage_collect *gc, int exit_code, char *err_msg);

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:40:04 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/08 16:06:58 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/09 18:49:27 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,13 +60,16 @@ static	char	*join_echo(char **to_echo, t_garbage_collect **gc)
 	
 	if (to_echo == NULL)
 		return (NULL);
-	i = -1;
+	i = 0;
 	letters = 0;
-
-	while (to_echo[++i])
-		letters += ft_strlen(to_echo[i]);
+	printf("hi in join echo\n");
+	printf("to echo [0] == %s\n", to_echo[0]);
+	printf("to echo [1] == %s\n", to_echo[1]);
+	while (to_echo[i])
+		letters += ft_strlen(to_echo[i++]);
 	letters += count_arrays_in_doubleptr((void **)to_echo) - 1;
-	str_to_return = malloc_trash(letters, gc);
+	printf("value of letters is %i\n", letters);
+	str_to_return = malloc_trash(letters + 1, gc);
 	str_to_return[letters] = '\0';
 	i = 0;
 	letters = 0;
@@ -75,9 +78,11 @@ static	char	*join_echo(char **to_echo, t_garbage_collect **gc)
 		j = 0;
 		while (to_echo[i][j])
 			str_to_return[letters++] = to_echo[i][j++];
-		str_to_return[letters++] = ' ';
 		i++;
+		if (to_echo[i])
+			str_to_return[letters++] = ' ';
 	}
+	printf("join echo is returning %s\n", str_to_return);
 	return (str_to_return);
 }
 

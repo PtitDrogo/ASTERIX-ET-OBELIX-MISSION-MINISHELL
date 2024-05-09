@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/09 21:36:06 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/10 00:33:41 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,13 +79,13 @@ char **expand(t_env_node *env, t_garbage_collect **gc, char **arrays)
 	//Try to expand first
 	//then get rid of quotes;
 	
-	printf("\n\n\n\n\n");
-	printf("I am feeding proper strings into this fucking function\n");
-	for (int test = 0; arrays[test]; test++)
-	{
-		printf("%s\n", arrays[test]);
-	}
-	printf("\n\n\n\n\n");
+	// printf("\n\n\n\n\n");
+	// printf("I am feeding proper strings into this fucking function\n");
+	// for (int test = 0; arrays[test]; test++)
+	// {
+	// 	printf("%s\n", arrays[test]);
+	// }
+	// printf("\n\n\n\n\n");
 
 	while (arrays[i])
 	{
@@ -98,7 +98,7 @@ char **expand(t_env_node *env, t_garbage_collect **gc, char **arrays)
 		j = 0;
 		while (arrays[i][j])
 		{
-			printf("hello I am in expand current char is %c\n", arrays[i][j]);
+			// printf("hello I am in expand current char is %c\n", arrays[i][j]);
 			if (arrays[i][j] == '\'' || arrays[i][j] == '\"')
 				update_quotes_bools(arrays[i][j], &in_single_quotes, &in_double_quotes);
 			// printf("about to check can expand, 1 quotes %i 2 quotes %i\n", in_single_quotes, in_double_quotes);
@@ -115,7 +115,7 @@ char **expand(t_env_node *env, t_garbage_collect **gc, char **arrays)
 				{
 					j += ft_strlen(tmp) + 1; // + 1 maybe
 					tmp = setter_gc(get_env_variable(env, tmp), gc);
-					printf("tmp, the thing getting the env variable is %s\n", tmp);
+					// printf("tmp, the thing getting the env variable is %s\n", tmp);
 					while (tmp && *tmp)
 					{	
 						expanded_var[size++] = *tmp; //not ++j so we write over the $
@@ -170,7 +170,7 @@ int	count_new_size_of_array(char *array, t_env_node *env, t_garbage_collect **gc
 			i++;
 		}
 	}
-	printf("new size returns %i\n", size);
+	// printf("new size returns %i\n", size);
 	return (size);
 	//STEP 1 = JE CREE UNE STRING AVEC LE $ ET les chars jusqu'a un espace ou fin
 	//STEP 1.5 = Je stock la taille de la str $TESTEST;

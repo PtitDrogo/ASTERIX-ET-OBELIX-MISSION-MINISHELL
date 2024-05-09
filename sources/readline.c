@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/09 20:55:27 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/10 01:17:23 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,12 +48,12 @@ int main(int argc, char const *argv[], char **envp)
 		// Check for EOF (Ctrl+D)
 		
 		basic_parsing(&gc, input, &token, &cmds);
-		printf("after basic parsing first cmd is %p\n", cmds);
+		// printf("after basic parsing first cmd is %p\n", cmds);
 		
 		//TODO LATER, fix syntax error;
 		if (token && syntax_error(token, gc) == 0)
 		{
-			expander(env_dup_root, &gc, cmds);
+			// expander(env_dup_root, &gc, cmds);
 			int number_of_pipes = count_pipes(token);
 			pipes = open_pipes(cmds, &gc, number_of_pipes);
 			if (number_of_pipes == 0 && is_builtin(cmds->str))
@@ -75,8 +75,13 @@ int	basic_parsing(t_garbage_collect **gc, char *input, t_token **token, t_cmd **
 {
 	char	**split_input;
 
-	if (input == NULL || input[0] == '\0')
+	if (input == NULL)
 		return (1);
+	if (input[0] == '\0')
+	{
+		*token = NULL;
+		return (1);
+	}
 	split_input = quote_split(input, gc);//ft_split(input, ' ');
 	if (!split_input)
 		return (0);

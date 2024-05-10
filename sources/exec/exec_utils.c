@@ -6,7 +6,7 @@
 /*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/10 14:05:02 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/10 19:47:45 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,9 @@ void	child_process(char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes
 		}
 		else if (cmds && cmds->str)
 		{
+			// ft_printf_err("qweqweqwe\n");
+			// exit(EXIT_FAILURE);
+			// why does here doc dont redirect good uuuuuuuh
 			execve(valid_path, cmds->str, envp);
 			ft_printf_err("Execve failed\n");
 			empty_trash_exit(*gc, 127);
@@ -137,16 +140,20 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 				print_open_err_msg_exit(errno, in->next->str, *gc);
 			if (here_doc(in->next->str, gc, tmp_fd) == 1)
 			{	
-				printf("exited out of here doc nicely");
+				printf("exited out of here doc nicely tmp fd is %i\n", tmp_fd);
 				// continue; //We do nothing I think 
 			}
 		}
 		if (in->type == PIPE)
+		{	
+			printf("if you see this you fucker up\n");
 			tmp_fd = in->pipe_fd;
+		}
 		if (in->next && in->next->next == NULL)
 		{	
-			printf("doing dup !\n");
+			printf("doing dup Feeding %i into secure dup !!\n", tmp_fd);
 			secure_dup2(tmp_fd, STDIN_FILENO, pipes, *gc, number_of_pipes);
+			write(tmp_fd, "does this write\n", 16);
 		}
 		if (in->type == LESS || in->type == D_LESS)
 			if (close(tmp_fd) == -1)

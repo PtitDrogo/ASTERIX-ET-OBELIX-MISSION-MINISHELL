@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/07 19:35:54 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/10 14:05:02 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,14 +96,19 @@ void	child_process(char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes
 		//Si j'ouvre des fichiers faut que je me demmerde pour les closes apres;
 		
 		valid_path = find_valid_path(cmds, envp, gc);
-		if (valid_path == NULL)
+		if (valid_path == NULL && cmds && cmds->str)
 		{
 			ft_printf_err("%s: command not found\n", cmds->str[0]); //need to check real err msg
 			empty_trash_exit(*gc, 127);
 		}
-		execve(valid_path, cmds->str, envp);
-		ft_printf_err("Execve failed\n");
-		empty_trash_exit(*gc, 127);
+		else if (cmds && cmds->str)
+		{
+			execve(valid_path, cmds->str, envp);
+			ft_printf_err("Execve failed\n");
+			empty_trash_exit(*gc, 127);
+		}
+		else
+			empty_trash_exit(*gc, 127); //All of this shit purely because of heredoc without a cmd
 	}
 }
 
@@ -117,7 +122,7 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 	in = cmds->redirection_in;
 	out = cmds->redirection_out;
 	
-	if (in)
+	while (in)
 	{	
 		if (in->type == LESS)
 		{	
@@ -130,17 +135,25 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 			tmp_fd = open(".ft_heredoc", O_CREAT | O_WRONLY | O_TRUNC, 0777);
 			if (tmp_fd == -1)
 				print_open_err_msg_exit(errno, in->next->str, *gc);
-			if (here_doc(in->next->str, gc, tmp_fd) == 0)
-				exit(42); //WILL HAVE TO HANDLE MANY HERE_DOC LATER
+			if (here_doc(in->next->str, gc, tmp_fd) == 1)
+			{	
+				printf("exited out of here doc nicely");
+				// continue; //We do nothing I think 
+			}
 		}
 		if (in->type == PIPE)
 			tmp_fd = in->pipe_fd;
-		secure_dup2(tmp_fd, STDIN_FILENO, pipes, *gc, number_of_pipes);
+		if (in->next && in->next->next == NULL)
+		{	
+			printf("doing dup !\n");
+			secure_dup2(tmp_fd, STDIN_FILENO, pipes, *gc, number_of_pipes);
+		}
 		if (in->type == LESS || in->type == D_LESS)
 			if (close(tmp_fd) == -1)
 				perror_exit(*gc, errno, "Failed to close opened file");
+		in = in->next;
 	}
-	if (out)
+	while (out)
 	{
 		if (out->type == GREAT)
 		{	
@@ -156,11 +169,14 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 		}	
 		if (out->type == PIPE)
 			tmp_fd = out->pipe_fd;
-		secure_dup2(tmp_fd, STDOUT_FILENO, pipes, *gc, number_of_pipes);
+		if (out->next && out->next->next == NULL)
+			secure_dup2(tmp_fd, STDOUT_FILENO, pipes, *gc, number_of_pipes);
 		if (out->type == GREAT || out->type == D_GREAT)
 			if (close(tmp_fd) == -1)
 				perror_exit(*gc, errno, "Failed to close opened file");
+		out = out->next;
 	}
+	
 	//Je peux fermer les fichiers ici apres avoir fait les redirections;
 	return ; // if theres no redirection we just go to exec as usual;
 }
@@ -260,7 +276,7 @@ char	*find_valid_path(t_cmd *cmds, char **envp, t_garbage_collect **gc)
 	char **possible_paths;
 	int i;
 	
-	if (envp == NULL)
+	if (envp == NULL || cmds == NULL || cmds->str == NULL) // maybe add an error message for some of these cases;
 		return (NULL);
 	if (access(*(cmds->str), X_OK) == 0)
 		return (*(cmds->str));
@@ -304,6 +320,7 @@ void	secure_dup2(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int
 	if (dup2(new_fd, old_fd) == -1)
 	{	
 		close_all_pipes(pipes, gc, number_of_pipes);
+		printf("errno is %i new_fd is %i and old_fd is %i\n", errno, new_fd, old_fd );
 		perror_exit(gc, errno, "Error duplicating file descriptor");
 	}
 	return ;

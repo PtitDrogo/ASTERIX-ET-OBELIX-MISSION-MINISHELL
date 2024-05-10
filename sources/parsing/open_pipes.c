@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   open_pipes.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 13:59:06 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/09 14:37:17 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/10 12:58:46 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static void fill_pipes_in_token(t_cmd *cmds, int **pipes_fds)
 	i = -1; //je suis remplis de sournoiseries;
 	while (cmds)
 	{
-		printf("hihi current cmds is %s and cmd in is %p\n", cmds->str[0], cmds->redirection_in);
+		// printf("hihi current cmds is %s and cmd in is %p\n", cmds->str[0], cmds->redirection_in);
 		if ( cmds->redirection_in)
 			printf("cnd redir in type is %u\n", cmds->redirection_in->type);
 		if (cmds->redirection_in && cmds->redirection_in->type == PIPE)

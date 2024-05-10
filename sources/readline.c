@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/10 01:17:23 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/10 12:52:31 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,11 @@ int main(int argc, char const *argv[], char **envp)
 	cmds = NULL;
 	gc = NULL;
 	env_dup_root = NULL;
+	// ft_memset(token, 0, sizeof(t_token));
+	// ft_memset(cmds, 0, sizeof(t_cmd));
+	// ft_memset(gc, 0, sizeof(t_garbage_collect));
+	// ft_memset(env_dup_root, 0, sizeof(t_env_node));
+	//foutre ca aux bons endroits
 	printf("launched shell\n");
 	if (envp == NULL)
 		return (1);

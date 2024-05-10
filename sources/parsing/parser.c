@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:48:23 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/07 17:28:12 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/10 11:59:27 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,10 +65,8 @@ static t_cmd	*create_command(t_token *tokenpile, t_garbage_collect **gc)
 	cmd->str = NULL;
 	token = tokenpile;
 	
-	// BANDAID//
 	if (token && token->prev && token->prev->type == PIPE)                       
 		add_token(&cmd->redirection_in, dup_token(token->prev, gc));
-	// BANDAID//
 	while (token && token->type != PIPE)
 	{
 		if (token->type == GREAT || token->type == D_GREAT || token->type == LESS || token->type == D_LESS)
@@ -86,8 +84,8 @@ static t_cmd	*create_command(t_token *tokenpile, t_garbage_collect **gc)
 		if (token) //added this for same reason as above
 			token = token->next;
 	}
-	set_to_last_redir(&cmd->redirection_in);
-	set_to_last_redir(&cmd->redirection_out);
+	// set_to_last_redir(&cmd->redirection_in);
+	// set_to_last_redir(&cmd->redirection_out);
 	if (token && token->type == PIPE && cmd->redirection_out == NULL)
 		add_token(&cmd->redirection_out, dup_token(token, gc));
 	return (cmd);

@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-//#include "minishell_parsing.h"
 #include "minishell.h"
 
 static void	add_command(t_cmd **cmd_chain, t_cmd *new_cmd)
@@ -51,8 +50,7 @@ static char	**add_str(char ***list, char *str, t_garbage_collect **gc)
 	*list = new_list; 
 	return (new_list);
 }
-// DOESNT WORK WITH PIPE, ONE PIPE CAN BE BOTH REDIR IN AND REDIR OUT OF 2 CMD
-// Why are we Duping the tokens ?????
+
 static t_cmd	*create_command(t_token *tokenpile, t_garbage_collect **gc)
 {
 	t_cmd	*cmd;
@@ -65,11 +63,8 @@ static t_cmd	*create_command(t_token *tokenpile, t_garbage_collect **gc)
 	cmd->str = NULL;
 	token = tokenpile;
 	
-	if (token && token->prev && token->prev->type == PIPE)                       
-	{	
-		printf("Just added command %s with redir in pipe \n", cmd->str);
+	if (token && token->prev && token->prev->type == PIPE)
 		add_token(&cmd->redirection_in, dup_token(token->prev, gc));
-	}
 	while (token && token->type != PIPE)
 	{
 		if (token->type == GREAT || token->type == D_GREAT || token->type == LESS || token->type == D_LESS)
@@ -91,7 +86,6 @@ static t_cmd	*create_command(t_token *tokenpile, t_garbage_collect **gc)
 	// set_to_last_redir(&cmd->redirection_out);
 	if (token && token->type == PIPE && cmd->redirection_out == NULL)	
 		add_token(&cmd->redirection_out, dup_token(token, gc));
-	printf("Just added command %s with redir in %i and redir out %i\n", cmd->str[0], cmd->redirection_in, cmd->redirection_out);
 	return (cmd);
 }
 //changed it so it fills pointers token and cmd given to it
@@ -109,7 +103,7 @@ void	parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cm
 	{
 		if (start)
 		{
-			printf("in parsetoken = %p\n", token);
+			// printf("in parsetoken = %p\n", token);
 			cmd = create_command(token, gc);
 			add_command(cmd_chain, cmd);
 			start = 0;

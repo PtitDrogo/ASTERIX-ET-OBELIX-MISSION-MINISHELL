@@ -84,6 +84,10 @@ typedef struct s_cmd
 
 ///------------------------Functions------------------------///
 
+//--------------------------------debug
+void check_fd(int fd);
+
+
 //garbage collector
 int		add_to_trash(t_garbage_collect **root, void *to_free);
 void    *malloc_trash(int size, t_garbage_collect **gc);

@@ -37,22 +37,21 @@ static void fill_pipes_in_token(t_cmd *cmds, int **pipes_fds)
 	i = -1; //je suis remplis de sournoiseries;
 	while (cmds)
 	{
-		// printf("hihi current cmds is %s and cmd in is %p\n", cmds->str[0], cmds->redirection_in);
-		if ( cmds->redirection_in)
-			printf("cnd redir in type is %u\n", cmds->redirection_in->type);
 		if (cmds->redirection_in && cmds->redirection_in->type == PIPE)
 		{	
 			cmds->redirection_in->pipe_fd = pipes_fds[i][0];
-			printf("cmd %s has redirection fd of type %u and of fd %i\n", cmds->str[0], cmds->redirection_in->type, cmds->redirection_in->pipe_fd);
+			// printf("I just gave cmd %s redirection to pipe %i\n", cmds->str[0], pipes_fds[i][0]);
+			// check_fd(pipes_fds[i][0]);
 		}
 		i++; // C'est de la triche mais en theorie ca passe;
 		if (cmds->redirection_out && cmds->redirection_out->type == PIPE)
 		{	
-			printf("current cmd is %s\n", cmds->str[0]);
 			cmds->redirection_out->pipe_fd = pipes_fds[i][1];
+			// printf("I just gave cmd %s redirection to pipe %i\n", cmds->str[0], pipes_fds[i][1]);
+			// check_fd(pipes_fds[i][1]);
 		}
 		cmds = cmds->next;
-	}  
+	}
 }
 
 int count_pipes(t_token *token_list)

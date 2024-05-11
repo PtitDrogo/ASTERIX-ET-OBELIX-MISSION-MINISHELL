@@ -33,7 +33,7 @@ typedef struct s_token
 // 	struct s_cmd_theo			*next;
 // 	int							cmd_id; //l'int qui va stock la valeur de retour de la cmd
 // }	t_cmd;
-int		tmp_fd_copy;
+// int		tmp_fd;
 
 void check_fd(int fd) {
     if (fcntl(fd, F_GETFD) == -1) {
@@ -57,7 +57,7 @@ void check_fd(int fd) {
         }
     }
 }
-
+int		tmp_fd;
 
 
 
@@ -91,11 +91,8 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 
 
 	envp = rebuild_env(root_env, gc);
-	// printf("envp after rebuild is %p and first var is %s\n", envp, envp[0]);
-    printf("current = %p\n", current);
 	while (current)
 	{
-		printf("looping in process\n");
 		child_process(envp, current, gc, pipes_fds, number_of_pipes); //giving current command !!
 		current = current->next;
 	}
@@ -118,16 +115,12 @@ void	child_process(char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes
 	char	*valid_path;
 	
 	cmds->cmd_id = fork();
-	// printf("in child Id of child is %i\n", cmds->cmd_id);
 	if (cmds->cmd_id == -1)
 		perror_exit(*gc, errno, "Error creating subshell");
-	// il faudra vider les pipes ici chef;
 	if (cmds->cmd_id == 0)
 	{
 		process_behavior(cmds, gc, pipes, number_of_pipes);	
 		close_all_pipes(pipes, *gc, number_of_pipes);
-		//Si j'ouvre des fichiers faut que je me demmerde pour les closes apres;
-		
 		valid_path = find_valid_path(cmds, envp, gc);
 		if (valid_path == NULL && cmds && cmds->str)
 		{
@@ -136,13 +129,10 @@ void	child_process(char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes
 		}
 		else if (cmds && cmds->str)
 		{
-			// ft_printf_err("qweqweqwe\n");
-			// exit(EXIT_FAILURE);
-			// why does here doc dont redirect good uuuuuuuh
-			printf("Current cmd is %s, redirin in is token %p, redir out is token %p\n", cmds->str[0], cmds->redirection_in, cmds->redirection_out);
-			
-
-			// check_fd(tmp_fd_copy);
+			//debug
+			// write(1, "YOYOYOYOYO\n\n", 12);
+			// check_fd(tmp_fd);
+			//debug
 			execve(valid_path, cmds->str, envp);
 			ft_printf_err("Execve failed\n");
 			empty_trash_exit(*gc, 127);
@@ -157,7 +147,7 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 	//je veux just dup les redirections;
 	t_token	*in;
 	t_token	*out;
-	int		tmp_fd;
+	// int		tmp_fd;
 
 	in = cmds->redirection_in;
 	out = cmds->redirection_out;
@@ -177,22 +167,18 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 				print_open_err_msg_exit(errno, in->next->str, *gc);
 			if (here_doc(in->next->str, gc, tmp_fd) == 1)
 			{	
-				printf("exited out of here doc nicely tmp fd is %i, now re opening\n", tmp_fd);
 				close(tmp_fd);
 				tmp_fd = open(".ft_heredoc", O_RDONLY);
 			}
 		}
 		if (in->type == PIPE)
 		{	
-			printf("about to give redir in pipe fd to cmd is %s\n", cmds->str[0]);
+			// printf("testing in pipe\n");
+			// check_fd(in->pipe_fd);
 			tmp_fd = in->pipe_fd;
 		}
-		if (in->next && in->next->next == NULL)
-		{	
-			printf("doing dup Feeding %i into secure dup !!\n", tmp_fd);
+		if (in->next && in->next->next == NULL || in->type == PIPE)
 			secure_dup2(tmp_fd, STDIN_FILENO, pipes, *gc, number_of_pipes);
-			write(tmp_fd, "does this write\n", 16);
-		}
 		if (in->type == LESS || in->type == D_LESS)
 			if (close(tmp_fd) == -1)
 				perror_exit(*gc, errno, "Failed to close opened file");
@@ -214,10 +200,11 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 		}	
 		if (out->type == PIPE)
 		{	
-			printf("out fd is pipe\n");
+			printf("testing out pipe\n");
+			check_fd(out->pipe_fd);
 			tmp_fd = out->pipe_fd;
 		}
-		if (out->next && out->next->next == NULL)
+		if ((out->next && out->next->next == NULL) || out->type == PIPE)
 			secure_dup2(tmp_fd, STDOUT_FILENO, pipes, *gc, number_of_pipes);
 		if (out->type == GREAT || out->type == D_GREAT)
 			if (close(tmp_fd) == -1)
@@ -365,11 +352,9 @@ char	*find_env_variable(char **envp, char *env_to_find)
 
 void	secure_dup2(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int number_of_pipes)
 {
-	printf("doing dup \n");
 	if (dup2(new_fd, old_fd) == -1)
 	{	
 		close_all_pipes(pipes, gc, number_of_pipes);
-		printf("errno is %i new_fd is %i and old_fd is %i\n", errno, new_fd, old_fd );
 		perror_exit(gc, errno, "Error duplicating file descriptor");
 	}
 	return ;

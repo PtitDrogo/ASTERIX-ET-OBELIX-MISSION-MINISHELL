@@ -35,30 +35,30 @@ typedef struct s_token
 // }	t_cmd;
 // int		tmp_fd;
 
-void check_fd(int fd) {
-    if (fcntl(fd, F_GETFD) == -1) {
-        perror("fcntl - GETFD");
-        printf("Error checking FD %d: %s\n", fd, strerror(errno));
-    } else {
-        printf("FD %d is open\n", fd);
-        int flags = fcntl(fd, F_GETFL);
-        if (flags == -1) {
-            perror("fcntl - GETFL");
-        } else {
-            printf("FD %d access mode: %s\n", fd, (flags & O_ACCMODE) == O_RDONLY ? "read-only" :
-                                              (flags & O_ACCMODE) == O_WRONLY ? "write-only" :
-                                              (flags & O_ACCMODE) == O_RDWR   ? "read/write" : "unknown");
-        }
-        int cloexec = fcntl(fd, F_GETFD);
-        if (cloexec == -1) {
-            perror("fcntl - GETFD");
-        } else {
-            printf("FD %d close-on-exec flag is %s\n", fd, (cloexec & FD_CLOEXEC) ? "set" : "not set");
-        }
-    }
-}
-int		tmp_fd;
+// void check_fd(int fd) {
+//     if (fcntl(fd, F_GETFD) == -1) {
+//         perror("fcntl - GETFD");
+//         printf("Error checking FD %d: %s\n", fd, strerror(errno));
+//     } else {
+//         printf("FD %d is open\n", fd);
+//         int flags = fcntl(fd, F_GETFL);
+//         if (flags == -1) {
+//             perror("fcntl - GETFL");
+//         } else {
+//             printf("FD %d access mode: %s\n", fd, (flags & O_ACCMODE) == O_RDONLY ? "read-only" :
+//                                               (flags & O_ACCMODE) == O_WRONLY ? "write-only" :
+//                                               (flags & O_ACCMODE) == O_RDWR   ? "read/write" : "unknown");
+//         }
+//         int cloexec = fcntl(fd, F_GETFD);
+//         if (cloexec == -1) {
+//             perror("fcntl - GETFD");
+//         } else {
+//             printf("FD %d close-on-exec flag is %s\n", fd, (cloexec & FD_CLOEXEC) ? "set" : "not set");
+//         }
+//     }
+// }
 
+// int		tmp_fd;
 
 
 
@@ -147,7 +147,7 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 	//je veux just dup les redirections;
 	t_token	*in;
 	t_token	*out;
-	// int		tmp_fd;
+	int		tmp_fd;
 
 	in = cmds->redirection_in;
 	out = cmds->redirection_out;
@@ -172,11 +172,7 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 			}
 		}
 		if (in->type == PIPE)
-		{	
-			// printf("testing in pipe\n");
-			// check_fd(in->pipe_fd);
 			tmp_fd = in->pipe_fd;
-		}
 		if (in->next && in->next->next == NULL || in->type == PIPE)
 			secure_dup2(tmp_fd, STDIN_FILENO, pipes, *gc, number_of_pipes);
 		if (in->type == LESS || in->type == D_LESS)
@@ -199,11 +195,7 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 				print_open_err_msg_exit(errno, out->next->str, *gc);
 		}	
 		if (out->type == PIPE)
-		{	
-			printf("testing out pipe\n");
-			check_fd(out->pipe_fd);
 			tmp_fd = out->pipe_fd;
-		}
 		if ((out->next && out->next->next == NULL) || out->type == PIPE)
 			secure_dup2(tmp_fd, STDOUT_FILENO, pipes, *gc, number_of_pipes);
 		if (out->type == GREAT || out->type == D_GREAT)
@@ -211,8 +203,6 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 				perror_exit(*gc, errno, "Failed to close opened file");
 		out = out->next;
 	}
-	
-	//Je peux fermer les fichiers ici apres avoir fait les redirections;
 	return ; // if theres no redirection we just go to exec as usual;
 }
 

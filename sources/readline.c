@@ -58,7 +58,7 @@ int main(int argc, char const *argv[], char **envp)
 		//TODO LATER, fix syntax error;
 		if (token && syntax_error(token, gc) == 0)
 		{
-			// expander(env_dup_root, &gc, cmds);
+			expander(env_dup_root, &gc, cmds);
 			int number_of_pipes = count_pipes(token);
 			pipes = open_pipes(cmds, &gc, number_of_pipes);
 			if (number_of_pipes == 0 && is_builtin(cmds->str))

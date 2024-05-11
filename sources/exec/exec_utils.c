@@ -6,7 +6,7 @@
 /*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/10 19:47:45 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/11 07:24:20 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,36 @@ typedef struct s_token
 // 	struct s_cmd_theo			*next;
 // 	int							cmd_id; //l'int qui va stock la valeur de retour de la cmd
 // }	t_cmd;
+// void check_fd(int fd) {
+//     if (fcntl(fd, F_GETFD) == -1) {
+//         perror("fcntl - GETFD");
+//         printf("Error checking FD %d: %s\n", fd, strerror(errno));
+//     } else {
+//         printf("FD %d is open\n", fd);
+//         int flags = fcntl(fd, F_GETFL);
+//         if (flags == -1) {
+//             perror("fcntl - GETFL");
+//         } else {
+//             printf("FD %d access mode: %s\n", fd, (flags & O_ACCMODE) == O_RDONLY ? "read-only" :
+//                                               (flags & O_ACCMODE) == O_WRONLY ? "write-only" :
+//                                               (flags & O_ACCMODE) == O_RDWR   ? "read/write" : "unknown");
+//         }
+//         int cloexec = fcntl(fd, F_GETFD);
+//         if (cloexec == -1) {
+//             perror("fcntl - GETFD");
+//         } else {
+//             printf("FD %d close-on-exec flag is %s\n", fd, (cloexec & FD_CLOEXEC) ? "set" : "not set");
+//         }
+//     }
+// }
+
+
+
+
+
+
+
+
 
 
 
@@ -140,8 +170,9 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 				print_open_err_msg_exit(errno, in->next->str, *gc);
 			if (here_doc(in->next->str, gc, tmp_fd) == 1)
 			{	
-				printf("exited out of here doc nicely tmp fd is %i\n", tmp_fd);
-				// continue; //We do nothing I think 
+				printf("exited out of here doc nicely tmp fd is %i, now re opening\n", tmp_fd);
+				close(tmp_fd);
+				tmp_fd = open(".ft_heredoc", O_RDONLY);
 			}
 		}
 		if (in->type == PIPE)

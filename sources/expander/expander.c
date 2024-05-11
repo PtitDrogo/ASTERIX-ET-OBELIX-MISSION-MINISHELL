@@ -235,3 +235,19 @@ int	chars_to_expand(char *str)
 	return (i);
 }
 
+// int	remove_quotes(char **cmds)
+// {
+// 	int	i;
+// 	int j;
+
+// 	i = 0;
+
+// 	while (cmds[i])
+// 	{
+// 		j = 0
+// 		while()
+// 	}
+
+
+// }
+

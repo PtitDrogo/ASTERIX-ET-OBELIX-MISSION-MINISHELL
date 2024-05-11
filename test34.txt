@@ -1,3 +1,4 @@
+Current cmd is cat, redirin in is token 0x55a50dd60990, redir out is token 0x55a50dd60ab0
 #---------------------------------Variables---------------------------------#
 
 OBJS_DIR	=	.objs

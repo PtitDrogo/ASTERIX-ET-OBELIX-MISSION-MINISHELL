@@ -33,28 +33,30 @@ typedef struct s_token
 // 	struct s_cmd_theo			*next;
 // 	int							cmd_id; //l'int qui va stock la valeur de retour de la cmd
 // }	t_cmd;
-// void check_fd(int fd) {
-//     if (fcntl(fd, F_GETFD) == -1) {
-//         perror("fcntl - GETFD");
-//         printf("Error checking FD %d: %s\n", fd, strerror(errno));
-//     } else {
-//         printf("FD %d is open\n", fd);
-//         int flags = fcntl(fd, F_GETFL);
-//         if (flags == -1) {
-//             perror("fcntl - GETFL");
-//         } else {
-//             printf("FD %d access mode: %s\n", fd, (flags & O_ACCMODE) == O_RDONLY ? "read-only" :
-//                                               (flags & O_ACCMODE) == O_WRONLY ? "write-only" :
-//                                               (flags & O_ACCMODE) == O_RDWR   ? "read/write" : "unknown");
-//         }
-//         int cloexec = fcntl(fd, F_GETFD);
-//         if (cloexec == -1) {
-//             perror("fcntl - GETFD");
-//         } else {
-//             printf("FD %d close-on-exec flag is %s\n", fd, (cloexec & FD_CLOEXEC) ? "set" : "not set");
-//         }
-//     }
-// }
+int		tmp_fd_copy;
+
+void check_fd(int fd) {
+    if (fcntl(fd, F_GETFD) == -1) {
+        perror("fcntl - GETFD");
+        printf("Error checking FD %d: %s\n", fd, strerror(errno));
+    } else {
+        printf("FD %d is open\n", fd);
+        int flags = fcntl(fd, F_GETFL);
+        if (flags == -1) {
+            perror("fcntl - GETFL");
+        } else {
+            printf("FD %d access mode: %s\n", fd, (flags & O_ACCMODE) == O_RDONLY ? "read-only" :
+                                              (flags & O_ACCMODE) == O_WRONLY ? "write-only" :
+                                              (flags & O_ACCMODE) == O_RDWR   ? "read/write" : "unknown");
+        }
+        int cloexec = fcntl(fd, F_GETFD);
+        if (cloexec == -1) {
+            perror("fcntl - GETFD");
+        } else {
+            printf("FD %d close-on-exec flag is %s\n", fd, (cloexec & FD_CLOEXEC) ? "set" : "not set");
+        }
+    }
+}
 
 
 
@@ -93,6 +95,7 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
     printf("current = %p\n", current);
 	while (current)
 	{
+		printf("looping in process\n");
 		child_process(envp, current, gc, pipes_fds, number_of_pipes); //giving current command !!
 		current = current->next;
 	}
@@ -136,6 +139,10 @@ void	child_process(char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes
 			// ft_printf_err("qweqweqwe\n");
 			// exit(EXIT_FAILURE);
 			// why does here doc dont redirect good uuuuuuuh
+			printf("Current cmd is %s, redirin in is token %p, redir out is token %p\n", cmds->str[0], cmds->redirection_in, cmds->redirection_out);
+			
+
+			// check_fd(tmp_fd_copy);
 			execve(valid_path, cmds->str, envp);
 			ft_printf_err("Execve failed\n");
 			empty_trash_exit(*gc, 127);
@@ -177,7 +184,7 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 		}
 		if (in->type == PIPE)
 		{	
-			printf("if you see this you fucker up\n");
+			printf("about to give redir in pipe fd to cmd is %s\n", cmds->str[0]);
 			tmp_fd = in->pipe_fd;
 		}
 		if (in->next && in->next->next == NULL)
@@ -206,7 +213,10 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 				print_open_err_msg_exit(errno, out->next->str, *gc);
 		}	
 		if (out->type == PIPE)
+		{	
+			printf("out fd is pipe\n");
 			tmp_fd = out->pipe_fd;
+		}
 		if (out->next && out->next->next == NULL)
 			secure_dup2(tmp_fd, STDOUT_FILENO, pipes, *gc, number_of_pipes);
 		if (out->type == GREAT || out->type == D_GREAT)
@@ -355,6 +365,7 @@ char	*find_env_variable(char **envp, char *env_to_find)
 
 void	secure_dup2(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int number_of_pipes)
 {
+	printf("doing dup \n");
 	if (dup2(new_fd, old_fd) == -1)
 	{	
 		close_all_pipes(pipes, gc, number_of_pipes);

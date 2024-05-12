@@ -12,12 +12,13 @@
 
 #include "minishell.h"
 
+bool    is_classic_redir(t_token *token);
 
-int syntax_error(t_token *token, t_garbage_collect *gc)
+int     syntax_error(t_token *token, t_garbage_collect *gc)
 {
     while(token)
     {
-        if (token->type != STR)
+        if (is_classic_redir(token))
         {
             if (token->next == NULL)
             {
@@ -50,4 +51,13 @@ int syntax_error(t_token *token, t_garbage_collect *gc)
         token = token->next;
     }
     return (0);
+}
+
+bool    is_classic_redir(t_token *token)
+{
+    t_tok_val type;
+
+    type = token->type;
+
+    return (type == GREAT || type == D_GREAT || type == LESS || type == D_LESS);
 }

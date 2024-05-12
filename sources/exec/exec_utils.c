@@ -77,7 +77,8 @@ void		print_open_err_msg_exit(int errnumber, char *file, t_garbage_collect *gc);
 char		**rebuild_env(t_env_node *root, t_garbage_collect **gc);
 void		process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes);
 char		*find_valid_path(t_cmd *cmds, char **envp, t_garbage_collect **gc);
-void		child_process(char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes);
+void		child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes);
+//ca fait beaucoup la non
 
 //execve a besoin de deux choses, le char ** de la commande, et envp avec un path valide;
 int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes)
@@ -93,7 +94,7 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 	envp = rebuild_env(root_env, gc);
 	while (current)
 	{
-		child_process(envp, current, gc, pipes_fds, number_of_pipes); //giving current command !!
+		child_process(root_env, envp, current, gc, pipes_fds, number_of_pipes); //giving current command !!
 		current = current->next;
 	}
 	close_all_pipes(pipes_fds, *gc, number_of_pipes);
@@ -110,7 +111,7 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 //plusieurs moyen de compter le nombre de commande, je peux le faire avec le nombre
 // de Pipe token, ou a priori je peux le faire juste en comptant le nombre de nodes commandes
 //a voir lequel est le plus pertinent
-void	child_process(char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes)
+void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes)
 {
 	char	*valid_path;
 	
@@ -133,7 +134,15 @@ void	child_process(char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes
 			// write(1, "YOYOYOYOYO\n\n", 12);
 			// check_fd(tmp_fd);
 			//debug
-			execve(valid_path, cmds->str, envp);
+			if (is_builtin(cmds->str))
+			{	
+				//TODO, implement redirection logic here
+				//most likely we make a small new function
+				theo_basic_parsing(&env, gc, cmds->str);
+				empty_trash_exit(*gc, 0);  //Exit with success;
+			}
+			else
+				execve(valid_path, cmds->str, envp);
 			ft_printf_err("Execve failed\n");
 			empty_trash_exit(*gc, 127);
 		}

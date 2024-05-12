@@ -82,8 +82,6 @@ static t_cmd	*create_command(t_token *tokenpile, t_garbage_collect **gc)
 		if (token) //added this for same reason as above
 			token = token->next;
 	}
-	// set_to_last_redir(&cmd->redirection_in);
-	// set_to_last_redir(&cmd->redirection_out);
 	if (token && token->type == PIPE && cmd->redirection_out == NULL)	
 		add_token(&cmd->redirection_out, dup_token(token, gc));
 	return (cmd);
@@ -97,8 +95,13 @@ void	parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cm
 
 	*cmd_chain = NULL;
 	*tokenpile = tokenize(input, gc);
+
 	token = *tokenpile;
 	start = 1;
+	// if (syntax_error(token, *gc) == 0)	
+
+	// I dont want to exit the shell if there is a parsing error but 
+	// doing the parsing right here is the best I think ?
 	while (token)
 	{
 		if (start)
@@ -112,26 +115,4 @@ void	parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cm
 			start = 1;
 		token = token->next;
 	}
-	
-	//this print fucks with the code woopsi
-	// while ((*current_chain))
-	// {
-	// 	printf("new cmd :\n");
-	// 	int i = 0;
-	// 	while ((*current_chain)->str && (*current_chain)->str[i])
-	// 		printf("cmd : %s\n", (*current_chain)->str[i++]);
-	// 	t_token	*redir_in = (*current_chain)->redirection_in;
-	// 	t_token	*redir_out = (*current_chain)->redirection_out;
-	// 	while (redir_in)
-	// 	{
-	// 		printf("redir_in : %s\n", redir_in->str);
-	// 		redir_in = redir_in->next;
-	// 	}
-	// 	while (redir_out)
-	// 	{
-	// 		printf("redir_out : %s\n", redir_out->str);
-	// 		redir_out = redir_out->next;
-	// 	}
-	// 	(*current_chain) = (*current_chain)->next;
-	// }
 }

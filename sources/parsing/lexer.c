@@ -95,10 +95,6 @@ t_token	*tokenize(char **input, t_garbage_collect **gc)
 	{
 		token = create_token(input[i], gc);
 		add_token(&tokenpile, token);
-		// printf("token : %s and input[i] is %s\n", token->str, input[i]);
-		// printf("token prev is %p\n", token->prev);
-		// if (token->prev)
-		// 	printf("content of token prev is %s\n", token->prev->str);
 		i++;
 	}
 	return (tokenpile);

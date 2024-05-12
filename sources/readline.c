@@ -47,7 +47,7 @@ int main(int argc, char const *argv[], char **envp)
 	{
 		input = readline("myshell> ");	
 		if (add_to_trash(&gc, input) == 0)
-			exit(EXIT_FAILURE); // do cleanup later
+			empty_trash_exit(gc, MALLOC_ERROR);
 		if (!input)
 			break;
 		// Check for EOF (Ctrl+D)
@@ -56,7 +56,7 @@ int main(int argc, char const *argv[], char **envp)
 		// printf("after basic parsing first cmd is %p\n", cmds);
 		
 		//TODO LATER, fix syntax error;
-		if (token && syntax_error(token, gc) == 0)
+		if (1) //token && syntax_error(token, gc) == 0
 		{
 			expander(env_dup_root, &gc, cmds);
 			int number_of_pipes = count_pipes(token);
@@ -117,10 +117,10 @@ int	theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *
 		pwd(gc);
 	if (ft_strcmp(cmd[0], "cd") == 0)
 		cd(cmd, gc, *env_dup_root);
-	if (ft_strcmp(cmd[0], "<<") == 0)
-		here_doc(cmd[1] ,gc, 1);
+	// if (ft_strcmp(cmd[0], "<<") == 0) // THIS WAS FOR TEST THIS IS BAD
+	// 	here_doc(cmd[1] ,gc, 1);
 	if (ft_strcmp(cmd[0], "echo") == 0)
-		echo(cmd, gc); //this will only print the first arg for now;
+		echo(cmd, gc);
 	
 	return (0);
 }

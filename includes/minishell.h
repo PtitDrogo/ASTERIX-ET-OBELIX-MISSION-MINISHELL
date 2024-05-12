@@ -133,6 +133,7 @@ void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds);
 int		**open_pipes(t_cmd *cmds, t_garbage_collect **gc, int number_of_pipes);
 int 	exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes);
 int		count_pipes(t_token *token_list);
+int		theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char **input);
 
 ///------------------------Parser/Lexer------------------------///
 void	parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cmd_chain);

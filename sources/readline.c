@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/13 12:57:50 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/13 13:00:40 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,8 @@ int main(int argc, char const *argv[], char **envp)
 	return 0;
 }
 
-//This is just basic parsing to be able to test my builtins
+// this function will need to report 0 in case of error, trying to uniformize that
+// 0 == ERR accross all functions
 int	basic_parsing(t_garbage_collect **gc, char *input, t_token **token, t_cmd **cmds)
 {
 	char	**split_input;
@@ -87,15 +88,15 @@ int	basic_parsing(t_garbage_collect **gc, char *input, t_token **token, t_cmd **
 	if (input[0] == '\0')
 	{
 		*token = NULL;
-		return (1);
+		return (0);
 	}
 	split_input = quote_split(input, gc);//ft_split(input, ' ');
 	if (!split_input)
 		return (0);
 	//setter_double_p_gc((void **)split_input, gc);
 	if (parse(split_input, gc, token, cmds) == 0)
-		return (1);
-	return (0);
+		return (0);
+	return (1);
 }
 
 //En vrai je peux garder cette fonction pour run les builtins;

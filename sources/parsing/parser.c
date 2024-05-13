@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:48:23 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/10 11:59:27 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/13 07:58:31 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ static t_cmd	*create_command(t_token *tokenpile, t_garbage_collect **gc)
 	return (cmd);
 }
 //changed it so it fills pointers token and cmd given to it
-void	parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cmd_chain)
+int	parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cmd_chain)
 {
 	t_token	*token;
 	t_cmd	*cmd;
@@ -98,7 +98,8 @@ void	parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cm
 
 	token = *tokenpile;
 	start = 1;
-	// if (syntax_error(token, *gc) == 0)	
+	if (syntax_error(token, *gc) == 0)
+		return (0);
 
 	// I dont want to exit the shell if there is a parsing error but 
 	// doing the parsing right here is the best I think ?
@@ -115,4 +116,5 @@ void	parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cm
 			start = 1;
 		token = token->next;
 	}
+	return (1);
 }

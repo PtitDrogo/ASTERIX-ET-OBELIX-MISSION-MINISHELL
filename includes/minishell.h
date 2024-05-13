@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/09 19:40:13 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/13 07:58:44 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,7 @@ int		count_pipes(t_token *token_list);
 int		theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char **input);
 
 ///------------------------Parser/Lexer------------------------///
-void	parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cmd_chain);
+int		parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cmd_chain);
 t_token	*tokenize(char **input, t_garbage_collect **gc);
 void	add_token(t_token **tokenpile, t_token *new_token);
 t_token	*dup_token(t_token *token, t_garbage_collect **gc);

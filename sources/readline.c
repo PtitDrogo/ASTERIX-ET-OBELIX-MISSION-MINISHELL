@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/13 14:36:43 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/13 14:43:21 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ int main(int argc, char const *argv[], char **envp)
 		
 
 		//TODO LATER, fix syntax error;
-		if (1) //token && syntax_error(token, gc) == 0
+		if (token) //token && syntax_error(token, gc) == 0
 		{
 			expander(env_dup_root, &gc, cmds);
 			int number_of_pipes = count_pipes(token);
@@ -97,8 +97,7 @@ int	basic_parsing(t_garbage_collect **gc, char *input, t_token **token, t_cmd **
 	if (!split_input)
 		return (0);
 	//setter_double_p_gc((void **)split_input, gc);
-	if (parse(split_input, gc, token, cmds) == 0)
-		return (0);
+	parse(split_input, gc, token, cmds);
 	return (1);
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   garbage_collector.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 17:32:57 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/24 16:59:04 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/03 13:33:11 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void    *malloc_trash(int size, t_garbage_collect **gc)
 	if (!to_return)
 	{	
 		if (ft_printf_err("Malloc failed\n") == -1)
-			perror_exit(*gc, errno, "Error writing error message\n");
+			perror_exit(*gc, errno, WRITE_ERR_MSG);
 		empty_trash_exit(*gc, MALLOC_ERROR);
 	}
 	if (add_to_trash(gc, to_return) == 0)
@@ -53,7 +53,7 @@ void    *malloc_trash(int size, t_garbage_collect **gc)
 		if (ft_printf_err("GC Malloc failed\n") == -1)
 		{
 			free(to_return);
-			perror_exit(*gc, errno, "Error writing error message\n");
+			perror_exit(*gc, errno, WRITE_ERR_MSG);
 		} 
 		free(to_return);
 		empty_trash_exit(*gc, MALLOC_ERROR);
@@ -79,14 +79,14 @@ int empty_trash(t_garbage_collect *gc)
 void	*setter_gc(void *data_to_set, t_garbage_collect **gc)
 {
 	if (data_to_set == NULL)
-		return(data_to_set); //Experimental but I think its ok, why would we want to add a NULL to gc ?
+		return(data_to_set);
 	if (no_dupplicate_check(data_to_set, *gc) == 1)
 	{
 		if (add_to_trash(gc, data_to_set) == 0)
 		{
 			free(data_to_set);
-			if (ft_printf_err("GC Malloc failed\n") == -1)
-				perror_exit(*gc, errno, "Error writing error message\n");
+			if (ft_printf_err(MALLOC_ERR_MSG) == -1)
+				perror_exit(*gc, errno, WRITE_ERR_MSG);
 			empty_trash_exit(*gc, MALLOC_ERROR);
 		}
 	}
@@ -119,16 +119,15 @@ int		no_dupplicate_check(void	*data, t_garbage_collect *gc)
 	return (1);
 }
 
-//TODO change this into gc
-/*int	pop(t_env_node *env_dup_root, t_env_node *node_to_pop)
-{	
-	if (!env_dup_root || !node_to_pop)
-		return (0); //gotta check later;
-	while (env_dup_root->next && env_dup_root->next != node_to_pop)	
-		env_dup_root = env_dup_root->next;
-	if (env_dup_root->next == NULL)
-		return (0); // we couldnt find the node to pop
-	env_dup_root->next = env_dup_root->next->next;
-	node_to_pop->variable = NULL;
-	return (1);
-}*/
+//this checks if malloc is NULL, if its the case it empty gc and exits with malloc error code;
+// (use this to check strdup);
+void    malloc_check(void *ptr, t_garbage_collect *gc)
+{
+    if (ptr == NULL)
+    {
+        if (ft_printf_err(MALLOC_ERR_MSG) == -1)
+            perror_exit(gc, errno, WRITE_ERR_MSG);
+        empty_trash_exit(gc, MALLOC_ERROR);
+    }
+    return ;
+}

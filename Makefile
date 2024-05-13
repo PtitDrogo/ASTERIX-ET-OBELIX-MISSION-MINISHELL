@@ -18,15 +18,21 @@ SRCS =		$(SRCS_DIR)/builtins/export.c \
 			$(SRCS_DIR)/builtins/env.c \
 			$(SRCS_DIR)/builtins/exit.c \
 			$(SRCS_DIR)/readline.c \
-      		$(SRCS_DIR)/parser.c \
-			$(SRCS_DIR)/lexer.c \
+      		$(SRCS_DIR)/parsing/parser.c \
+			$(SRCS_DIR)/parsing/lexer.c \
 			$(SRCS_DIR)/builtins/export_utils.c \
-			$(SRCS_DIR)/expander.c \
 			$(SRCS_DIR)/errors.c \
-			$(SRCS_DIR)/quote_split.c \
+			$(SRCS_DIR)/parsing/quote_split.c \
 			$(SRCS_DIR)/builtins/echo.c \
 			$(SRCS_DIR)/builtins/cd.c \
-			$(SRCS_DIR)/builtins/pwd.c
+			$(SRCS_DIR)/builtins/pwd.c \
+			$(SRCS_DIR)/here_doc.c \
+			$(SRCS_DIR)/parsing/open_pipes.c \
+			$(SRCS_DIR)/exec/exec_utils.c \
+			$(SRCS_DIR)/parsing/syntax_error.c \
+			$(SRCS_DIR)/expander.c \
+			$(SRCS_DIR)/signal.c
+
 #------------------------------------------------------------------------#
 
 #---------------------------------Compilation & Linking---------------------------------#

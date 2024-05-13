@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/13 14:43:21 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/13 19:35:27 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ int main(int argc, char const *argv[], char **envp)
 
 	token = NULL;
 	cmds = NULL;
-	set_signal();
 	gc = NULL;
 	env_dup_root = NULL;
 	// ft_memset(token, 0, sizeof(t_token));
@@ -46,8 +45,8 @@ int main(int argc, char const *argv[], char **envp)
 	generate_env_llist(&env_dup_root, &gc, envp);
 	while (1) 
 	{
+		signal(SIGINT, new_prompt);
 		input = readline("myshell> ");
-		ft_printf("%i\n", g_input);
 		if (add_to_trash(&gc, input) == 0)
 			empty_trash_exit(gc, MALLOC_ERROR);
 		if (!input)

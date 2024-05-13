@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/13 14:37:45 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/13 19:35:13 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,8 +82,6 @@ typedef struct s_cmd
 # define SYNTAX_ERROR_MSG "bash: syntax error near unexpected token"
 # define PERROR_ERR_MSG "Error : "
 
-extern volatile int	g_input;
-
 ///------------------------Functions------------------------///
 
 //--------------------------------debug
@@ -147,6 +145,7 @@ char	**quote_split(char *input, t_garbage_collect **gc);
 int    syntax_error(t_token *token, t_garbage_collect *gc);
 
 ///------------------------Signal handling------------------------///
-void	set_signal(void);
+void	new_prompt(int none);
+void	cancel_cmd(int none);
 
 #endif

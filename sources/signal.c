@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 16:29:30 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/13 13:28:35 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/13 19:44:28 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,19 +14,22 @@
 #include <signal.h>
 #include "minishell.h"
 
-volatile int	g_input = -1;
-
-static void	signal_handler(int signum, siginfo_t *info, void *ucontext)
+void	new_prompt(int none)
 {
-	(void)ucontext;
+	(void)none;
 	ft_printf("\n");
 	rl_on_new_line();
 	rl_replace_line("", 0);
-	rl_redisplay ();
-	g_input = 12;
+	rl_redisplay();
 }
 
-void	set_signal(void)
+void	cancel_cmd(int none)
+{
+	(void)none;
+	ft_printf("\n");
+}
+
+/*void	set_signal(int)
 {
 	struct sigaction	s_act;
 
@@ -35,4 +38,4 @@ void	set_signal(void)
 	s_act.sa_flags = SA_SIGINFO;
 	sigaction(SIGINT, &s_act, NULL);
 	sigaction(SIGQUIT, &s_act, NULL);
-}
+}*/

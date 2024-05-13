@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/13 12:58:01 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/13 19:30:57 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,7 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 
 
 	envp = rebuild_env(root_env, gc);
+	signal(SIGINT, cancel_cmd);
 	while (current)
 	{
 		child_process(root_env, envp, current, gc, pipes_fds, number_of_pipes); //giving current command !!
@@ -102,11 +103,17 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 	while (current)
 	{
 		// printf("in parent, ID of child is %i\n", current->cmd_id);
-		if (waitpid(current->cmd_id, &status, 0) == -1)
-			perror_exit(*gc, errno, "Error waiting for process");
+		waitpid(current->cmd_id, &status, 0);
+		if (WIFEXITED(status))
+			status = WEXITSTATUS(status);
+		else if (WIFSIGNALED(status))
+		{
+			status = 130;
+		}
+		//perror_exit(*gc, errno, "Error waiting for process");
 		current = current->next;
 	}
-	return (WEXITSTATUS(1)); //replace by exit status;
+	return (status); //replace by exit status;
 }
 //plusieurs moyen de compter le nombre de commande, je peux le faire avec le nombre
 // de Pipe token, ou a priori je peux le faire juste en comptant le nombre de nodes commandes

@@ -1,4 +1,4 @@
-.objs/garbage_collector.o: sources/garbage_collector.c \
+.objs/parsing/syntax_error.o: sources/parsing/syntax_error.c \
   includes/minishell.h includes/../libft/includes/libft.h
 
 includes/minishell.h:

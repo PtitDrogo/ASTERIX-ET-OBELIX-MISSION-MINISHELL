@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:15:09 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/13 14:15:33 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/13 14:37:20 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,10 +92,6 @@ t_token	*tokenize(char **input, t_garbage_collect **gc)
 	{
 		token = create_token(input[i], gc);
 		add_token(&tokenpile, token);
-		// printf("token : %s and input[i] is %s\n", token->str, input[i]);
-		// printf("token prev is %p\n", token->prev);
-		// if (token->prev)
-		// 	printf("content of token prev is %s\n", token->prev->str);
 		i++;
 	}
 	return (tokenpile);

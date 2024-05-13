@@ -30,9 +30,8 @@ SRCS =		$(SRCS_DIR)/builtins/export.c \
 			$(SRCS_DIR)/parsing/open_pipes.c \
 			$(SRCS_DIR)/exec/exec_utils.c \
 			$(SRCS_DIR)/parsing/syntax_error.c \
-			$(SRCS_DIR)/expander.c \
-			$(SRCS_DIR)/signal.c
-
+			$(SRCS_DIR)/signal.c	\
+			$(SRCS_DIR)/expander/expander.c 
 #------------------------------------------------------------------------#
 
 #---------------------------------Compilation & Linking---------------------------------#

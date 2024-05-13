@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/07 19:35:54 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/13 12:58:01 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,38 @@ typedef struct s_token
 // 	struct s_cmd_theo			*next;
 // 	int							cmd_id; //l'int qui va stock la valeur de retour de la cmd
 // }	t_cmd;
+// int		tmp_fd;
+
+// void check_fd(int fd) {
+//     if (fcntl(fd, F_GETFD) == -1) {
+//         perror("fcntl - GETFD");
+//         printf("Error checking FD %d: %s\n", fd, strerror(errno));
+//     } else {
+//         printf("FD %d is open\n", fd);
+//         int flags = fcntl(fd, F_GETFL);
+//         if (flags == -1) {
+//             perror("fcntl - GETFL");
+//         } else {
+//             printf("FD %d access mode: %s\n", fd, (flags & O_ACCMODE) == O_RDONLY ? "read-only" :
+//                                               (flags & O_ACCMODE) == O_WRONLY ? "write-only" :
+//                                               (flags & O_ACCMODE) == O_RDWR   ? "read/write" : "unknown");
+//         }
+//         int cloexec = fcntl(fd, F_GETFD);
+//         if (cloexec == -1) {
+//             perror("fcntl - GETFD");
+//         } else {
+//             printf("FD %d close-on-exec flag is %s\n", fd, (cloexec & FD_CLOEXEC) ? "set" : "not set");
+//         }
+//     }
+// }
+
+// int		tmp_fd;
+
+
+
+
+
+
 
 
 
@@ -45,7 +77,8 @@ void		print_open_err_msg_exit(int errnumber, char *file, t_garbage_collect *gc);
 char		**rebuild_env(t_env_node *root, t_garbage_collect **gc);
 void		process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes);
 char		*find_valid_path(t_cmd *cmds, char **envp, t_garbage_collect **gc);
-void		child_process(char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes);
+void		child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes);
+//ca fait beaucoup la non
 
 //execve a besoin de deux choses, le char ** de la commande, et envp avec un path valide;
 int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes)
@@ -59,11 +92,9 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 
 
 	envp = rebuild_env(root_env, gc);
-	// printf("envp after rebuild is %p and first var is %s\n", envp, envp[0]);
-    printf("current = %p\n", current);
 	while (current)
 	{
-		child_process(envp, current, gc, pipes_fds, number_of_pipes); //giving current command !!
+		child_process(root_env, envp, current, gc, pipes_fds, number_of_pipes); //giving current command !!
 		current = current->next;
 	}
 	close_all_pipes(pipes_fds, *gc, number_of_pipes);
@@ -80,30 +111,42 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 //plusieurs moyen de compter le nombre de commande, je peux le faire avec le nombre
 // de Pipe token, ou a priori je peux le faire juste en comptant le nombre de nodes commandes
 //a voir lequel est le plus pertinent
-void	child_process(char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes)
+void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes)
 {
 	char	*valid_path;
 	
 	cmds->cmd_id = fork();
-	// printf("in child Id of child is %i\n", cmds->cmd_id);
 	if (cmds->cmd_id == -1)
 		perror_exit(*gc, errno, "Error creating subshell");
-	// il faudra vider les pipes ici chef;
 	if (cmds->cmd_id == 0)
 	{
 		process_behavior(cmds, gc, pipes, number_of_pipes);	
 		close_all_pipes(pipes, *gc, number_of_pipes);
-		//Si j'ouvre des fichiers faut que je me demmerde pour les closes apres;
-		
 		valid_path = find_valid_path(cmds, envp, gc);
-		if (valid_path == NULL)
+		if (valid_path == NULL && cmds && cmds->str)
 		{
 			ft_printf_err("%s: command not found\n", cmds->str[0]); //need to check real err msg
 			empty_trash_exit(*gc, 127);
 		}
-		execve(valid_path, cmds->str, envp);
-		ft_printf_err("Execve failed\n");
-		empty_trash_exit(*gc, 127);
+		else if (cmds && cmds->str)
+		{
+			// //debug
+			// write(1, "YOYOYOYOYO\n\n", 12);
+			// check_fd(tmp_fd);
+			//debug
+			// if (is_builtin(cmds->str))
+			// {	
+			// 	//TODO, implement redirection logic here
+			// 	//most likely we make a small new function
+			// 	theo_basic_parsing(&env, gc, cmds->str);
+			// 	empty_trash_exit(*gc, 0);  //Exit with success;
+			// }
+			execve(valid_path, cmds->str, envp);
+			ft_printf_err("Execve failed\n");
+			empty_trash_exit(*gc, 127);
+		}
+		else
+			empty_trash_exit(*gc, 127); //All of this shit purely because of heredoc without a cmd
 	}
 }
 
@@ -117,7 +160,7 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 	in = cmds->redirection_in;
 	out = cmds->redirection_out;
 	
-	if (in)
+	while (in)
 	{	
 		if (in->type == LESS)
 		{	
@@ -130,17 +173,22 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 			tmp_fd = open(".ft_heredoc", O_CREAT | O_WRONLY | O_TRUNC, 0777);
 			if (tmp_fd == -1)
 				print_open_err_msg_exit(errno, in->next->str, *gc);
-			if (here_doc(in->next->str, gc, tmp_fd) == 0)
-				exit(42); //WILL HAVE TO HANDLE MANY HERE_DOC LATER
+			if (here_doc(in->next->str, gc, tmp_fd) == 1)
+			{	
+				close(tmp_fd);
+				tmp_fd = open(".ft_heredoc", O_RDONLY);
+			}
 		}
 		if (in->type == PIPE)
 			tmp_fd = in->pipe_fd;
-		secure_dup2(tmp_fd, STDIN_FILENO, pipes, *gc, number_of_pipes);
+		if (in->next && in->next->next == NULL || in->type == PIPE)
+			secure_dup2(tmp_fd, STDIN_FILENO, pipes, *gc, number_of_pipes);
 		if (in->type == LESS || in->type == D_LESS)
 			if (close(tmp_fd) == -1)
 				perror_exit(*gc, errno, "Failed to close opened file");
+		in = in->next;
 	}
-	if (out)
+	while (out)
 	{
 		if (out->type == GREAT)
 		{	
@@ -156,12 +204,13 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 		}	
 		if (out->type == PIPE)
 			tmp_fd = out->pipe_fd;
-		secure_dup2(tmp_fd, STDOUT_FILENO, pipes, *gc, number_of_pipes);
+		if ((out->next && out->next->next == NULL) || out->type == PIPE)
+			secure_dup2(tmp_fd, STDOUT_FILENO, pipes, *gc, number_of_pipes);
 		if (out->type == GREAT || out->type == D_GREAT)
 			if (close(tmp_fd) == -1)
 				perror_exit(*gc, errno, "Failed to close opened file");
+		out = out->next;
 	}
-	//Je peux fermer les fichiers ici apres avoir fait les redirections;
 	return ; // if theres no redirection we just go to exec as usual;
 }
 
@@ -260,7 +309,7 @@ char	*find_valid_path(t_cmd *cmds, char **envp, t_garbage_collect **gc)
 	char **possible_paths;
 	int i;
 	
-	if (envp == NULL)
+	if (envp == NULL || cmds == NULL || cmds->str == NULL) // maybe add an error message for some of these cases;
 		return (NULL);
 	if (access(*(cmds->str), X_OK) == 0)
 		return (*(cmds->str));

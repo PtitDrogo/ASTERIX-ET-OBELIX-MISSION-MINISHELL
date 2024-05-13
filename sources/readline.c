@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/13 08:00:34 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/13 12:57:50 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,13 +52,13 @@ int main(int argc, char const *argv[], char **envp)
 			break;
 		// Check for EOF (Ctrl+D)
 		
-		if (basic_parsing(&gc, input, &token, &cmds) == 1)
+		basic_parsing(&gc, input, &token, &cmds);
 			
 			
 		// printf("after basic parsing first cmd is %p\n", cmds);
 		
 		//TODO LATER, fix syntax error;
-		if (basic_parsing(&gc, input, &token, &cmds) == 0) //token && syntax_error(token, gc) == 0
+		if (1) //token && syntax_error(token, gc) == 0
 		{
 			expander(env_dup_root, &gc, cmds);
 			int number_of_pipes = count_pipes(token);

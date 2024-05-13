@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/11 07:24:20 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/13 12:58:01 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,19 +130,18 @@ void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect 
 		}
 		else if (cmds && cmds->str)
 		{
-			//debug
+			// //debug
 			// write(1, "YOYOYOYOYO\n\n", 12);
 			// check_fd(tmp_fd);
 			//debug
-			if (is_builtin(cmds->str))
-			{	
-				//TODO, implement redirection logic here
-				//most likely we make a small new function
-				theo_basic_parsing(&env, gc, cmds->str);
-				empty_trash_exit(*gc, 0);  //Exit with success;
-			}
-			else
-				execve(valid_path, cmds->str, envp);
+			// if (is_builtin(cmds->str))
+			// {	
+			// 	//TODO, implement redirection logic here
+			// 	//most likely we make a small new function
+			// 	theo_basic_parsing(&env, gc, cmds->str);
+			// 	empty_trash_exit(*gc, 0);  //Exit with success;
+			// }
+			execve(valid_path, cmds->str, envp);
 			ft_printf_err("Execve failed\n");
 			empty_trash_exit(*gc, 127);
 		}

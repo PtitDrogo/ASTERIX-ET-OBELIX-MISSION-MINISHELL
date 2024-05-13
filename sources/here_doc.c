@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   here_doc.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/26 20:13:44 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/10 13:18:40 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,15 @@ int	here_doc(char *delimiter, t_garbage_collect **gc, int fd)
 		if (input == NULL)
 			if (ft_printf_err("bash: warning: here-document delimited by end-of-file (wanted `%s')\n", delimiter) == -1)
 				return (0); //CTRL D doesnt exit shell just the current heredoc; (if its the last here_doc it exits the shell tho);
-        if (ft_strncmp_n(input, delimiter, ft_strlen(input)))
+        if (ft_strncmp_n(input, delimiter, ft_strlen(input)) == 0)
+		{	
+			// printf("I am breaking out of heredoc loop'n");
 			break ;
+		}
 		if (write(fd, input, ft_strlen(input)) == -1)
             perror_exit(*gc, errno, WRITE_ERR_MSG);
 	}
+	printf("Returning 1 in heredoc\n");
 	return (1);
 }
 
@@ -57,6 +61,7 @@ static int    ft_strncmp_n(char *input, char *delimiter, size_t n)
     }
     if (input[i] == '\n' && delimiter[i] == '\0')
         return (0);
+	printf("cmp is about to return %i\n",(unsigned char)input[i] - (unsigned char)delimiter[i] );
     return ((unsigned char)input[i] - (unsigned char)delimiter[i]);
 }
 

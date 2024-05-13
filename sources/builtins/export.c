@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 16:11:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/03 16:22:45 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/09 19:40:19 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@ int			unset(t_env_node *env_dup_root, char *env_to_find);
 int			export(t_env_node **root, void *variable, t_garbage_collect **gc);
 int			pop(t_env_node *env_dup_root, t_env_node *node_to_pop);
 t_env_node *check_if_variable_exist(t_env_node *root, void *variable);
-int			is_valid_env_name(char *name, t_garbage_collect *gc);
 char		*get_env_name(const char *src, t_garbage_collect **gc);
 char		*get_env_var(const char *src, t_garbage_collect **gc);
+int			is_valid_env_name(char *name, t_garbage_collect *gc);
 
 
 //TODO make this universal later

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/09 14:30:34 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/13 13:00:40 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,16 @@ int main(int argc, char const *argv[], char **envp)
 	char				*input;
 	char				*history;
 	int					**pipes;
-	
+
+	token = NULL;
+	cmds = NULL;
 	gc = NULL;
 	env_dup_root = NULL;
+	// ft_memset(token, 0, sizeof(t_token));
+	// ft_memset(cmds, 0, sizeof(t_cmd));
+	// ft_memset(gc, 0, sizeof(t_garbage_collect));
+	// ft_memset(env_dup_root, 0, sizeof(t_env_node));
+	//foutre ca aux bons endroits
 	printf("launched shell\n");
 	if (envp == NULL)
 		return (1);
@@ -40,18 +47,20 @@ int main(int argc, char const *argv[], char **envp)
 	{
 		input = readline("myshell> ");	
 		if (add_to_trash(&gc, input) == 0)
-			exit(EXIT_FAILURE); // do cleanup later
+			empty_trash_exit(gc, MALLOC_ERROR);
 		if (!input)
 			break;
 		// Check for EOF (Ctrl+D)
 		
 		basic_parsing(&gc, input, &token, &cmds);
-		printf("after basic parsing first cmd is %p\n", cmds);
+			
+			
+		// printf("after basic parsing first cmd is %p\n", cmds);
 		
 		//TODO LATER, fix syntax error;
-		if (syntax_error(token, gc) == 0)
+		if (1) //token && syntax_error(token, gc) == 0
 		{
-			// expander(env_dup_root, &gc, cmds);
+			expander(env_dup_root, &gc, cmds);
 			int number_of_pipes = count_pipes(token);
 			pipes = open_pipes(cmds, &gc, number_of_pipes);
 			if (number_of_pipes == 0 && is_builtin(cmds->str))
@@ -68,19 +77,26 @@ int main(int argc, char const *argv[], char **envp)
 	return 0;
 }
 
-//This is just basic parsing to be able to test my builtins
+// this function will need to report 0 in case of error, trying to uniformize that
+// 0 == ERR accross all functions
 int	basic_parsing(t_garbage_collect **gc, char *input, t_token **token, t_cmd **cmds)
 {
 	char	**split_input;
 
-	if (input == NULL || input[0] == '\0')
+	if (input == NULL)
 		return (1);
+	if (input[0] == '\0')
+	{
+		*token = NULL;
+		return (0);
+	}
 	split_input = quote_split(input, gc);//ft_split(input, ' ');
 	if (!split_input)
 		return (0);
 	//setter_double_p_gc((void **)split_input, gc);
-	parse(split_input, gc, token, cmds);
-	return (0);
+	if (parse(split_input, gc, token, cmds) == 0)
+		return (0);
+	return (1);
 }
 
 //En vrai je peux garder cette fonction pour run les builtins;
@@ -105,10 +121,10 @@ int	theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *
 		pwd(gc);
 	if (ft_strcmp(cmd[0], "cd") == 0)
 		cd(cmd, gc, *env_dup_root);
-	if (ft_strcmp(cmd[0], "<<") == 0)
-		here_doc(cmd[1] ,gc, 1);
+	// if (ft_strcmp(cmd[0], "<<") == 0) // THIS WAS FOR TEST THIS IS BAD
+	// 	here_doc(cmd[1] ,gc, 1);
 	if (ft_strcmp(cmd[0], "echo") == 0)
-		echo(cmd, gc); //this will only print the first arg for now;
+		echo(cmd, gc);
 	
 	return (0);
 }

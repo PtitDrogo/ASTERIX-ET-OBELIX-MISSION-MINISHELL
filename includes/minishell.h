@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/09 14:04:25 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/13 07:58:44 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,10 @@ typedef struct s_cmd
 
 ///------------------------Functions------------------------///
 
+//--------------------------------debug
+void check_fd(int fd);
+
+
 //garbage collector
 int		add_to_trash(t_garbage_collect **root, void *to_free);
 void    *malloc_trash(int size, t_garbage_collect **gc);
@@ -117,6 +121,7 @@ bool		is_builtin(char **cmd);
 int			count_arrays_in_doubleptr(void **array);
 char		*get_env_variable(t_env_node *root, char *variable_name);
 
+
 //errors && exit
 void    perror_exit(t_garbage_collect *gc, int exit_code, char *err_msg);
 void	empty_trash_exit(t_garbage_collect *gc, int exit_code);
@@ -128,9 +133,10 @@ void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds);
 int		**open_pipes(t_cmd *cmds, t_garbage_collect **gc, int number_of_pipes);
 int 	exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes);
 int		count_pipes(t_token *token_list);
+int		theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char **input);
 
 ///------------------------Parser/Lexer------------------------///
-void	parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cmd_chain);
+int		parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cmd_chain);
 t_token	*tokenize(char **input, t_garbage_collect **gc);
 void	add_token(t_token **tokenpile, t_token *new_token);
 t_token	*dup_token(t_token *token, t_garbage_collect **gc);

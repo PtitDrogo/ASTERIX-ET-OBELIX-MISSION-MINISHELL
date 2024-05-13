@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:15:09 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/07 02:58:36 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/09 15:58:44 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,10 +95,6 @@ t_token	*tokenize(char **input, t_garbage_collect **gc)
 	{
 		token = create_token(input[i], gc);
 		add_token(&tokenpile, token);
-		// printf("token : %s and input[i] is %s\n", token->str, input[i]);
-		// printf("token prev is %p\n", token->prev);
-		// if (token->prev)
-		// 	printf("content of token prev is %s\n", token->prev->str);
 		i++;
 	}
 	return (tokenpile);

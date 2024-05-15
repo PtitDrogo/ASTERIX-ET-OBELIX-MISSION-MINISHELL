@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/10 00:33:41 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/15 21:15:33 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,8 @@ char **expand(t_env_node *env, t_garbage_collect **gc, char **arrays)
 	// 	printf("%s\n", arrays[test]);
 	// }
 	// printf("\n\n\n\n\n");
+	if (arrays == NULL)
+		return (NULL);
 
 	while (arrays[i])
 	{

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/13 13:00:40 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/15 11:09:30 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int main(int argc, char const *argv[], char **envp)
 		// printf("after basic parsing first cmd is %p\n", cmds);
 		
 		//TODO LATER, fix syntax error;
-		if (1) //token && syntax_error(token, gc) == 0
+		if (token) // && syntax_error(token, gc) == 0
 		{
 			expander(env_dup_root, &gc, cmds);
 			int number_of_pipes = count_pipes(token);
@@ -66,9 +66,16 @@ int main(int argc, char const *argv[], char **envp)
 			if (number_of_pipes == 0 && is_builtin(cmds->str))
 				theo_basic_parsing(&env_dup_root, &gc, cmds->str);
 			else
-				exec(env_dup_root, cmds, &gc, pipes, number_of_pipes);
+			{	
+				int status = exec(env_dup_root, cmds, &gc, pipes, number_of_pipes);
+			}
+			//TOADD : Il faut se motiver a itoa status et a le str join avec ?=
+			//pour pouvoir feed "?=status" dans la fonction export;
+			// str_status = ft_strjoin("?=", itoa(status));
+			// export(&env_dup_root, str_status, gc);
+			//et normalement ca rajoute ca a l'env liste et du coup tu pourras l'echo tranquille
 		}
-		add_history(input);
+		add_history(input); // TODO add condition so we dont add whitespace (or errors ? idk) to history;
 	}
 	
 	printf("Exit.\n");

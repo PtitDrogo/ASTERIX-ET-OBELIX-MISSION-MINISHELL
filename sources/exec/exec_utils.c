@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/13 12:58:01 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/15 11:01:22 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,20 @@ void		child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect
 //ca fait beaucoup la non
 
 //execve a besoin de deux choses, le char ** de la commande, et envp avec un path valide;
+int			get_status_code(t_garbage_collect **gc, int status);
+
+
+int		get_status_code(t_garbage_collect **gc, int status)
+{
+	//WIFEXITED(status) Check si le process a ete termine par un return ou exit (et non par un signal)
+	//si c'est le cas, je renvois status process par la bonne macro qui va avec
+	if (WIFEXITED(status))
+		return (WEXITSTATUS(status));
+	else
+		return (130); //Quand je teste c'est un 130 le return dun process ctrl C mais ca peut changer au besoin;
+}
+
+
 int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes)
 {
 
@@ -106,7 +120,8 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 			perror_exit(*gc, errno, "Error waiting for process");
 		current = current->next;
 	}
-	return (WEXITSTATUS(1)); //replace by exit status;
+	status = get_status_code(gc, status);
+	return (status); //replace by exit status;
 }
 //plusieurs moyen de compter le nombre de commande, je peux le faire avec le nombre
 // de Pipe token, ou a priori je peux le faire juste en comptant le nombre de nodes commandes

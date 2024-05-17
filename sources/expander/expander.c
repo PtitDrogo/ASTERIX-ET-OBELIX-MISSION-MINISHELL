@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/10 00:33:41 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/15 16:29:31 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ char 	**expand(t_env_node *env, t_garbage_collect **gc, char **arrays);
 int		chars_to_expand(char *str);
 
 
-void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds)
+void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds, int status)
 {
 	while (cmds)
 	{

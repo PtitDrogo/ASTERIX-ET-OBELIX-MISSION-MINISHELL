@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/13 19:30:57 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/17 16:08:39 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 			status = WEXITSTATUS(status);
 		else if (WIFSIGNALED(status))
 		{
-			status = 130;
+			status = 128 + WTERMSIG(status);
 		}
 		//perror_exit(*gc, errno, "Error waiting for process");
 		current = current->next;
@@ -163,10 +163,11 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 	t_token	*in;
 	t_token	*out;
 	int		tmp_fd;
+	int		status;
 
 	in = cmds->redirection_in;
 	out = cmds->redirection_out;
-	
+	status = 0;
 	while (in)
 	{	
 		if (in->type == LESS)
@@ -180,10 +181,19 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 			tmp_fd = open(".ft_heredoc", O_CREAT | O_WRONLY | O_TRUNC, 0777);
 			if (tmp_fd == -1)
 				print_open_err_msg_exit(errno, in->next->str, *gc);
-			if (here_doc(in->next->str, gc, tmp_fd) == 1)
-			{	
+			status = here_doc(in->next->str, gc, tmp_fd);
+			if (status == EXIT_SUCCESS)
+			{
+				ft_printf("Heredoc success\n");
 				close(tmp_fd);
 				tmp_fd = open(".ft_heredoc", O_RDONLY);
+			}
+			else
+			{
+				ft_printf("Errno to update somehow : %i\n", status);
+				new_prompt(0);
+				close(tmp_fd);
+				return ;
 			}
 		}
 		if (in->type == PIPE)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   here_doc.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/10 13:18:40 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/17 16:33:04 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,18 +15,53 @@
 //TODO, somehow get the initial call to heredoc to the history
 static char		*readline_n_add_n(char *readline, t_garbage_collect **gc);
 static int		ft_strncmp_n(char *input, char *delimiter, size_t n);
+static void		child_here_doc(char *delimiter, t_garbage_collect **gc, int fd);
+
+int	here_doc(char *delimiter, t_garbage_collect **gc, int fd)
+{
+	int	fork_id;
+	int	status;
+
+	global_gc(gc);
+	fork_id = fork();
+	if (fork_id == -1)
+		empty_trash_exit(*gc, 0);
+	if (fork_id == 0)
+		child_here_doc(delimiter, gc, fd);
+	else
+	{
+		waitpid(fork_id, &status, 0);
+		if (WIFEXITED(status))
+			status = WEXITSTATUS(status);
+		else
+			status = 0;
+	}
+	ft_printf("status returned : %i\n", status);
+	return (status);
+}
+
+t_garbage_collect	**global_gc(t_garbage_collect **gc)
+{
+	static t_garbage_collect	**sgc;
+
+	if (gc)
+		sgc = gc;
+	return (sgc);
+}
 
 //here_doc that will write into the fd we give it, it doesnt update history because life is hard.
-int	here_doc(char *delimiter, t_garbage_collect **gc, int fd)
+static void	child_here_doc(char *delimiter, t_garbage_collect **gc, int fd)
 {
 	char	*input;
 
+	global_gc(gc);
+	signal(SIGINT, cancel_heredoc);
     while (1)
 	{
 		input = readline_n_add_n(readline("heredoc> "), gc);
 		if (input == NULL)
 			if (ft_printf_err("bash: warning: here-document delimited by end-of-file (wanted `%s')\n", delimiter) == -1)
-				return (0); //CTRL D doesnt exit shell just the current heredoc; (if its the last here_doc it exits the shell tho);
+				exit(EXIT_SUCCESS);//return (0); //CTRL D doesnt exit shell just the current heredoc; (if its the last here_doc it exits the shell tho);
         if (ft_strncmp_n(input, delimiter, ft_strlen(input)) == 0)
 		{	
 			// printf("I am breaking out of heredoc loop'n");
@@ -36,7 +71,7 @@ int	here_doc(char *delimiter, t_garbage_collect **gc, int fd)
             perror_exit(*gc, errno, WRITE_ERR_MSG);
 	}
 	printf("Returning 1 in heredoc\n");
-	return (1);
+	exit(EXIT_SUCCESS);
 }
 
 char	*readline_n_add_n(char *readline, t_garbage_collect **gc)

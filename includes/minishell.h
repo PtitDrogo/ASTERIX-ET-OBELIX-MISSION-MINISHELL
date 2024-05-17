@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/13 19:35:13 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/17 15:20:23 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 # include <fcntl.h>
 # include <../libft/includes/libft.h>
 # include <sys/wait.h>
+# include <sys/types.h>
 # include <signal.h>
 
 ///------------------------Structs------------------------///
@@ -98,6 +99,7 @@ void    malloc_check(void *ptr, t_garbage_collect *gc);
 
 //Here_doc
 int		here_doc(char *delimiter, t_garbage_collect **gc, int fd);
+t_garbage_collect	**global_gc(t_garbage_collect **gc);
 
 //BUILT INS
 int		unset(t_env_node *env_dup_root, char *env_to_find);
@@ -129,7 +131,7 @@ void    ft_error(char *error, t_garbage_collect *gc);
 
 
 ///------------------------Execution------------------------///
-void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds);
+void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds, int status);
 int		**open_pipes(t_cmd *cmds, t_garbage_collect **gc, int number_of_pipes);
 int 	exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes);
 int		count_pipes(t_token *token_list);
@@ -147,5 +149,6 @@ int    syntax_error(t_token *token, t_garbage_collect *gc);
 ///------------------------Signal handling------------------------///
 void	new_prompt(int none);
 void	cancel_cmd(int none);
+void	cancel_heredoc(int none);
 
 #endif

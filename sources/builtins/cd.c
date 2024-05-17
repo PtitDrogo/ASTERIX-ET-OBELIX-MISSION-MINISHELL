@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:54:37 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/07 19:22:47 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/15 16:15:53 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ char	*safe_get_var(t_env_node *env, t_garbage_collect *gc, char *variable)
 
 static void	handle_error(char *dir_path, t_garbage_collect *gc)
 {
+	//TODO XD DO NOT EXIT SHELL
 	if (errno == EACCES)
 	{	
 		if (ft_printf_err("bash: cd: %s: Permission denied\n", dir_path) == -1)

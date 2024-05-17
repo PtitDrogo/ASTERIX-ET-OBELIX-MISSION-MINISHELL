@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/13 19:35:27 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/15 17:32:54 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,13 @@ int main(int argc, char const *argv[], char **envp)
 	char				*input;
 	char				*history;
 	int					**pipes;
+	int					status;
 
 	token = NULL;
 	cmds = NULL;
 	gc = NULL;
 	env_dup_root = NULL;
+	status = 0;
 	// ft_memset(token, 0, sizeof(t_token));
 	// ft_memset(cmds, 0, sizeof(t_cmd));
 	// ft_memset(gc, 0, sizeof(t_garbage_collect));
@@ -43,9 +45,11 @@ int main(int argc, char const *argv[], char **envp)
 	if (envp == NULL)
 		return (1);
 	generate_env_llist(&env_dup_root, &gc, envp);
+	//export(&env_dup_root, ft_strjoin("?=", itoa(0)), gc);
 	while (1) 
 	{
 		signal(SIGINT, new_prompt);
+		signal(SIGQUIT, SIG_IGN);
 		input = readline("myshell> ");
 		if (add_to_trash(&gc, input) == 0)
 			empty_trash_exit(gc, MALLOC_ERROR);
@@ -62,15 +66,16 @@ int main(int argc, char const *argv[], char **envp)
 		//TODO LATER, fix syntax error;
 		if (token) //token && syntax_error(token, gc) == 0
 		{
-			expander(env_dup_root, &gc, cmds);
+			expander(env_dup_root, &gc, cmds, status);
 			int number_of_pipes = count_pipes(token);
 			pipes = open_pipes(cmds, &gc, number_of_pipes);
 			if (number_of_pipes == 0 && is_builtin(cmds->str))
 				theo_basic_parsing(&env_dup_root, &gc, cmds->str);
 			else
-				exec(env_dup_root, cmds, &gc, pipes, number_of_pipes);
+				status = exec(env_dup_root, cmds, &gc, pipes, number_of_pipes);
 		}
 		add_history(input);
+		ft_printf("Errno : %i\n", status);
 	}
 	
 	printf("Exit.\n");

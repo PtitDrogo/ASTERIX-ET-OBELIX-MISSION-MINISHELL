@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 16:29:30 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/13 19:44:28 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/17 15:39:24 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,15 @@ void	cancel_cmd(int none)
 {
 	(void)none;
 	ft_printf("\n");
+}
+
+void	cancel_heredoc(int none)
+{
+	t_garbage_collect	**gc;
+
+	gc = global_gc(NULL);
+	(void)none;
+	empty_trash_exit(*gc, 130);
 }
 
 /*void	set_signal(int)

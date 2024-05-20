@@ -6,7 +6,7 @@
 /*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/20 11:58:32 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/20 18:28:34 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,6 @@ int main(int argc, char const *argv[], char **envp)
 		// if ( basic_parsing(&gc, input, &token, &cmds) == 0);
 		// printf("after basic parsing first cmd is %p\n", cmds);
 		
-		//We dont do Syntax error now because i need the redirection to know if theres an error
 		if (basic_parsing(&gc, input, &token, &cmds) && token)
 		{
 			expander(env_dup_root, &gc, cmds);

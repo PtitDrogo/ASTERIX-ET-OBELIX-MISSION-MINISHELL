@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/15 11:01:22 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/20 18:45:35 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,24 +138,20 @@ void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect 
 		process_behavior(cmds, gc, pipes, number_of_pipes);	
 		close_all_pipes(pipes, *gc, number_of_pipes);
 		valid_path = find_valid_path(cmds, envp, gc);
-		if (valid_path == NULL && cmds && cmds->str)
+		if (valid_path == NULL && cmds && cmds->str && is_builtin(cmds->str) == false) //last condition is important !
 		{
 			ft_printf_err("%s: command not found\n", cmds->str[0]); //need to check real err msg
 			empty_trash_exit(*gc, 127);
 		}
 		else if (cmds && cmds->str)
 		{
-			// //debug
-			// write(1, "YOYOYOYOYO\n\n", 12);
-			// check_fd(tmp_fd);
-			//debug
-			// if (is_builtin(cmds->str))
-			// {	
-			// 	//TODO, implement redirection logic here
-			// 	//most likely we make a small new function
-			// 	theo_basic_parsing(&env, gc, cmds->str);
-			// 	empty_trash_exit(*gc, 0);  //Exit with success;
-			// }
+			printf("hi, cmd is %s\n", cmds->str[0]);
+			if (is_builtin(cmds->str))
+			{	
+				printf("hi, cmd is %s\n", cmds->str[0]);
+				theo_basic_parsing(&env, gc, cmds->str);
+				empty_trash_exit(*gc, 0);  //Exit with success;
+			}
 			execve(valid_path, cmds->str, envp);
 			ft_printf_err("Execve failed\n");
 			empty_trash_exit(*gc, 127);

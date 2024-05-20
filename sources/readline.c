@@ -6,7 +6,7 @@
 /*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/15 19:51:28 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/20 11:58:32 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,13 +52,11 @@ int main(int argc, char const *argv[], char **envp)
 			break;
 		// Check for EOF (Ctrl+D)
 		
-		basic_parsing(&gc, input, &token, &cmds);
-			
-			
+		// if ( basic_parsing(&gc, input, &token, &cmds) == 0);
 		// printf("after basic parsing first cmd is %p\n", cmds);
 		
-		//TODO LATER, fix syntax error;
-		if (token) // && syntax_error(token, gc) == 0
+		//We dont do Syntax error now because i need the redirection to know if theres an error
+		if (basic_parsing(&gc, input, &token, &cmds) && token)
 		{
 			expander(env_dup_root, &gc, cmds);
 			int number_of_pipes = count_pipes(token);
@@ -91,7 +89,7 @@ int	basic_parsing(t_garbage_collect **gc, char *input, t_token **token, t_cmd **
 	char	**split_input;
 
 	if (input == NULL)
-		return (1);
+		return (0);
 	if (input[0] == '\0')
 	{
 		*token = NULL;
@@ -100,7 +98,6 @@ int	basic_parsing(t_garbage_collect **gc, char *input, t_token **token, t_cmd **
 	split_input = quote_split(input, gc);//ft_split(input, ' ');
 	if (!split_input)
 		return (0);
-	//setter_double_p_gc((void **)split_input, gc);
 	if (parse(split_input, gc, token, cmds) == 0)
 		return (0);
 	return (1);

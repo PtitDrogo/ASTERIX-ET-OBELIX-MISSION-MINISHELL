@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/13 12:58:01 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/21 13:06:10 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,20 @@ void		child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect
 //ca fait beaucoup la non
 
 //execve a besoin de deux choses, le char ** de la commande, et envp avec un path valide;
+int			get_status_code(t_garbage_collect **gc, int status);
+
+
+int		get_status_code(t_garbage_collect **gc, int status)
+{
+	//WIFEXITED(status) Check si le process a ete termine par un return ou exit (et non par un signal)
+	//si c'est le cas, je renvois status process par la bonne macro qui va avec
+	if (WIFEXITED(status))
+		return (WEXITSTATUS(status));
+	else
+		return (130); //Quand je teste c'est un 130 le return dun process ctrl C mais ca peut changer au besoin;
+}
+
+
 int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes)
 {
 
@@ -106,7 +120,8 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 			perror_exit(*gc, errno, "Error waiting for process");
 		current = current->next;
 	}
-	return (WEXITSTATUS(1)); //replace by exit status;
+	status = get_status_code(gc, status);
+	return (status); //replace by exit status;
 }
 //plusieurs moyen de compter le nombre de commande, je peux le faire avec le nombre
 // de Pipe token, ou a priori je peux le faire juste en comptant le nombre de nodes commandes
@@ -123,24 +138,20 @@ void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect 
 		process_behavior(cmds, gc, pipes, number_of_pipes);	
 		close_all_pipes(pipes, *gc, number_of_pipes);
 		valid_path = find_valid_path(cmds, envp, gc);
-		if (valid_path == NULL && cmds && cmds->str)
+		if (valid_path == NULL && cmds && cmds->str && is_builtin(cmds->str) == false) //last condition is important !
 		{
 			ft_printf_err("%s: command not found\n", cmds->str[0]); //need to check real err msg
 			empty_trash_exit(*gc, 127);
 		}
 		else if (cmds && cmds->str)
 		{
-			// //debug
-			// write(1, "YOYOYOYOYO\n\n", 12);
-			// check_fd(tmp_fd);
-			//debug
-			// if (is_builtin(cmds->str))
-			// {	
-			// 	//TODO, implement redirection logic here
-			// 	//most likely we make a small new function
-			// 	theo_basic_parsing(&env, gc, cmds->str);
-			// 	empty_trash_exit(*gc, 0);  //Exit with success;
-			// }
+			printf("hi, cmd is %s\n", cmds->str[0]);
+			if (is_builtin(cmds->str))
+			{	
+				printf("hi, cmd is %s\n", cmds->str[0]);
+				theo_basic_parsing(&env, gc, cmds->str);
+				empty_trash_exit(*gc, 0);  //Exit with success;
+			}
 			execve(valid_path, cmds->str, envp);
 			ft_printf_err("Execve failed\n");
 			empty_trash_exit(*gc, 127);
@@ -170,13 +181,13 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 		}
 		if (in->type == D_LESS)
 		{
-			tmp_fd = open(".ft_heredoc", O_CREAT | O_WRONLY | O_TRUNC, 0777);
+			tmp_fd = open(HEREDOC_FILE, O_CREAT | O_WRONLY | O_TRUNC, 0777);
 			if (tmp_fd == -1)
-				print_open_err_msg_exit(errno, in->next->str, *gc);
+				print_open_err_msg_exit(errno, HEREDOC_FILE, *gc);
 			if (here_doc(in->next->str, gc, tmp_fd) == 1)
 			{	
 				close(tmp_fd);
-				tmp_fd = open(".ft_heredoc", O_RDONLY);
+				tmp_fd = open(HEREDOC_FILE, O_RDONLY);
 			}
 		}
 		if (in->type == PIPE)

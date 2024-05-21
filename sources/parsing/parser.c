@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:48:23 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/13 13:00:58 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/20 18:29:02 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,15 +95,11 @@ int	parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cmd
 
 	*cmd_chain = NULL;
 	*tokenpile = tokenize(input, gc);
-
 	token = *tokenpile;
 	start = 1;
-	//FUCKING UP PARSING SOMEHOW DO NOT TOUCH YET
-	
-	if (syntax_error(token, *gc) == 0)
-		return (0);
 
-	// I dont want to exit the shell if there is a parsing error
+	if (syntax_error(token, *gc) == 0) 
+		return (0); // I dont want to exit the shell if there is a parsing error
 	while (token)
 	{
 		if (start)

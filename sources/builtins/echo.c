@@ -6,13 +6,11 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:40:04 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/10 00:32:15 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/21 13:40:27 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-// #include <stdbool.h>
-// #include <stdio.h>
 
 static	char    *n_flag_logic(char *str, bool *n_flag);
 static	char	*join_echo(char **to_echo, t_garbage_collect **gc);
@@ -23,8 +21,7 @@ static	char	*join_echo(char **to_echo, t_garbage_collect **gc);
 //Ive coded echo assuming I would get the content of every "Word" to the right of it,
 //that means flag and words to print all in one pointer, i can change that if need be
 
-//This is coded like trash im touching it again when im sure of the type
-//of input i will get.
+//TODO, add case for echo -n -n -n -nnnn -n hello world
 int echo(char **to_echo, t_garbage_collect **gc)
 {
 	bool    n_flag;
@@ -62,13 +59,9 @@ static	char	*join_echo(char **to_echo, t_garbage_collect **gc)
 		return (NULL);
 	i = 0;
 	letters = 0;
-	// printf("hi in join echo\n");
-	// printf("to echo [0] == %s\n", to_echo[0]);
-	// printf("to echo [1] == %s\n", to_echo[1]);
 	while (to_echo[i])
 		letters += ft_strlen(to_echo[i++]);
 	letters += count_arrays_in_doubleptr((void **)to_echo) - 1;
-	// printf("value of letters is %i\n", letters);
 	str_to_return = malloc_trash(letters + 1, gc);
 	str_to_return[letters] = '\0';
 	i = 0;

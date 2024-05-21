@@ -6,7 +6,7 @@
 /*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/10 13:18:40 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/20 18:47:15 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ static int    ft_strncmp_n(char *input, char *delimiter, size_t n)
     }
     if (input[i] == '\n' && delimiter[i] == '\0')
         return (0);
-	printf("cmp is about to return %i\n",(unsigned char)input[i] - (unsigned char)delimiter[i] );
+	// printf("cmp is about to return %i\n",(unsigned char)input[i] - (unsigned char)delimiter[i] );
     return ((unsigned char)input[i] - (unsigned char)delimiter[i]);
 }
 

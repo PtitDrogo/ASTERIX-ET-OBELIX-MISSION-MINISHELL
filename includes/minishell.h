@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/13 07:58:44 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/21 13:05:48 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ typedef struct s_cmd
 #define WRITE_ERR_MSG "Error : Writing failed"
 #define	SYNTAX_ERROR_MSG "bash: syntax error near unexpected token"
 #define PERROR_ERR_MSG "Error : "
+#define HEREDOC_FILE ".ft_heredoc"
 
 ///------------------------Functions------------------------///
 

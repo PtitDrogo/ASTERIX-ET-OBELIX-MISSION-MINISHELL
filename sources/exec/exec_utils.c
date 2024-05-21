@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/20 18:45:35 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/21 13:06:10 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,13 +181,13 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 		}
 		if (in->type == D_LESS)
 		{
-			tmp_fd = open(".ft_heredoc", O_CREAT | O_WRONLY | O_TRUNC, 0777);
+			tmp_fd = open(HEREDOC_FILE, O_CREAT | O_WRONLY | O_TRUNC, 0777);
 			if (tmp_fd == -1)
-				print_open_err_msg_exit(errno, in->next->str, *gc);
+				print_open_err_msg_exit(errno, HEREDOC_FILE, *gc);
 			if (here_doc(in->next->str, gc, tmp_fd) == 1)
 			{	
 				close(tmp_fd);
-				tmp_fd = open(".ft_heredoc", O_RDONLY);
+				tmp_fd = open(HEREDOC_FILE, O_RDONLY);
 			}
 		}
 		if (in->type == PIPE)

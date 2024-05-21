@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/20 18:28:34 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/21 12:22:55 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,13 +39,13 @@ int main(int argc, char const *argv[], char **envp)
 	// ft_memset(gc, 0, sizeof(t_garbage_collect));
 	// ft_memset(env_dup_root, 0, sizeof(t_env_node));
 	//foutre ca aux bons endroits
-	printf("launched shell\n");
+	// printf("launched shell\n");
 	if (envp == NULL)
 		return (1);
 	generate_env_llist(&env_dup_root, &gc, envp);
 	while (1) 
 	{
-		input = readline("myshell> ");	
+		input = readline(NULL);	
 		if (add_to_trash(&gc, input) == 0)
 			empty_trash_exit(gc, MALLOC_ERROR);
 		if (!input)
@@ -75,7 +75,7 @@ int main(int argc, char const *argv[], char **envp)
 		add_history(input); // TODO add condition so we dont add whitespace (or errors ? idk) to history;
 	}
 	
-	printf("Exit.\n");
+	// printf("Exit.\n");
 	rl_clear_history();
 	empty_trash(gc);
 	return 0;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   syntax_error.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 19:40:15 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/20 18:28:12 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/21 13:07:25 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ bool	is_classic_redir_valid(t_token *token, t_garbage_collect *gc);
 bool	is_first_token_pipe(t_token *token, t_garbage_collect *gc);
 bool	is_pipe_valid(t_token *token, t_garbage_collect *gc);
 
+//Pour etre clean faire une fonction qui call les here doc avant de return
+// false;
 int     syntax_error(t_token *token, t_garbage_collect *gc)
 {
 	if (is_first_token_pipe(token, gc) == true)

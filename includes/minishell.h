@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/21 14:26:28 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/21 20:01:41 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,8 @@ t_env_node *get_env_node(t_env_node *root, char *variable_name);
 bool		is_builtin(char **cmd);
 int			count_arrays_in_doubleptr(void **array);
 char		*get_env_variable(t_env_node *root, char *variable_name);
+char		**rebuild_env(t_env_node *root, t_garbage_collect **gc);
+char		*ft_strjoin_and_add(char const *s1, char const *s2, char c);
 
 
 //errors && exit

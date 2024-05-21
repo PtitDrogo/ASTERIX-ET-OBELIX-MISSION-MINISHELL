@@ -3,37 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/21 14:30:20 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/21 20:01:56 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-// #include "pipex_bonus.h"
-
-//tmp struct for me to play with while not breaking your stuff
-
-//WE populate the redirection before exec;
-
-/*
-typedef struct s_token
-{
-	char			*str;
-	t_tok_val		type;
-	struct s_token	*next;
-}	t_token;
-*/
-// typedef struct s_cmd_theo
-// {
-// 	char						**str; //la commande et ses flags/argument
-//     t_token					    *redirection_in;
-// 	t_token					    *redirection_out;
-// 	struct s_cmd_theo			*next;
-// 	int							cmd_id; //l'int qui va stock la valeur de retour de la cmd
-// }	t_cmd;
-// int		tmp_fd;
 
 // void check_fd(int fd) {
 //     if (fcntl(fd, F_GETFD) == -1) {
@@ -60,21 +37,13 @@ typedef struct s_token
 
 // int		tmp_fd;
 
-
-
-
-
-
-
-
-
 int			count_valid_nodes(t_env_node *root);
 void		close_all_pipes(int **pipes_fds, t_garbage_collect *gc, int number_of_pipes);
 char		*find_env_variable(char **envp, char *env_to_find);
-static char	*ft_strjoin_and_add(char const *s1, char const *s2, char c);
+
 void		secure_dup2(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int number_of_pipes);
 void		print_open_err_msg_exit(int errnumber, char *file, t_garbage_collect *gc);
-char		**rebuild_env(t_env_node *root, t_garbage_collect **gc);
+
 void		process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes);
 char		*find_valid_path(t_cmd *cmds, char **envp, t_garbage_collect **gc);
 void		child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes);
@@ -242,7 +211,7 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 	return ; // if theres no redirection we just go to exec as usual;
 }
 
-static char	*ft_strjoin_and_add(char const *s1, char const *s2, char c)
+char	*ft_strjoin_and_add(char const *s1, char const *s2, char c)
 {
 	char	*joined;
 	size_t	i;

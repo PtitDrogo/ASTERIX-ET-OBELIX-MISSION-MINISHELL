@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/17 15:20:23 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/21 14:26:28 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,13 +75,14 @@ typedef struct s_cmd
 
 ///------------------------Defines------------------------///
 
-# define ATOI_ERROR 3000000000
-# define SYNTAX_ERROR 2
-# define MALLOC_ERROR 42
-# define MALLOC_ERR_MSG "Error : Malloc failed\n"
-# define WRITE_ERR_MSG "Error : Writing failed"
-# define SYNTAX_ERROR_MSG "bash: syntax error near unexpected token"
-# define PERROR_ERR_MSG "Error : "
+#define ATOI_ERROR 3000000000
+#define	SYNTAX_ERROR 2
+#define MALLOC_ERROR 42
+#define MALLOC_ERR_MSG "Error : Malloc failed\n"
+#define WRITE_ERR_MSG "Error : Writing failed"
+#define	SYNTAX_ERROR_MSG "bash: syntax error near unexpected token"
+#define PERROR_ERR_MSG "Error : "
+#define HEREDOC_FILE ".ft_heredoc"
 
 ///------------------------Functions------------------------///
 

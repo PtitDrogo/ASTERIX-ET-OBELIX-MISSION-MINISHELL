@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/15 16:29:31 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/21 14:30:48 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,8 @@ char **expand(t_env_node *env, t_garbage_collect **gc, char **arrays)
 	// 	printf("%s\n", arrays[test]);
 	// }
 	// printf("\n\n\n\n\n");
+	if (arrays == NULL)
+		return (NULL);
 
 	while (arrays[i])
 	{

@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/15 17:32:54 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/21 14:28:26 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int main(int argc, char const *argv[], char **envp)
 	// ft_memset(gc, 0, sizeof(t_garbage_collect));
 	// ft_memset(env_dup_root, 0, sizeof(t_env_node));
 	//foutre ca aux bons endroits
-	printf("launched shell\n");
+	// printf("launched shell\n");
 	if (envp == NULL)
 		return (1);
 	generate_env_llist(&env_dup_root, &gc, envp);
@@ -57,14 +57,10 @@ int main(int argc, char const *argv[], char **envp)
 			break;
 		// Check for EOF (Ctrl+D)
 		
-		basic_parsing(&gc, input, &token, &cmds);
-			
-			
+		// if ( basic_parsing(&gc, input, &token, &cmds) == 0);
 		// printf("after basic parsing first cmd is %p\n", cmds);
 		
-
-		//TODO LATER, fix syntax error;
-		if (token) //token && syntax_error(token, gc) == 0
+		if (basic_parsing(&gc, input, &token, &cmds) && token)
 		{
 			expander(env_dup_root, &gc, cmds, status);
 			int number_of_pipes = count_pipes(token);
@@ -78,7 +74,7 @@ int main(int argc, char const *argv[], char **envp)
 		ft_printf("Errno : %i\n", status);
 	}
 	
-	printf("Exit.\n");
+	// printf("Exit.\n");
 	rl_clear_history();
 	empty_trash(gc);
 	return 0;
@@ -91,7 +87,7 @@ int	basic_parsing(t_garbage_collect **gc, char *input, t_token **token, t_cmd **
 	char	**split_input;
 
 	if (input == NULL)
-		return (1);
+		return (0);
 	if (input[0] == '\0')
 	{
 		*token = NULL;
@@ -100,8 +96,8 @@ int	basic_parsing(t_garbage_collect **gc, char *input, t_token **token, t_cmd **
 	split_input = quote_split(input, gc);//ft_split(input, ' ');
 	if (!split_input)
 		return (0);
-	//setter_double_p_gc((void **)split_input, gc);
-	parse(split_input, gc, token, cmds);
+	if (parse(split_input, gc, token, cmds) == 0)
+		return (0);
 	return (1);
 }
 

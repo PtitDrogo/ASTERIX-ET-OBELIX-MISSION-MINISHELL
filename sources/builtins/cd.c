@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:54:37 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/15 16:15:53 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/21 14:28:37 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ char	*join_path_to_home(char *dir_path, char *home, t_garbage_collect **gc)
 	setter_gc(to_return, gc);
 	return (to_return);
 }
-
+//CD AND PWD FAILURE DONT EXIT SHELL
 void	update_pwd(t_garbage_collect **gc, t_env_node *env, char *dir_path)
 {
 	t_env_node *pwd_old;
@@ -113,8 +113,8 @@ void	update_pwd(t_garbage_collect **gc, t_env_node *env, char *dir_path)
 	char *back_up_old_pwd;
 
 	back_up_old_pwd = setter_gc(getcwd(NULL, 0), gc);
-	if (back_up_old_pwd == NULL)
-			perror_exit(*gc, errno, "Failed to get current path");
+	// if (back_up_old_pwd == NULL)
+	// 	perror_exit(*gc, errno, "Failed to get current path");
 	if (chdir(dir_path) == -1)
 		handle_error(dir_path, *gc);
 	pwd_curr = get_env_node(env, "PWD");

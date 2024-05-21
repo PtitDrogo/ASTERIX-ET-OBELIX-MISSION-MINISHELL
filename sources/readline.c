@@ -6,13 +6,12 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/21 20:36:22 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/21 20:51:54 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// compile this code with cc readline.c -lreadline
 int 	empty_trash(t_garbage_collect *gc);
 int		add_to_trash(t_garbage_collect **root, void *to_free);
 int		basic_parsing(t_garbage_collect **gc, char *input, t_token **token, t_cmd **cmds);
@@ -21,8 +20,6 @@ char	*accurate_shell(t_garbage_collect **gc, t_env_node *env);
 bool	is_ascii(unsigned char c);
 int		verify_input(char *input);
 char    **rebuild_env_no_gc(t_env_node *root);
-// bool	is_env_node(t_garbage_collect	*gc, t_env_node	*env_dup_root);
-// int		free_and_pop_gc(t_garbage_collect **env_dup_root, t_garbage_collect *node_to_pop);
 void	recycle_trash(t_garbage_collect	**gc, t_env_node	**env_dup_root);
 
 int main(int argc, char const *argv[], char **envp)
@@ -41,12 +38,6 @@ int main(int argc, char const *argv[], char **envp)
 	gc = NULL;
 	env_dup_root = NULL;
 	status = 0;
-	// ft_memset(token, 0, sizeof(t_token));
-	// ft_memset(cmds, 0, sizeof(t_cmd));
-	// ft_memset(gc, 0, sizeof(t_garbage_collect));
-	// ft_memset(env_dup_root, 0, sizeof(t_env_node));
-	//foutre ca aux bons endroits
-	// printf("launched shell\n");
 	if (envp == NULL)
 		return (1);
 	generate_env_llist(&env_dup_root, &gc, envp);
@@ -72,7 +63,10 @@ int main(int argc, char const *argv[], char **envp)
 			int number_of_pipes = count_pipes(token);
 			pipes = open_pipes(cmds, &gc, number_of_pipes);
 			if (number_of_pipes == 0 && is_builtin(cmds->str))
+			{	
+				// process_behavior(cmds, gc, NULL, 0); //kinda weird, i shouldnt exit shell on a lot of cases where this exit the shell;
 				theo_basic_parsing(&env_dup_root, &gc, cmds->str);
+			}
 			else
 				status = exec(env_dup_root, cmds, &gc, pipes, number_of_pipes);
 		}
@@ -202,33 +196,33 @@ char    **rebuild_env_no_gc(t_env_node *root)
 }
 
 //Ignore ca c'est une experience mais remplacer le home par ~ c'est chiant
-char	*prompt(t_garbage_collect **gc, t_env_node *env)
-{
-	char *pwd;
+// char	*prompt(t_garbage_collect **gc, t_env_node *env)
+// {
+// 	char *pwd;
 
-	pwd = accurate_shell(gc, env);
+// 	pwd = accurate_shell(gc, env);
 	
 
-	return (NULL);
-}
+// 	return (NULL);
+// }
 
-char	*accurate_shell(t_garbage_collect **gc, t_env_node *env)
-{
-	t_env_node *pwd;
-	char		*backup_pwd;
+// char	*accurate_shell(t_garbage_collect **gc, t_env_node *env)
+// {
+// 	t_env_node *pwd;
+// 	char		*backup_pwd;
 	
-	pwd = get_env_node(env, "PWD");
- 	if (pwd != NULL)
-		return (pwd->variable);
-	else
-	{
-		backup_pwd = getcwd(NULL, 0);
-		if (backup_pwd == NULL)
-			perror_exit(*gc, errno, "Failed to get current path");
-		setter_gc(backup_pwd, gc);
-		return (backup_pwd);
-	}
-}
+// 	pwd = get_env_node(env, "PWD");
+//  	if (pwd != NULL)
+// 		return (pwd->variable);
+// 	else
+// 	{
+// 		backup_pwd = getcwd(NULL, 0);
+// 		if (backup_pwd == NULL)
+// 			perror_exit(*gc, errno, "Failed to get current path");
+// 		setter_gc(backup_pwd, gc);
+// 		return (backup_pwd);
+// 	}
+// }
 ///FIN EXPERIENCE
 
 

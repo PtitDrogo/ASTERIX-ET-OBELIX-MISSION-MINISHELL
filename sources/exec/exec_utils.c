@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/21 20:01:56 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/21 20:45:12 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -287,6 +287,9 @@ void	close_all_pipes(int **pipes_fds, t_garbage_collect *gc, int number_of_pipes
 	int	i;
 
 	i = 0;
+	if (pipes_fds == NULL)
+		return ;
+	
 	while (i < number_of_pipes)
 	{
 		if (close(pipes_fds[i][0]) == -1)

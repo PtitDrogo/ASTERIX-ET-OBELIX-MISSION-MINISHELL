@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/21 20:45:12 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/22 17:11:33 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,10 +121,10 @@ void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect 
 		}
 		else if (cmds && cmds->str)
 		{
-			printf("hi, cmd is %s\n", cmds->str[0]);
+			// printf("hi, cmd is %s\n", cmds->str[0]);
 			if (is_builtin(cmds->str))
 			{	
-				printf("hi, cmd is %s\n", cmds->str[0]);
+				// printf("hi, cmd is %s\n", cmds->str[0]);
 				theo_basic_parsing(&env, gc, cmds->str);
 				empty_trash_exit(*gc, 0);  //Exit with success;
 			}

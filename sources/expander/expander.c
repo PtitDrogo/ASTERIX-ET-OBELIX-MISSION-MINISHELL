@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/21 19:05:47 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/22 17:10:04 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ bool	can_expand(char *current_quotes);
 char	*create_string_to_expand(char *str, t_garbage_collect **gc);
 char 	**expand(t_env_node *env, t_garbage_collect **gc, char **arrays);
 int		chars_to_expand(char *str);
-void	update_current_quote(char c, char *current_quotes);
+int		update_current_quote(char c, char *current_quotes);
 
 
 void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds, int status)
@@ -45,69 +45,72 @@ char **expand(t_env_node *env, t_garbage_collect **gc, char **arrays)
 	int j;
 	int size;
 	
-	char current_quotes;
 	char *expanded_var;
 	char *tmp;
 	i = 0;
-	current_quotes = '\0';
-	//Try to expand first
-	//then get rid of quotes;
-	
+	char current_quotes = '\0';
 	// printf("\n\n\n\n\n");
 	// printf("I am feeding proper strings into this fucking function\n");
 	// for (int test = 0; arrays[test]; test++)
 	// {
 	// 	printf("%s\n", arrays[test]);
 	// }
-	// printf("\n\n\n\n\n");
 	if (arrays == NULL)
 		return (NULL);
 
 	while (arrays[i])
 	{
 		size = count_new_size_of_array(arrays[i], env, gc);
-		printf("size of %s is %i\n", arrays[i], size);
-		// printf("after counting size, arrays[0] is %s and [1] is %s\n", arrays[0], arrays[1]);
+		// printf("size of %s is %i\n", arrays[i], size);
+		// printf("after counting size, arrays[0] is %s and [1] is %s\n", arrays[i], arrays[i + 1]);
 		// write(1, "allo", 4);
 		
-		// expanded_var = malloc_trash(size + 1, gc);
-		// expanded_var[size] = '\0';
-		// size = 0;
-		// j = 0;
-		// while (arrays[i][j])
-		// {
-		// 	// printf("hello I am in expand current char is %c\n", arrays[i][j]);
-		// 	if (arrays[i][j] == '\'' || arrays[i][j] == '\"')
-		// 		update_current_quote(arrays[i][j], &current_quotes);
-		// 	// printf("about to check can expand, 1 quotes %i 2 quotes %i\n", in_single_quotes, in_double_quotes);
-		// 	if (arrays[i][j] == '$' && can_expand(&current_quotes))
-		// 	{
-		// 		// printf("feeding into getenv %s\n", create_string_to_expand(&(arrays[i][j + 1]), gc));
-		// 		tmp = setter_gc(create_string_to_expand(&(arrays[i][j + 1]), gc), gc);
-		// 		if (ft_strlen(tmp) == 0)
-		// 		{	
-		// 			expanded_var[size++] = '$';
-		// 			j++;
-		// 		}
-		// 		else
-		// 		{
-		// 			j += ft_strlen(tmp) + 1; // + 1 maybe
-		// 			tmp = setter_gc(get_env_variable(env, tmp), gc);
-		// 			// printf("tmp, the thing getting the env variable is %s\n", tmp);
-		// 			while (tmp && *tmp)
-		// 			{	
-		// 				expanded_var[size++] = *tmp; //not ++j so we write over the $
-		// 				tmp++;
-		// 				// printf("array[i][j] == %c and tmp %c", arrays[i][j - 1], *(tmp - 1));
-		// 			}
-		// 		}
-		// 	}
-		// 	else	
-		// 		expanded_var[size++] = arrays[i][j++];
-		// }
-		// arrays[i] = expanded_var;
+		expanded_var = malloc_trash(size + 1, gc);
+		expanded_var[size] = '\0';
+		size = 0;
+		j = 0;
+		while (arrays[i][j])
+		{
+			// printf("hello I am in expand current char is %c\n", arrays[i][j]);
+			if (arrays[i][j] == '\'' || arrays[i][j] == '\"')
+			{	
+				if (update_current_quote(arrays[i][j], &current_quotes) == 1)
+					expanded_var[size++] = arrays[i][j++];
+				else
+					j++;
+			}
+			// printf("about to check can expand, in current quote : %c\n", current_quotes);
+			else if (arrays[i][j] == '$' && can_expand(&current_quotes))
+			{
+				// printf("I am lined up with false declaration\n");
+				// printf("feeding into getenv %s\n", create_string_to_expand(&(arrays[i][j + 1]), gc));
+				tmp = setter_gc(create_string_to_expand(&(arrays[i][j + 1]), gc), gc);
+				if (ft_strlen(tmp) == 0)
+				{	
+					expanded_var[size++] = '$';
+					j++;
+				}
+				else
+				{
+					j += ft_strlen(tmp) + 1; // + 1 maybe
+					// printf("is this undefined %s\n", &arrays[i][j]);
+					tmp = setter_gc(get_env_variable(env, tmp), gc);
+					// printf("tmp, the thing getting the env variable is %s\n", tmp);
+					while (tmp && *tmp)
+					{	
+						expanded_var[size++] = *tmp; //not ++j so we write over the $
+						tmp++;
+						// printf("array[i][j] == %c and tmp %c", arrays[i][j - 1], *(tmp - 1));
+					}
+				}
+			}
+			else	
+				expanded_var[size++] = arrays[i][j++];
+		}
+		arrays[i] = expanded_var;
 		i++;
-	}
+		// printf("i = %i\n", i);
+		}
 	// printf("I am returning arrays[0] : %s and expanded var arrays[1] : %s\n", arrays[0], arrays[1]);
 	return (arrays);
 }
@@ -129,11 +132,8 @@ int	count_new_size_of_array(char *array, t_env_node *env, t_garbage_collect **gc
 	{
 		if (array[i] == '\'' || array[i] == '\"')
 		{	
-			if (current_quotes == '\0')
-				i++; //a bit confusing, but in a nutshell im not increasing size for quotes ill delete
-			update_current_quote(array[i], &current_quotes);
-			if (current_quotes == '\0')
-				i++; //a bit confusing, but in a nutshell im not increasing size for quotes ill delete
+			size += update_current_quote(array[i], &current_quotes); //absolute dark magic
+			i++; 
 		}
 		else if (array[i] == '$' && can_expand(&current_quotes) == true)
 		{
@@ -155,7 +155,7 @@ int	count_new_size_of_array(char *array, t_env_node *env, t_garbage_collect **gc
 			i++;
 		}
 	}
-	printf("for string %s size is %i\n", array, size);
+	// printf("for string %s size is %i\n", array, size);
 	return (size);
 	//STEP 1 = JE CREE UNE STRING AVEC LE $ ET les chars jusqu'a un espace ou fin
 	//STEP 1.5 = Je stock la taille de la str $TESTEST;
@@ -166,28 +166,44 @@ int	count_new_size_of_array(char *array, t_env_node *env, t_garbage_collect **gc
 
 bool	can_expand(char *current_quotes)
 {
+	// printf("Im in can expand and current quotes is %c\n", *current_quotes);
+	
 	if (*current_quotes == '\'')
+	{	
+		// printf("I should be here, returning false\n");
 		return (false);
+	}
 	else
 		return (true);
 }
 
-
-void	update_current_quote(char c, char *current_quotes)
+//update current quotes and return the amount to increase size of string by;
+int		update_current_quote(char c, char *current_quotes)
 {
 	if (c == *current_quotes)
+	{	
 		*current_quotes = '\0';
+		return (0);
+	}
 	else if (c == '\'')
 	{
 		if (*current_quotes == '\0')
+		{	
 			*current_quotes = '\'';
+			return (0);
+		}
+		return (1);
 	}
 	else if (c == '\"')
 	{
 		if (*current_quotes == '\0')
+		{	
 			*current_quotes = '\"';
+			return (0);
+		}
+		return (1);
 	}
-	return ;
+	return (1);
 }
 
 //FEED INTO THIS THE CHAR AFTER THE DOLLAR (Maybe we change this later)

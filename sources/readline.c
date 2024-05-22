@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/21 20:51:54 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/22 17:10:32 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ int main(int argc, char const *argv[], char **envp)
 	if (envp == NULL)
 		return (1);
 	generate_env_llist(&env_dup_root, &gc, envp);
-	//export(&env_dup_root, ft_strjoin("?=", itoa(0)), gc);
 	while (1) 
 	{
 		signal(SIGINT, new_prompt);
@@ -53,11 +52,10 @@ int main(int argc, char const *argv[], char **envp)
 			break;
 		// Check for EOF (Ctrl+D)
 		//GROS caca pour tenter de faire passer le testeur, a ne pas keep;
-		// if (strcmp(input, "echo $?") == 0)
-		// 	printf("%i\n", status);
-		
+		if (strcmp(input, "echo $?") == 0)
+			printf("%i\n", status);
 		//J'ai rajoute un verify input sinon cat /dev/urandom/ fait crash le programme
-		if (verify_input(input) && basic_parsing(&gc, input, &token, &cmds) && token)
+		else if (verify_input(input) && basic_parsing(&gc, input, &token, &cmds) && token)
 		{
 			expander(env_dup_root, &gc, cmds, status); //WORK IN PROGRESS
 			int number_of_pipes = count_pipes(token);
@@ -65,10 +63,14 @@ int main(int argc, char const *argv[], char **envp)
 			if (number_of_pipes == 0 && is_builtin(cmds->str))
 			{	
 				// process_behavior(cmds, gc, NULL, 0); //kinda weird, i shouldnt exit shell on a lot of cases where this exit the shell;
+				// printf("Am i here or no\n");
 				theo_basic_parsing(&env_dup_root, &gc, cmds->str);
 			}
 			else
+			{	
+				// printf("Am i here or no\n");
 				status = exec(env_dup_root, cmds, &gc, pipes, number_of_pipes);
+			}
 		}
 		if (verify_input(input))
 			add_history(input);

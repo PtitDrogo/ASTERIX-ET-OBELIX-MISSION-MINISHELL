@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/22 17:10:32 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/23 02:09:40 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,9 @@ bool	is_ascii(unsigned char c);
 int		verify_input(char *input);
 char    **rebuild_env_no_gc(t_env_node *root);
 void	recycle_trash(t_garbage_collect	**gc, t_env_node	**env_dup_root);
+void	process_solo_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes);
+void	print_open_err_msg(int errnumber, char *file, t_garbage_collect *gc);
+void	secure_dup2_no_exit(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int number_of_pipes);
 
 int main(int argc, char const *argv[], char **envp)
 {
@@ -62,9 +65,11 @@ int main(int argc, char const *argv[], char **envp)
 			pipes = open_pipes(cmds, &gc, number_of_pipes);
 			if (number_of_pipes == 0 && is_builtin(cmds->str))
 			{	
-				// process_behavior(cmds, gc, NULL, 0); //kinda weird, i shouldnt exit shell on a lot of cases where this exit the shell;
+				process_solo_behavior(cmds, &gc, NULL, 0); //kinda weird, i shouldnt exit shell on a lot of cases where this exit the shell;
 				// printf("Am i here or no\n");
 				theo_basic_parsing(&env_dup_root, &gc, cmds->str);
+				close (0);
+				close(1);
 			}
 			else
 			{	
@@ -195,6 +200,104 @@ char    **rebuild_env_no_gc(t_env_node *root)
     }
 	envp[i] = NULL;
 	return (envp);
+}
+
+//The only difference is that I dont exit the shell if theres an error
+//need to save stdin and out;
+void	process_solo_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes)
+{
+	//je veux just dup les redirections;
+	t_token	*in;
+	t_token	*out;
+	int		tmp_fd;
+	int		status;
+
+	in = cmds->redirection_in;
+	out = cmds->redirection_out;
+	status = 0;
+	while (in)
+	{	
+		if (in->type == LESS)
+		{	
+			tmp_fd = open(in->next->str, O_RDONLY);
+			if (tmp_fd == -1)
+				return (print_open_err_msg(errno, in->next->str, *gc));
+		}
+		if (in->type == D_LESS)
+		{
+			tmp_fd = open(HEREDOC_FILE, O_CREAT | O_WRONLY | O_TRUNC, 0777);
+			if (tmp_fd == -1)
+				return (print_open_err_msg(errno, in->next->str, *gc));
+			status = here_doc(in->next->str, gc, tmp_fd);
+			if (status == EXIT_SUCCESS)
+			{
+				ft_printf("Heredoc success\n");
+				close(tmp_fd);
+				tmp_fd = open(HEREDOC_FILE, O_RDONLY);
+			}
+			else
+			{
+				ft_printf("Errno to update somehow : %i\n", status);
+				new_prompt(0);
+				close(tmp_fd);
+				return ;
+			}
+		}
+		if (in->next && in->next->next == NULL || in->type == PIPE)
+			if (dup2(tmp_fd, STDIN_FILENO) == -1)
+				return (perror("Error duplicating file descriptor"));
+		if (in->type == LESS || in->type == D_LESS)
+			if (close(tmp_fd) == -1)
+				return (perror("Failed to close opened file"));
+		in = in->next;
+	}
+	while (out)
+	{
+		if (out->type == GREAT)
+		{	
+			tmp_fd = open(out->next->str, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+			if (tmp_fd == -1)
+				return (print_open_err_msg(errno, out->next->str, *gc));
+		}
+		if (out->type == D_GREAT)
+		{	
+			tmp_fd = open(out->next->str, O_WRONLY | O_APPEND | O_CREAT, 0644);
+			if (tmp_fd == -1)
+				return (print_open_err_msg(errno, out->next->str, *gc));
+		}
+		if ((out->next && out->next->next == NULL) || out->type == PIPE)
+			if (dup2(tmp_fd, STDOUT_FILENO) == -1)
+				return (perror("Error duplicating file descriptor"));
+		if (out->type == GREAT || out->type == D_GREAT)
+			if (close(tmp_fd) == -1)
+				return (perror("Failed to close opened file"));
+		out = out->next;
+	}
+	return ; // if theres no redirection we just go to exec as usual;
+}
+
+//no exit here;
+void	print_open_err_msg(int errnumber, char *file, t_garbage_collect *gc)
+{
+	if (errnumber == ENOENT)
+		if (ft_printf_err("bash: %s: No such file or directory\n", file) == -1)
+			perror_exit(gc, errnumber, WRITE_ERR_MSG);
+	if (errnumber == EACCES)
+		if (ft_printf_err("bash: %s: Permission denied\n", file) == -1)
+			perror_exit(gc, errnumber, WRITE_ERR_MSG);
+	if (errnumber == EISDIR)
+		if (ft_printf_err("bash: %s: Is a directory\n", file) == -1)
+			perror_exit(gc, errnumber, WRITE_ERR_MSG);
+	if (errnumber == EMFILE)
+		if (ft_printf_err("bash: %s: Too many files opened", file) == -1)
+			perror_exit(gc, errnumber, WRITE_ERR_MSG);
+}
+//no exit
+void	secure_dup2_no_exit(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int number_of_pipes)
+{
+	if (dup2(new_fd, old_fd) == -1)
+		perror("Error duplicating file descriptor");
+	return ;
 }
 
 //Ignore ca c'est une experience mais remplacer le home par ~ c'est chiant

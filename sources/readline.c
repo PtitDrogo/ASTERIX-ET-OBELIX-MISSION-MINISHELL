@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 19:20:55 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/23 20:24:22 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,8 +60,9 @@ int main(int argc, char const *argv[], char **envp)
 		//J'ai rajoute un verify input sinon cat /dev/urandom/ fait crash le programme
 		else if (verify_input(input) && basic_parsing(&gc, input, &token, &cmds) && token)
 		{
-			// parse_all_here_docs(token, &gc);
-
+			parse_all_here_docs(cmds, &gc);
+			
+			
 			// //DEBUG//
 			// printf("midpoint check cmds pipe : %s\n", cmds->str[0]);
 			// // check_fd(cmds->redirection_in->here_doc_pipe);
@@ -74,7 +75,7 @@ int main(int argc, char const *argv[], char **envp)
 			pipes = open_pipes(cmds, &gc, number_of_pipes);
 			if (number_of_pipes == 0 && is_builtin(cmds->str))
 			{	
-
+				
 				int backup_fds[2];
 				backup_fds[0] = dup(0);
 				backup_fds[1] = dup(1);
@@ -87,6 +88,7 @@ int main(int argc, char const *argv[], char **envp)
 			}
 			else
 			{	
+				
 				// printf("Am i here or no\n");
 				exit_status(exec(env_dup_root, cmds, &gc, pipes, number_of_pipes));
 			}

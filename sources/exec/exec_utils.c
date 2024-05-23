@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 19:28:13 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/23 20:27:10 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 	signal(SIGINT, cancel_cmd);
 	while (current)
 	{
+		
 		child_process(root_env, envp, current, gc, pipes_fds, number_of_pipes); //giving current command !!
 		current = current->next;
 	}
@@ -110,6 +111,7 @@ void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect 
 		perror_exit(*gc, errno, "Error creating subshell");
 	if (cmds->cmd_id == 0)
 	{
+		
 		process_behavior(cmds, gc, pipes, number_of_pipes);	
 		close_all_pipes(pipes, *gc, number_of_pipes);
 		valid_path = find_valid_path(cmds, envp, gc);
@@ -147,7 +149,7 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 	in = cmds->redirection_in;
 	out = cmds->redirection_out;
 	status = 0;
-
+	printf("Alloaa ?\n");
 	while (in)
 	{	
 		if (in->type == LESS)
@@ -159,12 +161,12 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 		if (in->type == D_LESS)
 		{
 			//open(PIPE);
-			// tmp_fd = in->here_doc_pipe;
-			printf("L'here est HS repasser plus tard\n");
+			tmp_fd = in->here_doc_pipe;
+			// printf("L'here est HS repasser plus tard\n");
 			//DEBUG
-			// printf("checking in exec\n");
-			// printf("token is %s\n", in->str);
-			// check_fd(tmp_fd);
+			printf("checking in exec\n");
+			printf("token is %s\n", in->str);
+			check_fd(tmp_fd);
 			//thats the main idea, to make that happen;
 			
 			// tmp_fd = open(HEREDOC_FILE, O_CREAT | O_WRONLY | O_TRUNC, 0777);

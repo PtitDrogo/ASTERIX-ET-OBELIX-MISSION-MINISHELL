@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 19:19:37 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/23 20:13:43 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ void    malloc_check(void *ptr, t_garbage_collect *gc);
 int					here_doc(char *delimiter, t_garbage_collect **gc, int fd);
 t_garbage_collect	**global_gc(t_garbage_collect **gc);
 int					global_fd(int fd);
-void	parse_all_here_docs(t_cmd *tokens, t_garbage_collect **gc);
+void	parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc);
 
 //BUILT INS
 int		unset(t_env_node *env_dup_root, char *env_to_find);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 14:57:56 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/22 17:14:20 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/23 13:08:04 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,14 @@
 static bool	too_many_arguments(char **str);
 static bool	is_letter_in_first_arg(char *str);
 static int	get_exit_return_value(char *arg);
+void	close_backup_fds(int backup_fds[2]);
 
-int ft_exit(char **args, t_garbage_collect *gc)
+int ft_exit(char **args, t_garbage_collect *gc, int backup_fds[2])
 {
     int exit_value;
     int i;
 
+	close_backup_fds(backup_fds[2]);
     if (args == NULL || *args == NULL || *args[0] == '\0')
     {
 		if (ft_printf_err("exit\n") == -1)
@@ -66,7 +68,7 @@ static bool	is_letter_in_first_arg(char *str)
 	int i;
 
 	i = 0;
-	if (str[i] == '-')
+	if (str[i] == '-' || str[i] == '+')
 		i++;
 	while (str[i] && str[i] != ' ')
 	{
@@ -82,4 +84,16 @@ static bool	too_many_arguments(char **str)
 	if (str[1] == NULL)
 		return (false);
 	return (true);
+}
+
+void	close_backup_fds(int backup_fds[2])
+{
+	if (backup_fds == NULL)
+		return ;
+	else
+	{
+		close (backup_fds[0]);
+		close (backup_fds[1]);
+	}
+	return ;
 }

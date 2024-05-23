@@ -6,7 +6,7 @@
 /*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 02:09:40 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/23 13:07:50 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ bool	is_ascii(unsigned char c);
 int		verify_input(char *input);
 char    **rebuild_env_no_gc(t_env_node *root);
 void	recycle_trash(t_garbage_collect	**gc, t_env_node	**env_dup_root);
-void	process_solo_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes);
+void	process_solo_behavior(t_cmd *cmds, t_garbage_collect **gc);
 void	print_open_err_msg(int errnumber, char *file, t_garbage_collect *gc);
 void	secure_dup2_no_exit(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int number_of_pipes);
 
@@ -65,11 +65,15 @@ int main(int argc, char const *argv[], char **envp)
 			pipes = open_pipes(cmds, &gc, number_of_pipes);
 			if (number_of_pipes == 0 && is_builtin(cmds->str))
 			{	
-				process_solo_behavior(cmds, &gc, NULL, 0); //kinda weird, i shouldnt exit shell on a lot of cases where this exit the shell;
-				// printf("Am i here or no\n");
+				int backup_fds[2];
+				backup_fds[0] = dup(0);
+				backup_fds[1] = dup(1);
+				process_solo_behavior(cmds, &gc); //kinda weird, i shouldnt exit shell on a lot of cases where this exit the shell;
 				theo_basic_parsing(&env_dup_root, &gc, cmds->str);
-				close (0);
-				close(1);
+				dup2(backup_fds[0], STDIN_FILENO);
+				dup2(backup_fds[1], STDOUT_FILENO);
+				close(backup_fds[0]);
+				close(backup_fds[1]);
 			}
 			else
 			{	
@@ -204,7 +208,7 @@ char    **rebuild_env_no_gc(t_env_node *root)
 
 //The only difference is that I dont exit the shell if theres an error
 //need to save stdin and out;
-void	process_solo_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes)
+void	process_solo_behavior(t_cmd *cmds, t_garbage_collect **gc)
 {
 	//je veux just dup les redirections;
 	t_token	*in;

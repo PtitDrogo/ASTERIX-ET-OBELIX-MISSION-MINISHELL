@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/21 14:28:26 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/23 14:15:18 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ int main(int argc, char const *argv[], char **envp)
 				status = exec(env_dup_root, cmds, &gc, pipes, number_of_pipes);
 		}
 		add_history(input);
-		ft_printf("Errno : %i\n", status);
+		ft_printf("- Errno : %i -", status);
 	}
 	
 	// printf("Exit.\n");

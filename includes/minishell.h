@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/21 14:26:28 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/23 14:01:26 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,7 @@ void    malloc_check(void *ptr, t_garbage_collect *gc);
 //Here_doc
 int		here_doc(char *delimiter, t_garbage_collect **gc, int fd);
 t_garbage_collect	**global_gc(t_garbage_collect **gc);
+int					global_fd(int fd);
 
 //BUILT INS
 int		unset(t_env_node *env_dup_root, char *env_to_find);

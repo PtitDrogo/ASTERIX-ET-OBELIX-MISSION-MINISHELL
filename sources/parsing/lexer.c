@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:15:09 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/13 14:37:20 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/23 16:00:36 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,12 @@ t_token	*tokenize(char **input, t_garbage_collect **gc)
 		token = create_token(input[i], gc);
 		add_token(&tokenpile, token);
 		i++;
+	}
+	token = tokenpile;
+	while (token)
+	{
+		ft_printf("token : %s\n", token->str);
+		token = token->next;
 	}
 	return (tokenpile);
 }

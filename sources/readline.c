@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 19:26:43 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/23 19:20:55 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ int main(int argc, char const *argv[], char **envp)
 				backup_fds[0] = dup(0);
 				backup_fds[1] = dup(1);
 				process_solo_behavior(cmds, &gc); //kinda weird, i shouldnt exit shell on a lot of cases where this exit the shell;
-				theo_basic_parsing(&env_dup_root, &gc, cmds->str, backup_fds);
+				exit_status(theo_basic_parsing(&env_dup_root, &gc, cmds->str, backup_fds));
 				dup2(backup_fds[0], STDIN_FILENO);
 				dup2(backup_fds[1], STDOUT_FILENO);
 				close(backup_fds[0]);
@@ -88,15 +88,15 @@ int main(int argc, char const *argv[], char **envp)
 			else
 			{	
 				// printf("Am i here or no\n");
-				status = exec(env_dup_root, cmds, &gc, pipes, number_of_pipes);
+				exit_status(exec(env_dup_root, cmds, &gc, pipes, number_of_pipes));
 			}
 		}
 		if (verify_input(input))
 			add_history(input);
 		recycle_trash(&gc, &env_dup_root);
-		// ft_printf("Errno : %i\n", status);
+		ft_printf("- Errno : %i -", exit_status(-1));
+
 	}
-	
 	// printf("Exit.\n");
 	rl_clear_history();
 	empty_trash(gc);
@@ -147,7 +147,6 @@ int	theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *
 		cd(cmd, gc, *env_dup_root);
 	if (ft_strcmp(cmd[0], "echo") == 0)
 		echo(cmd, gc);
-	
 	return (0);
 }
 

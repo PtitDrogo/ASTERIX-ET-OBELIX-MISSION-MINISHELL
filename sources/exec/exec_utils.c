@@ -73,7 +73,6 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 	t_cmd *current = cmds;
 	int	status;
 
-
 	envp = rebuild_env(root_env, gc);
 	signal(SIGINT, cancel_cmd);
 	while (current)
@@ -90,13 +89,13 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 		if (WIFEXITED(status))
 			status = WEXITSTATUS(status);
 		else if (WIFSIGNALED(status))
-		{
 			status = 128 + WTERMSIG(status);
-		}
+		if (status == 130)
+			ft_printf("\n");
 		//perror_exit(*gc, errno, "Error waiting for process");
 		current = current->next;
 	}
-	status = get_status_code(gc, status);
+	//status = get_status_code(gc, status);
 	return (status); //replace by exit status;
 }
 //plusieurs moyen de compter le nombre de commande, je peux le faire avec le nombre

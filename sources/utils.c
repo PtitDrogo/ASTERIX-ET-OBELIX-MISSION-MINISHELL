@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 14:47:08 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/09 17:16:45 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/23 19:12:59 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ char	*get_env_variable(t_env_node *root, char *variable_name)
 //returns true if cmd is a builtin
 bool	is_builtin(char **cmd)
 {
-	static char *builtins[] = {"unset", "export", "env", "exit", "pwd", "cd", "echo", NULL};
+	static char *builtins[] = {"unset", "export", "env", "exit", "pwd", "cd", "echo", "$?", NULL};
 	int	i;
 	
 	i = 0;

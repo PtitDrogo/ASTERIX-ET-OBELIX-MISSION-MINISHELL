@@ -73,7 +73,10 @@ int	here_doc(char *delimiter, t_garbage_collect **gc, int fd)
 	int	status;
 
 	global_gc(gc);
-	fork_id = fork();
+	global_fd(fd);
+	signal(SIGINT, cancel_heredoc);
+	here_doc_process(delimiter, gc, fd);
+	/*fork_id = fork();
 	if (fork_id == -1)
 		empty_trash_exit(*gc, 0);
 	if (fork_id == 0)
@@ -86,8 +89,9 @@ int	here_doc(char *delimiter, t_garbage_collect **gc, int fd)
 		else
 			status = 0;
 	}
-	ft_printf("status returned : %i\n", status);
-	return (status);
+	ft_printf("status returned : %i ", status);
+	return (status);*/
+	return (0);
 }
 
 t_garbage_collect	**global_gc(t_garbage_collect **gc)
@@ -99,13 +103,20 @@ t_garbage_collect	**global_gc(t_garbage_collect **gc)
 	return (sgc);
 }
 
+int	global_fd(int fd)
+{
+	static int	ffd;
+
+	if (fd)
+		ffd = fd;
+	return (ffd);
+}
+
 //here_doc that will write into the fd we give it, it doesnt update history because life is hard.
-static void	child_here_doc(char *delimiter, t_garbage_collect **gc, int fd)
+static void	here_doc_process(char *delimiter, t_garbage_collect **gc, int fd)
 {
 	char	*input;
 
-	global_gc(gc);
-	signal(SIGINT, cancel_heredoc);
     while (1)
 	{
 		input = readline_n_add_n(readline("heredoc> "), gc);

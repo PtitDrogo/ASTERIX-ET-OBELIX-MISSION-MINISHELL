@@ -104,6 +104,7 @@ void    malloc_check(void *ptr, t_garbage_collect *gc);
 //Here_doc
 int					here_doc(char *delimiter, t_garbage_collect **gc, int fd);
 t_garbage_collect	**global_gc(t_garbage_collect **gc);
+int					global_fd(int fd);
 void	parse_all_here_docs(t_cmd *tokens, t_garbage_collect **gc);
 
 //BUILT INS
@@ -135,6 +136,7 @@ char		*ft_strjoin_and_add(char const *s1, char const *s2, char c);
 void    perror_exit(t_garbage_collect *gc, int exit_code, char *err_msg);
 void	empty_trash_exit(t_garbage_collect *gc, int exit_code);
 void    ft_error(char *error, t_garbage_collect *gc);
+int		exit_status(int status);
 
 
 ///------------------------Execution------------------------///

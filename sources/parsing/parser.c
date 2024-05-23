@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:48:23 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/21 14:31:11 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/23 15:58:49 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ int	parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cmd
 	{
 		if (start)
 		{
-			// printf("in parsetoken = %p\n", token);
+			//printf("in parsetoken = %p\n", token);
 			cmd = create_command(token, gc);
 			add_command(cmd_chain, cmd);
 			start = 0;

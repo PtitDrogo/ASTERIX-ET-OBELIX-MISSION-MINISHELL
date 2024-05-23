@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/24 18:11:38 by garivo            #+#    #+#             */
-/*   Updated: 2024/04/30 00:39:23 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/23 16:58:55 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,13 @@ static size_t	count_words(char *input, t_garbage_collect **gc)
 				i++;
 			firstchar = 1;
 		}
+		else if ((input[i] == '<' || input[i] == '>') && ++wc > 0)
+		{
+			if (input[i + 1] == input[i])
+				i++;
+			i++;
+			firstchar = 1;
+		}
 		else if (firstchar && ++wc > 0 && ++i > 0)
 			firstchar = 0;
 		else
@@ -75,7 +82,13 @@ static size_t	extract_len(char *input)
 
 	i = 0;
 	len = 0;
-	while (input[i] && input[i] != ' ')
+	if (input[i] == '<' || input[i] == '>')
+	{
+		if (input[i + 1] == input[i])
+			return (2);
+		return (1);
+	}
+	while (input[i] && input[i] != ' ' && input[i] != '<' && input[i] != '>')
 	{
 		quote_start = i;
 		separator = 0;
@@ -135,7 +148,13 @@ static char	*extract(char *input, char *res, size_t *index)
 	size_t	quote_start;
 
 	i = 0;
-	while (input[i] && input[i] != ' ')
+	if ((input[i] == '<' || input[i] == '>') && ++(*index) > 0)
+	{
+		if (input[i + 1] == input[i] && ++(*index) > 0)
+			return (ft_strncat(&input[i], res, 2));
+		return (ft_strncat(&input[i], res, 1));
+	}
+	while (input[i] && input[i] != ' ' && input[i] != '<' && input[i] != '>')
 	{
 		quote_start = i;
 		separator = 0;

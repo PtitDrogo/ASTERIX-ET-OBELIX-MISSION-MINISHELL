@@ -26,7 +26,6 @@ void	new_prompt(int none)
 void	cancel_cmd(int none)
 {
 	(void)none;
-	ft_printf(" Chat\n");
 }
 
 void	cancel_heredoc(int none)
@@ -34,6 +33,7 @@ void	cancel_heredoc(int none)
 	t_garbage_collect	**gc;
 
 	gc = global_gc(NULL);
+	close(global_fd(0));
 	(void)none;
 	empty_trash_exit(*gc, 130);
 }

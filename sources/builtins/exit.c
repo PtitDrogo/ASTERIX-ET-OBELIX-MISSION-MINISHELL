@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 14:57:56 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 13:08:04 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/23 13:48:43 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,25 +24,35 @@ int ft_exit(char **args, t_garbage_collect *gc, int backup_fds[2])
     int exit_value;
     int i;
 
-	close_backup_fds(backup_fds[2]);
+	
     if (args == NULL || *args == NULL || *args[0] == '\0')
     {
-		if (ft_printf_err("exit\n") == -1)
+		close_backup_fds(backup_fds);
+		if (printf("exit\n") == -1)
 			perror_exit(gc, errno, WRITE_ERR_MSG);
 		empty_trash_exit(gc, 0); // normal execution
 	}
 	if (is_letter_in_first_arg(*args) == true || ft_safe_atoi(*args) == ATOI_ERROR) //hilarious use of my safe atoi can perfectly replicate bash
 	{
-		if (ft_printf_err("exit\nbash: exit: %s: numeric argument required\n", args[0]) == -1)
+		close_backup_fds(backup_fds);
+		if (printf("exit\n") == -1)
+			perror_exit(gc, errno, WRITE_ERR_MSG);
+		if (ft_printf_err("bash: exit: %s: numeric argument required\n", args[0]) == -1)
 			perror_exit(gc, errno, WRITE_ERR_MSG);
 		empty_trash_exit(gc, 2);
 	}
     if (too_many_arguments(args) == true)
 	{
-		if (ft_printf_err("exit\nbash: exit: too many arguments\n") == -1)
+		if (printf("exit\n") == -1)
 			perror_exit(gc, errno, WRITE_ERR_MSG);
+		if (ft_printf_err("bash: exit: too many arguments\n") == -1)
+		{	
+			close_backup_fds(backup_fds);
+			perror_exit(gc, errno, WRITE_ERR_MSG);
+		}
 		return (1); // this does NOT exit
 	}
+	close_backup_fds(backup_fds);
 	empty_trash_exit(gc, get_exit_return_value(*args));
 	return(0); // we should never get there
 }

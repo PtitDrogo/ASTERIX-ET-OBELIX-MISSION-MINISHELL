@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 13:07:50 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/23 13:50:29 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int 	empty_trash(t_garbage_collect *gc);
 int		add_to_trash(t_garbage_collect **root, void *to_free);
 int		basic_parsing(t_garbage_collect **gc, char *input, t_token **token, t_cmd **cmds);
-int		theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char **input);
+int		theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char **cmd, int backup_fds[2]);
 char	*accurate_shell(t_garbage_collect **gc, t_env_node *env);
 bool	is_ascii(unsigned char c);
 int		verify_input(char *input);
@@ -69,7 +69,7 @@ int main(int argc, char const *argv[], char **envp)
 				backup_fds[0] = dup(0);
 				backup_fds[1] = dup(1);
 				process_solo_behavior(cmds, &gc); //kinda weird, i shouldnt exit shell on a lot of cases where this exit the shell;
-				theo_basic_parsing(&env_dup_root, &gc, cmds->str);
+				theo_basic_parsing(&env_dup_root, &gc, cmds->str, backup_fds);
 				dup2(backup_fds[0], STDIN_FILENO);
 				dup2(backup_fds[1], STDOUT_FILENO);
 				close(backup_fds[0]);
@@ -114,7 +114,7 @@ int	basic_parsing(t_garbage_collect **gc, char *input, t_token **token, t_cmd **
 
 //En vrai je peux garder cette fonction pour run les builtins;
 //TODO, add redirection for solo exec lol;
-int	theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char **cmd)
+int	theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char **cmd, int backup_fds[2])
 {
 	if (cmd == NULL || cmd[0] == NULL)
 		return (1);
@@ -130,7 +130,7 @@ int	theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *
 	if (ft_strcmp(cmd[0], "env") == 0)
 		env(*env_dup_root, *gc);
 	if (ft_strcmp(cmd[0], "exit") == 0)
-		ft_exit(&cmd[1], *gc);
+		ft_exit(&cmd[1], *gc, backup_fds);
 	if (ft_strcmp(cmd[0], "pwd") == 0)
 		pwd(gc);
 	if (ft_strcmp(cmd[0], "cd") == 0)

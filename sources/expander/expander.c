@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/22 17:10:04 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/23 14:17:00 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,13 +60,13 @@ char **expand(t_env_node *env, t_garbage_collect **gc, char **arrays)
 
 	while (arrays[i])
 	{
-		size = count_new_size_of_array(arrays[i], env, gc);
-		// printf("size of %s is %i\n", arrays[i], size);
-		// printf("after counting size, arrays[0] is %s and [1] is %s\n", arrays[i], arrays[i + 1]);
+		int total_size = count_new_size_of_array(arrays[i], env, gc);
+		printf("size of %s is %i\n", arrays[i], total_size);
+		printf("after counting size, arrays[0] is %s and [1] is %s\n", arrays[i], arrays[i + 1]);
 		// write(1, "allo", 4);
 		
-		expanded_var = malloc_trash(size + 1, gc);
-		expanded_var[size] = '\0';
+		expanded_var = malloc_trash(total_size + 1, gc);
+		expanded_var[total_size] = '\0';
 		size = 0;
 		j = 0;
 		while (arrays[i][j])
@@ -95,9 +95,11 @@ char **expand(t_env_node *env, t_garbage_collect **gc, char **arrays)
 					j += ft_strlen(tmp) + 1; // + 1 maybe
 					// printf("is this undefined %s\n", &arrays[i][j]);
 					tmp = setter_gc(get_env_variable(env, tmp), gc);
-					// printf("tmp, the thing getting the env variable is %s\n", tmp);
-					while (tmp && *tmp)
+					printf("tmp, the thing getting the env variable is %s\n", tmp);
+					printf("size is %i and total size is %i\n", size, total_size);
+					while (tmp && *tmp && size < total_size)
 					{	
+						// printf("%c is the current char we are writing to new string\n", *tmp);
 						expanded_var[size++] = *tmp; //not ++j so we write over the $
 						tmp++;
 						// printf("array[i][j] == %c and tmp %c", arrays[i][j - 1], *(tmp - 1));
@@ -155,7 +157,7 @@ int	count_new_size_of_array(char *array, t_env_node *env, t_garbage_collect **gc
 			i++;
 		}
 	}
-	// printf("for string %s size is %i\n", array, size);
+	printf("in count size, for string %s size is %i\n", array, size);
 	return (size);
 	//STEP 1 = JE CREE UNE STRING AVEC LE $ ET les chars jusqu'a un espace ou fin
 	//STEP 1.5 = Je stock la taille de la str $TESTEST;

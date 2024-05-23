@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 15:03:48 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/23 18:08:45 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 		//perror_exit(*gc, errno, "Error waiting for process");
 		current = current->next;
 	}
-	status = get_status_code(gc, status);
+	//status = get_status_code(gc, status);
 	return (status); //replace by exit status;
 }
 //plusieurs moyen de compter le nombre de commande, je peux le faire avec le nombre
@@ -198,6 +198,8 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 				signal(SIGINT, cancel_cmd);
 				close(tmp_fd);
 				tmp_fd = open(HEREDOC_FILE, O_RDONLY);
+				if (tmp_fd == -1)
+					print_open_err_msg_exit(errno, in->next->str, *gc);
 			}
 		}
 		if (in->type == PIPE)

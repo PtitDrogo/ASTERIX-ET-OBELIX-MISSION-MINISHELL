@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 14:15:18 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/23 19:20:55 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,12 +66,12 @@ int main(int argc, char const *argv[], char **envp)
 			int number_of_pipes = count_pipes(token);
 			pipes = open_pipes(cmds, &gc, number_of_pipes);
 			if (number_of_pipes == 0 && is_builtin(cmds->str))
-				theo_basic_parsing(&env_dup_root, &gc, cmds->str);
+				exit_status(theo_basic_parsing(&env_dup_root, &gc, cmds->str));
 			else
-				status = exec(env_dup_root, cmds, &gc, pipes, number_of_pipes);
+				exit_status(exec(env_dup_root, cmds, &gc, pipes, number_of_pipes));
 		}
 		add_history(input);
-		ft_printf("- Errno : %i -", status);
+		ft_printf("- Errno : %i -", exit_status(-1));
 	}
 	
 	// printf("Exit.\n");
@@ -127,7 +127,6 @@ int	theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *
 	// 	here_doc(cmd[1] ,gc, 1);
 	if (ft_strcmp(cmd[0], "echo") == 0)
 		echo(cmd, gc);
-	
 	return (0);
 }
 

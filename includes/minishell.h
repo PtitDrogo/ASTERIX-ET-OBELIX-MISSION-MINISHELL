@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 14:01:26 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/23 17:50:08 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,6 +130,7 @@ char		*get_env_variable(t_env_node *root, char *variable_name);
 void    perror_exit(t_garbage_collect *gc, int exit_code, char *err_msg);
 void	empty_trash_exit(t_garbage_collect *gc, int exit_code);
 void    ft_error(char *error, t_garbage_collect *gc);
+int		exit_status(int status);
 
 
 ///------------------------Execution------------------------///

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   errors.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 16:01:27 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/07 04:36:53 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/23 18:09:17 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,5 +34,14 @@ void    ft_error(char *error, t_garbage_collect *gc)
 		printf("%s\n", error);
 	/*if (gc)
 	  empty_trash(gc);*/
+}
+
+int	exit_status(int status)
+{
+	static int	exit_status;
+
+	if (status != -1)
+		exit_status = status;
+	return (exit_status);
 }
 

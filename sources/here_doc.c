@@ -3,19 +3,69 @@
 /*                                                        :::      ::::::::   */
 /*   here_doc.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 14:57:39 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/23 19:26:21 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 //TODO, somehow get the initial call to heredoc to the history
-static char					*readline_n_add_n(char *readline, t_garbage_collect **gc);
-static int					ft_strncmp_n(char *input, char *delimiter, size_t n);
-static void					here_doc_process(char *delimiter, t_garbage_collect **gc, int fd);
+static char		*readline_n_add_n(char *readline, t_garbage_collect **gc);
+static int		ft_strncmp_n(char *input, char *delimiter, size_t n);
+static void		child_here_doc(char *delimiter, t_garbage_collect **gc, int fd);
+// int				new_here_doc_check(t_token *here_doc_token, int **pipe, t_garbage_collect **gc);
+int				count_here_docs(t_cmd *cmds);
+
+
+// void parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc)
+// {
+// 	int number_of_pipes;
+// 	int **pipe_array;
+// 	int	i;
+	
+// 	i = 0;
+// 	number_of_pipes = count_here_docs(cmds);
+// 	if (number_of_pipes == 0)
+// 		return ;
+// 	pipe_array = malloc_trash(sizeof(int *) * (number_of_pipes + 1), gc);
+// 	pipe_array[number_of_pipes] = NULL;
+// 	while (cmds)
+// 	{
+// 		if (cmds->type == D_LESS)
+// 		{
+// 			pipe_array[i] = malloc_trash(sizeof(int) * 2, gc);
+// 			pipe(pipe_array[i]);
+// 			here_doc(cmds->next->str, gc, pipe_array[i][1]);
+// 			cmds->here_doc_pipe = pipe_array[i][0];
+// 			close(pipe_array[i][1]);
+// 			printf("In parse all here doc\n");
+// 			printf("the value of token heredoc pipe is %i\n", cmds->here_doc_pipe);
+// 			check_fd(cmds->here_doc_pipe);
+// 			i++;
+// 		}
+// 		cmds = cmds->next;
+// 	}
+// 	return ;
+// }
+
+// int	count_here_docs(t_cmd *cmds)
+// {
+
+// 	int i;
+
+// 	i = 0;
+// 	while (cmds)
+// 	{
+// 		if (cmds->type == D_LESS)
+// 			i++;
+// 		cmds = cmds->next;
+// 	}
+// 	return (i);
+	
+// }
 
 int	here_doc(char *delimiter, t_garbage_collect **gc, int fd)
 {
@@ -72,7 +122,7 @@ static void	here_doc_process(char *delimiter, t_garbage_collect **gc, int fd)
 		input = readline_n_add_n(readline("heredoc> "), gc);
 		if (input == NULL)
 			if (ft_printf_err("bash: warning: here-document delimited by end-of-file (wanted `%s')\n", delimiter) == -1)
-				exit(EXIT_SUCCESS);//return (0); //CTRL D doesnt exit shell just the current heredoc; (if its the last here_doc it exits the shell tho);
+				exit(EXIT_SUCCESS);//return (0);//TODO MAKE UP MY MIND //CTRL D doesnt exit shell just the current heredoc; (if its the last here_doc it exits the shell tho);
         if (ft_strncmp_n(input, delimiter, ft_strlen(input)) == 0)
 		{	
 			// printf("I am breaking out of heredoc loop'n");

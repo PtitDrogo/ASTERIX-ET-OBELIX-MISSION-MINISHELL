@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 16:29:30 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/23 14:17:08 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/21 17:18:56 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 void	new_prompt(int none)
 {
 	(void)none;
-	ft_printf("\n");
+	ft_printf("Chien \n");
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();

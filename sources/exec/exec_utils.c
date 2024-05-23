@@ -3,78 +3,47 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 18:08:45 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/23 19:28:13 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-// #include "pipex_bonus.h"
 
-//tmp struct for me to play with while not breaking your stuff
-
-//WE populate the redirection before exec;
-
-/*
-typedef struct s_token
-{
-	char			*str;
-	t_tok_val		type;
-	struct s_token	*next;
-}	t_token;
-*/
-// typedef struct s_cmd_theo
-// {
-// 	char						**str; //la commande et ses flags/argument
-//     t_token					    *redirection_in;
-// 	t_token					    *redirection_out;
-// 	struct s_cmd_theo			*next;
-// 	int							cmd_id; //l'int qui va stock la valeur de retour de la cmd
-// }	t_cmd;
-// int		tmp_fd;
-
-// void check_fd(int fd) {
-//     if (fcntl(fd, F_GETFD) == -1) {
-//         perror("fcntl - GETFD");
-//         printf("Error checking FD %d: %s\n", fd, strerror(errno));
-//     } else {
-//         printf("FD %d is open\n", fd);
-//         int flags = fcntl(fd, F_GETFL);
-//         if (flags == -1) {
-//             perror("fcntl - GETFL");
-//         } else {
-//             printf("FD %d access mode: %s\n", fd, (flags & O_ACCMODE) == O_RDONLY ? "read-only" :
-//                                               (flags & O_ACCMODE) == O_WRONLY ? "write-only" :
-//                                               (flags & O_ACCMODE) == O_RDWR   ? "read/write" : "unknown");
-//         }
-//         int cloexec = fcntl(fd, F_GETFD);
-//         if (cloexec == -1) {
-//             perror("fcntl - GETFD");
-//         } else {
-//             printf("FD %d close-on-exec flag is %s\n", fd, (cloexec & FD_CLOEXEC) ? "set" : "not set");
-//         }
-//     }
-// }
+void check_fd(int fd) {
+    if (fcntl(fd, F_GETFD) == -1) {
+        perror("fcntl - GETFD");
+        printf("Error checking FD %d: %s\n", fd, strerror(errno));
+    } else {
+        printf("FD %d is open\n", fd);
+        int flags = fcntl(fd, F_GETFL);
+        if (flags == -1) {
+            perror("fcntl - GETFL");
+        } else {
+            printf("FD %d access mode: %s\n", fd, (flags & O_ACCMODE) == O_RDONLY ? "read-only" :
+                                              (flags & O_ACCMODE) == O_WRONLY ? "write-only" :
+                                              (flags & O_ACCMODE) == O_RDWR   ? "read/write" : "unknown");
+        }
+        int cloexec = fcntl(fd, F_GETFD);
+        if (cloexec == -1) {
+            perror("fcntl - GETFD");
+        } else {
+            printf("FD %d close-on-exec flag is %s\n", fd, (cloexec & FD_CLOEXEC) ? "set" : "not set");
+        }
+    }
+}
 
 // int		tmp_fd;
-
-
-
-
-
-
-
-
 
 int			count_valid_nodes(t_env_node *root);
 void		close_all_pipes(int **pipes_fds, t_garbage_collect *gc, int number_of_pipes);
 char		*find_env_variable(char **envp, char *env_to_find);
-static char	*ft_strjoin_and_add(char const *s1, char const *s2, char c);
+
 void		secure_dup2(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int number_of_pipes);
 void		print_open_err_msg_exit(int errnumber, char *file, t_garbage_collect *gc);
-char		**rebuild_env(t_env_node *root, t_garbage_collect **gc);
+
 void		process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes);
 char		*find_valid_path(t_cmd *cmds, char **envp, t_garbage_collect **gc);
 void		child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes);
@@ -151,11 +120,11 @@ void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect 
 		}
 		else if (cmds && cmds->str)
 		{
-			printf("hi, cmd is %s\n", cmds->str[0]);
+			// printf("hi, cmd is %s\n", cmds->str[0]);
 			if (is_builtin(cmds->str))
 			{	
-				printf("hi, cmd is %s\n", cmds->str[0]);
-				theo_basic_parsing(&env, gc, cmds->str);
+				// printf("hi, cmd is %s\n", cmds->str[0]);
+				theo_basic_parsing(&env, gc, cmds->str, NULL);
 				empty_trash_exit(*gc, 0);  //Exit with success;
 			}
 			execve(valid_path, cmds->str, envp);
@@ -178,6 +147,7 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 	in = cmds->redirection_in;
 	out = cmds->redirection_out;
 	status = 0;
+
 	while (in)
 	{	
 		if (in->type == LESS)
@@ -188,19 +158,32 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 		}
 		if (in->type == D_LESS)
 		{
-			tmp_fd = open(HEREDOC_FILE, O_CREAT | O_WRONLY | O_TRUNC, 0777);
-			if (tmp_fd == -1)
-				print_open_err_msg_exit(errno, in->next->str, *gc);
-			status = here_doc(in->next->str, gc, tmp_fd);
-			if (status == EXIT_SUCCESS)
-			{
-				ft_printf("Heredoc success\n");
-				signal(SIGINT, cancel_cmd);
-				close(tmp_fd);
-				tmp_fd = open(HEREDOC_FILE, O_RDONLY);
-				if (tmp_fd == -1)
-					print_open_err_msg_exit(errno, in->next->str, *gc);
-			}
+			//open(PIPE);
+			// tmp_fd = in->here_doc_pipe;
+			printf("L'here est HS repasser plus tard\n");
+			//DEBUG
+			// printf("checking in exec\n");
+			// printf("token is %s\n", in->str);
+			// check_fd(tmp_fd);
+			//thats the main idea, to make that happen;
+			
+			// tmp_fd = open(HEREDOC_FILE, O_CREAT | O_WRONLY | O_TRUNC, 0777);
+			// if (tmp_fd == -1)
+			// 	print_open_err_msg_exit(errno, in->next->str, *gc);
+			// status = here_doc(in->next->str, gc, tmp_fd);
+			// if (status == EXIT_SUCCESS)
+			// {
+			// 	ft_printf("Heredoc success\n");
+			// 	close(tmp_fd);
+			// 	tmp_fd = open(HEREDOC_FILE, O_RDONLY);
+			// }
+			// else
+			// {
+			// 	ft_printf("Errno to update somehow : %i\n", status);
+			// 	new_prompt(0);
+			// 	close(tmp_fd);
+			// 	return ;
+			// }q
 		}
 		if (in->type == PIPE)
 			tmp_fd = in->pipe_fd;
@@ -237,7 +220,7 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 	return ; // if theres no redirection we just go to exec as usual;
 }
 
-static char	*ft_strjoin_and_add(char const *s1, char const *s2, char c)
+char	*ft_strjoin_and_add(char const *s1, char const *s2, char c)
 {
 	char	*joined;
 	size_t	i;
@@ -313,6 +296,9 @@ void	close_all_pipes(int **pipes_fds, t_garbage_collect *gc, int number_of_pipes
 	int	i;
 
 	i = 0;
+	if (pipes_fds == NULL)
+		return ;
+	
 	while (i < number_of_pipes)
 	{
 		if (close(pipes_fds[i][0]) == -1)
@@ -376,6 +362,7 @@ void	secure_dup2(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int
 	if (dup2(new_fd, old_fd) == -1)
 	{	
 		close_all_pipes(pipes, gc, number_of_pipes);
+		//ADD HEREDOC PIPES HERE;
 		perror_exit(gc, errno, "Error duplicating file descriptor");
 	}
 	return ;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 17:50:08 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/23 19:19:37 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,9 @@ typedef enum e_tok_val //
 typedef struct s_token
 {
 	char			*str;
+	//test
+	int				here_doc_pipe;
+	//est
 	int				pipe_fd; //maybe fuse this and str later idk;
 	t_tok_val		type;
 	struct s_token	*next;
@@ -99,15 +102,16 @@ void	**setter_double_p_gc(void **data_to_set, t_garbage_collect **gc);
 void    malloc_check(void *ptr, t_garbage_collect *gc);
 
 //Here_doc
-int		here_doc(char *delimiter, t_garbage_collect **gc, int fd);
+int					here_doc(char *delimiter, t_garbage_collect **gc, int fd);
 t_garbage_collect	**global_gc(t_garbage_collect **gc);
 int					global_fd(int fd);
+void	parse_all_here_docs(t_cmd *tokens, t_garbage_collect **gc);
 
 //BUILT INS
 int		unset(t_env_node *env_dup_root, char *env_to_find);
 int		export(t_env_node **root, void *variable, t_garbage_collect **gc);
 int 	env(t_env_node *env_dup_root, t_garbage_collect *gc);
-int 	ft_exit(char **args, t_garbage_collect *gc);
+int 	ft_exit(char **args, t_garbage_collect *gc, int backup_fds[2]);
 void	sorted_env_print(t_env_node *env_dup_root, t_garbage_collect *gc);
 int		pwd(t_garbage_collect **gc);
 int		echo(char **to_echo, t_garbage_collect **gc);
@@ -124,6 +128,8 @@ t_env_node *get_env_node(t_env_node *root, char *variable_name);
 bool		is_builtin(char **cmd);
 int			count_arrays_in_doubleptr(void **array);
 char		*get_env_variable(t_env_node *root, char *variable_name);
+char		**rebuild_env(t_env_node *root, t_garbage_collect **gc);
+char		*ft_strjoin_and_add(char const *s1, char const *s2, char c);
 
 
 //errors && exit
@@ -138,7 +144,7 @@ void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds, int status);
 int		**open_pipes(t_cmd *cmds, t_garbage_collect **gc, int number_of_pipes);
 int 	exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes);
 int		count_pipes(t_token *token_list);
-int		theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char **input);
+int		theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char **cmd, int backup_fds[2]);
 
 ///------------------------Parser/Lexer------------------------///
 int		parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cmd_chain);

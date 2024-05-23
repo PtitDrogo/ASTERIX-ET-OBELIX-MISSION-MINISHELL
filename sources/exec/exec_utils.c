@@ -6,34 +6,34 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 13:54:48 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/23 19:28:13 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// void check_fd(int fd) {
-//     if (fcntl(fd, F_GETFD) == -1) {
-//         perror("fcntl - GETFD");
-//         printf("Error checking FD %d: %s\n", fd, strerror(errno));
-//     } else {
-//         printf("FD %d is open\n", fd);
-//         int flags = fcntl(fd, F_GETFL);
-//         if (flags == -1) {
-//             perror("fcntl - GETFL");
-//         } else {
-//             printf("FD %d access mode: %s\n", fd, (flags & O_ACCMODE) == O_RDONLY ? "read-only" :
-//                                               (flags & O_ACCMODE) == O_WRONLY ? "write-only" :
-//                                               (flags & O_ACCMODE) == O_RDWR   ? "read/write" : "unknown");
-//         }
-//         int cloexec = fcntl(fd, F_GETFD);
-//         if (cloexec == -1) {
-//             perror("fcntl - GETFD");
-//         } else {
-//             printf("FD %d close-on-exec flag is %s\n", fd, (cloexec & FD_CLOEXEC) ? "set" : "not set");
-//         }
-//     }
-// }
+void check_fd(int fd) {
+    if (fcntl(fd, F_GETFD) == -1) {
+        perror("fcntl - GETFD");
+        printf("Error checking FD %d: %s\n", fd, strerror(errno));
+    } else {
+        printf("FD %d is open\n", fd);
+        int flags = fcntl(fd, F_GETFL);
+        if (flags == -1) {
+            perror("fcntl - GETFL");
+        } else {
+            printf("FD %d access mode: %s\n", fd, (flags & O_ACCMODE) == O_RDONLY ? "read-only" :
+                                              (flags & O_ACCMODE) == O_WRONLY ? "write-only" :
+                                              (flags & O_ACCMODE) == O_RDWR   ? "read/write" : "unknown");
+        }
+        int cloexec = fcntl(fd, F_GETFD);
+        if (cloexec == -1) {
+            perror("fcntl - GETFD");
+        } else {
+            printf("FD %d close-on-exec flag is %s\n", fd, (cloexec & FD_CLOEXEC) ? "set" : "not set");
+        }
+    }
+}
 
 // int		tmp_fd;
 
@@ -148,6 +148,7 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 	in = cmds->redirection_in;
 	out = cmds->redirection_out;
 	status = 0;
+
 	while (in)
 	{	
 		if (in->type == LESS)
@@ -158,23 +159,32 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 		}
 		if (in->type == D_LESS)
 		{
-			tmp_fd = open(HEREDOC_FILE, O_CREAT | O_WRONLY | O_TRUNC, 0777);
-			if (tmp_fd == -1)
-				print_open_err_msg_exit(errno, in->next->str, *gc);
-			status = here_doc(in->next->str, gc, tmp_fd);
-			if (status == EXIT_SUCCESS)
-			{
-				ft_printf("Heredoc success\n");
-				close(tmp_fd);
-				tmp_fd = open(HEREDOC_FILE, O_RDONLY);
-			}
-			else
-			{
-				ft_printf("Errno to update somehow : %i\n", status);
-				new_prompt(0);
-				close(tmp_fd);
-				return ;
-			}
+			//open(PIPE);
+			// tmp_fd = in->here_doc_pipe;
+			printf("L'here est HS repasser plus tard\n");
+			//DEBUG
+			// printf("checking in exec\n");
+			// printf("token is %s\n", in->str);
+			// check_fd(tmp_fd);
+			//thats the main idea, to make that happen;
+			
+			// tmp_fd = open(HEREDOC_FILE, O_CREAT | O_WRONLY | O_TRUNC, 0777);
+			// if (tmp_fd == -1)
+			// 	print_open_err_msg_exit(errno, in->next->str, *gc);
+			// status = here_doc(in->next->str, gc, tmp_fd);
+			// if (status == EXIT_SUCCESS)
+			// {
+			// 	ft_printf("Heredoc success\n");
+			// 	close(tmp_fd);
+			// 	tmp_fd = open(HEREDOC_FILE, O_RDONLY);
+			// }
+			// else
+			// {
+			// 	ft_printf("Errno to update somehow : %i\n", status);
+			// 	new_prompt(0);
+			// 	close(tmp_fd);
+			// 	return ;
+			// }q
 		}
 		if (in->type == PIPE)
 			tmp_fd = in->pipe_fd;
@@ -353,6 +363,7 @@ void	secure_dup2(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int
 	if (dup2(new_fd, old_fd) == -1)
 	{	
 		close_all_pipes(pipes, gc, number_of_pipes);
+		//ADD HEREDOC PIPES HERE;
 		perror_exit(gc, errno, "Error duplicating file descriptor");
 	}
 	return ;

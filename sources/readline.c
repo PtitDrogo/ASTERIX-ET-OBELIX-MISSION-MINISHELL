@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 13:50:29 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/23 19:26:43 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,16 +55,26 @@ int main(int argc, char const *argv[], char **envp)
 			break;
 		// Check for EOF (Ctrl+D)
 		//GROS caca pour tenter de faire passer le testeur, a ne pas keep;
-		if (strcmp(input, "echo $?") == 0)
-			printf("%i\n", status);
+		// if (strcmp(input, "echo $?") == 0)
+		// 	printf("%i\n", status);
 		//J'ai rajoute un verify input sinon cat /dev/urandom/ fait crash le programme
 		else if (verify_input(input) && basic_parsing(&gc, input, &token, &cmds) && token)
 		{
+			// parse_all_here_docs(token, &gc);
+
+			// //DEBUG//
+			// printf("midpoint check cmds pipe : %s\n", cmds->str[0]);
+			// // check_fd(cmds->redirection_in->here_doc_pipe);
+			// printf("midpoint check first token pipe : %s\n", token->str);
+			// // check_fd(token->here_doc_pipe);
+			// printf("token address is %p and cmd redir address is %p\n", &cmds->redirection_in->here_doc_pipe, &token->here_doc_pipe);
+			// //DEBUG
 			expander(env_dup_root, &gc, cmds, status); //WORK IN PROGRESS
 			int number_of_pipes = count_pipes(token);
 			pipes = open_pipes(cmds, &gc, number_of_pipes);
 			if (number_of_pipes == 0 && is_builtin(cmds->str))
 			{	
+
 				int backup_fds[2];
 				backup_fds[0] = dup(0);
 				backup_fds[1] = dup(1);

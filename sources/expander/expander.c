@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 14:17:00 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/23 16:15:35 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,8 @@ char **expand(t_env_node *env, t_garbage_collect **gc, char **arrays)
 	while (arrays[i])
 	{
 		int total_size = count_new_size_of_array(arrays[i], env, gc);
-		printf("size of %s is %i\n", arrays[i], total_size);
-		printf("after counting size, arrays[0] is %s and [1] is %s\n", arrays[i], arrays[i + 1]);
+		// printf("size of %s is %i\n", arrays[i], total_size);
+		// printf("after counting size, arrays[0] is %s and [1] is %s\n", arrays[i], arrays[i + 1]);
 		// write(1, "allo", 4);
 		
 		expanded_var = malloc_trash(total_size + 1, gc);
@@ -157,7 +157,7 @@ int	count_new_size_of_array(char *array, t_env_node *env, t_garbage_collect **gc
 			i++;
 		}
 	}
-	printf("in count size, for string %s size is %i\n", array, size);
+	// printf("in count size, for string %s size is %i\n", array, size);
 	return (size);
 	//STEP 1 = JE CREE UNE STRING AVEC LE $ ET les chars jusqu'a un espace ou fin
 	//STEP 1.5 = Je stock la taille de la str $TESTEST;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 20:24:22 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/24 01:06:38 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,18 +58,20 @@ int main(int argc, char const *argv[], char **envp)
 		// if (strcmp(input, "echo $?") == 0)
 		// 	printf("%i\n", status);
 		//J'ai rajoute un verify input sinon cat /dev/urandom/ fait crash le programme
-		else if (verify_input(input) && basic_parsing(&gc, input, &token, &cmds) && token)
+		if (verify_input(input) && basic_parsing(&gc, input, &token, &cmds) && token)
 		{
+			
 			parse_all_here_docs(cmds, &gc);
-			
-			
-			// //DEBUG//
 			// printf("midpoint check cmds pipe : %s\n", cmds->str[0]);
-			// // check_fd(cmds->redirection_in->here_doc_pipe);
+			// printf("cmd is %p\n", cmds);
+			// printf("cmd redir is %p and its type is %i\n", cmds->redirection_in, cmds->redirection_in->type);
+			// printf("POST FUNCTION cmd redir is %p\n", cmds->redirection_in);
+			//DEBUG//
+			// check_fd(cmds->redirection_in->here_doc_pipe);
 			// printf("midpoint check first token pipe : %s\n", token->str);
-			// // check_fd(token->here_doc_pipe);
+			// check_fd(token->here_doc_pipe);
 			// printf("token address is %p and cmd redir address is %p\n", &cmds->redirection_in->here_doc_pipe, &token->here_doc_pipe);
-			// //DEBUG
+			//DEBUG
 			expander(env_dup_root, &gc, cmds, status); //WORK IN PROGRESS
 			int number_of_pipes = count_pipes(token);
 			pipes = open_pipes(cmds, &gc, number_of_pipes);

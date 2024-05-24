@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:48:23 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/23 15:58:49 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/24 00:58:19 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,7 @@ static t_cmd	*create_command(t_token *tokenpile, t_garbage_collect **gc)
 	}
 	if (token && token->type == PIPE && cmd->redirection_out == NULL)	
 		add_token(&cmd->redirection_out, dup_token(token, gc));
+	// printf("after being created, first cmd is %p and its redir in is %i\n", cmd, cmd->redirection_in->type);
 	return (cmd);
 }
 //changed it so it fills pointers token and cmd given to it
@@ -104,7 +105,7 @@ int	parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cmd
 	{
 		if (start)
 		{
-			//printf("in parsetoken = %p\n", token);
+			printf("in parsetoken = %p\n", token);
 			cmd = create_command(token, gc);
 			add_command(cmd_chain, cmd);
 			start = 0;

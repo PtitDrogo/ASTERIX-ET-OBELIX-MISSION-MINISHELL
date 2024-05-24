@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   here_doc.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 20:27:46 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/24 01:22:12 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,31 +25,44 @@ void parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc)
 {
 	int number_of_pipes;
 	int **pipe_array;
+	t_token *current;
 	int	i;
 	
 	i = 0;
+	// printf("IN PARSE HEREDOC cmd->redir in is %p\n", cmds->redirection_in);
 	number_of_pipes = count_here_docs(cmds);
+	// printf("number of pipes is %i\n", number_of_pipes);
 	if (number_of_pipes == 0)
 		return ;
 	pipe_array = malloc_trash(sizeof(int *) * (number_of_pipes + 1), gc);
 	pipe_array[number_of_pipes] = NULL;
 	while (cmds)
 	{
-		while (cmds->redirection_in && cmds->redirection_in->type == D_LESS)
+		
+		// printf("curr cmd is %s\n", cmds->str[0]);
+		// if (cmds->redirection_in)
+		// 	printf("cmd->redir->type in is %i\n", cmds->redirection_in->type);
+		current = cmds->redirection_in;
+		// this is bad because it just exit if it sees another redir;
+		while (current)
 		{
-			pipe_array[i] = malloc_trash(sizeof(int) * 2, gc);
-			pipe(pipe_array[i]);
-			here_doc(cmds->redirection_in->next->str, gc, pipe_array[i][1]);//wallah
-			cmds->redirection_in->here_doc_pipe = pipe_array[i][0];
-			close(pipe_array[i][1]);
-			printf("In parse all here doc\n");
-			printf("the value of token heredoc pipe is %i\n", cmds->redirection_in->here_doc_pipe);
-			check_fd(cmds->redirection_in->here_doc_pipe);
-			cmds->redirection_in = cmds->redirection_in->next;
-			cmds->redirection_in = cmds->redirection_in->next;
-			i++;
+			if (current->type == D_LESS)
+			{
+				pipe_array[i] = malloc_trash(sizeof(int) * 2, gc);
+				pipe(pipe_array[i]);
+				here_doc(current->next->str, gc, pipe_array[i][1]);//wallah
+				current->here_doc_pipe = pipe_array[i][0];
+				close(pipe_array[i][1]);
+				// printf("In parse all here doc\n");
+				// printf("cmd is %p\n", cmds);
+				// printf("the value of token heredoc pipe is %i\n", current->here_doc_pipe);
+				check_fd(current->here_doc_pipe);
+				current = current->next;
+				i++;
+				// printf("yoyo\n");
+			}
+			current = current->next;
 		}
-		printf("yoyo\n");
 		cmds = cmds->next;
 	}
 	return ;
@@ -59,18 +72,23 @@ int	count_here_docs(t_cmd *cmds)
 {
 
 	int i;
-
+	t_token *current;
+	
 	i = 0;
 	while (cmds)
 	{
-		while (cmds->redirection_in && cmds->redirection_in->type == D_LESS)
-		{	
-			i++;
-			cmds->redirection_in = cmds->redirection_in->next;
-			cmds->redirection_in = cmds->redirection_in->next;
-			printf("bonjour\n");
-			//INCHALLAH CA DOIT PASSER NORMALEMENT;
-			//Vu que j'ai syntax error un D_LESS doit tj avoir son delim just apres;
+		current = cmds->redirection_in;
+		while (current)
+		{
+			if (current->type == D_LESS)
+			{	
+				i++;
+				current = current->next;
+				// printf("bonjour\n");
+				//INCHALLAH CA DOIT PASSER NORMALEMENT;
+				//Vu que j'ai syntax error un D_LESS doit tj avoir son delim just apres;
+			}
+			current = current->next;
 		}
 		cmds = cmds->next;
 	}
@@ -143,7 +161,7 @@ static void	here_doc_process(char *delimiter, t_garbage_collect **gc, int fd)
             perror_exit(*gc, errno, WRITE_ERR_MSG);
 	}
 	printf("Returning 1 in heredoc\n");
-	exit(EXIT_SUCCESS);
+	// exit(EXIT_SUCCESS);
 }
 
 char	*readline_n_add_n(char *readline, t_garbage_collect **gc)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 20:27:10 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/24 01:28:08 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,15 +158,17 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 			if (tmp_fd == -1)
 				print_open_err_msg_exit(errno, in->next->str, *gc);
 		}
+		//TODO, Close the pipes of the HEREDOC somehow
+		//EITHER close all of them now or somehow close them before idk;
 		if (in->type == D_LESS)
 		{
 			//open(PIPE);
 			tmp_fd = in->here_doc_pipe;
 			// printf("L'here est HS repasser plus tard\n");
 			//DEBUG
-			printf("checking in exec\n");
-			printf("token is %s\n", in->str);
-			check_fd(tmp_fd);
+			// printf("checking in exec\n");
+			// printf("token is %s\n", in->str);
+			// check_fd(tmp_fd);
 			//thats the main idea, to make that happen;
 			
 			// tmp_fd = open(HEREDOC_FILE, O_CREAT | O_WRONLY | O_TRUNC, 0777);

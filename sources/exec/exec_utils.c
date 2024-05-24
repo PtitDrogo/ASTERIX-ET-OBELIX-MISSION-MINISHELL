@@ -6,7 +6,7 @@
 /*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/24 14:35:12 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/24 18:31:17 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,8 @@ void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect 
 	if (cmds->cmd_id == 0)
 	{
 		
-		process_behavior(cmds, gc, pipes, number_of_pipes);	
+		process_behavior(cmds, gc, pipes, number_of_pipes);
+		//in close all pipes add function to close all Heredoc pipes (need to give the root of cmd to see function);
 		close_all_pipes(pipes, *gc, number_of_pipes);
 		valid_path = find_valid_path(cmds, envp, gc);
 		if (valid_path == NULL && cmds && cmds->str && is_builtin(cmds->str) == false) //last condition is important !

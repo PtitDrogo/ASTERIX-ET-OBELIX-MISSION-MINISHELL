@@ -6,7 +6,7 @@
 /*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:48:23 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/24 00:58:19 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/24 14:36:20 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,6 @@ int	parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cmd
 	{
 		if (start)
 		{
-			printf("in parsetoken = %p\n", token);
 			cmd = create_command(token, gc);
 			add_command(cmd_chain, cmd);
 			start = 0;

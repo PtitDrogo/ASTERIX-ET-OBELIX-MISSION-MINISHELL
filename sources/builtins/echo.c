@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:40:04 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/21 13:40:27 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/24 14:14:58 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 static	char    *n_flag_logic(char *str, bool *n_flag);
 static	char	*join_echo(char **to_echo, t_garbage_collect **gc);
+static char *remove_white_spaces(char *str);
 //I want a function i can just dump all the word content to the
 //right of echo and be happy with my life
 
@@ -38,7 +39,7 @@ int echo(char **to_echo, t_garbage_collect **gc)
 	// printf("toecho [1] == %s, to echo 2 = %s\n\n\n", to_echo[1],to_echo[2]);
 	joined_string = join_echo(&to_echo[1], gc);
 	joined_string = n_flag_logic(joined_string, &n_flag);
-	
+	joined_string = remove_white_spaces(joined_string);
 	if (printf("%s", joined_string) == -1)
 		perror_exit(*gc, errno, WRITE_ERR_MSG);
 	if (n_flag == false)    
@@ -107,5 +108,15 @@ static	char    *n_flag_logic(char *str, bool *n_flag)
 	}
 	*n_flag = true;
 	return (&str[++i]);
+}
+
+static char *remove_white_spaces(char *str)
+{
+	int i;
+
+	i = 0;
+	while (str[i] >= 9 && str[i] <= 13 || str[i] == ' ')
+		i++;
+	return (&str[i]);
 }
 

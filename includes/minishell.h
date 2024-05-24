@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 20:13:43 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/24 13:50:21 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,9 +56,7 @@ typedef enum e_tok_val //
 typedef struct s_token
 {
 	char			*str;
-	//test
 	int				here_doc_pipe;
-	//est
 	int				pipe_fd; //maybe fuse this and str later idk;
 	t_tok_val		type;
 	struct s_token	*next;
@@ -72,8 +70,6 @@ typedef struct s_cmd
 	t_token					*redirection_out;
 	struct s_cmd			*next;
 	int						cmd_id;
-	//int						(*builtin)(t_tools *, struct s_simple_cmds *);
-	// int		input;
 }	t_cmd;
 
 ///------------------------Defines------------------------///

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 16:11:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/09 19:40:19 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/26 16:23:12 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ t_env_node *check_if_variable_exist(t_env_node *root, void *variable);
 char		*get_env_name(const char *src, t_garbage_collect **gc);
 char		*get_env_var(const char *src, t_garbage_collect **gc);
 int			is_valid_env_name(char *name, t_garbage_collect *gc);
-
+static char *remove_white_spaces(char *str);
 
 //TODO make this universal later
 int	pop(t_env_node *env_dup_root, t_env_node *node_to_pop)
@@ -149,6 +149,8 @@ char	*get_env_var(const char *src, t_garbage_collect **gc)
 	if (src[i] == '\0')
 		return (NULL);//Could be return empty malloc(but risk of false positive), would also make it different than failed malloc
 	i++; // to go past the '='
+	while (src[i] && ((src[i] >= 9 && src[i] <= 13) || src[i] == ' '))
+		i++; // get rid of spaces at the beginning;
 	to_return = setter_gc(ft_strdup(&src[i]), gc);
 	malloc_check(to_return, *gc);
 	return (to_return);

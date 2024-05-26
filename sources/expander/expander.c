@@ -6,7 +6,7 @@
 /*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/26 11:20:38 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/26 16:05:37 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,16 @@ int		update_current_quote(char c, char *current_quotes);
 
 void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds, char *error_value)
 {
+	setter_gc(error_value, gc);
+	malloc_check(error_value, *gc);
+	// printf("at the very start error value is %s\n", error_value);
 	while (cmds)
 	{
 		cmds->str = expand(env, gc, cmds->str, error_value);
-		// remove_quotes();
+		// for (int i = 0; cmds->str[i]; i++)
+		// {
+		// 	printf("after expanding : %s\n", cmds->str[i]);
+		// }
 		cmds = cmds->next;
 	}
 	return ;

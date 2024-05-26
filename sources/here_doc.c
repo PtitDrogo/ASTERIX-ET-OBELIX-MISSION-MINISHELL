@@ -6,7 +6,7 @@
 /*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/24 13:46:45 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/26 15:57:05 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,7 @@ static void	here_doc_process(char *delimiter, t_garbage_collect **gc, int fd)
 		}
 		if (ft_strncmp_n(input, delimiter, ft_strlen(input)) == 0)
 			break ;
+		//if we want to expand before writing in here doc it would be here;
 		if (write(fd, input, ft_strlen(input)) == -1)
             perror_exit(*gc, errno, WRITE_ERR_MSG);
 	}

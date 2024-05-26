@@ -6,7 +6,7 @@
 /*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/26 11:27:21 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/26 16:29:56 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ int main(int argc, char const *argv[], char **envp)
 			// check_fd(token->here_doc_pipe);
 			// printf("token address is %p and cmd redir address is %p\n", &cmds->redirection_in->here_doc_pipe, &token->here_doc_pipe);
 			//DEBUG
-			printf("before expanding status has value %i\n", status);
+			// printf("before expanding status has value %i\n", status);
 			expander(env_dup_root, &gc, cmds, ft_itoa(status)); //WORK IN PROGRESS
 			int number_of_pipes = count_pipes(token);
 			pipes = open_pipes(cmds, &gc, number_of_pipes);
@@ -101,7 +101,7 @@ int main(int argc, char const *argv[], char **envp)
 		if (verify_input(input))
 			add_history(input);
 		recycle_trash(&gc, &env_dup_root);
-		ft_printf("- Errno : %i -", exit_status(-1));
+		// ft_printf("- Errno : %i -", exit_status(-1));
 	}
 	// printf("Exit.\n");
 	rl_clear_history();
@@ -162,6 +162,8 @@ int		verify_input(char *input)
 	int i;
 	
 	i = 0;
+	if (input[0] == '\n')
+		return (0);
 	while (input[i])
 	{
 		if (is_ascii((unsigned char)input[i]) == false)

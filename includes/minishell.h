@@ -6,7 +6,7 @@
 /*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/26 11:11:07 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/26 15:56:33 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,7 @@ int					here_doc(char *delimiter, t_garbage_collect **gc, int fd);
 t_garbage_collect	**global_gc(t_garbage_collect **gc);
 int					global_fd(int fd);
 void	parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc);
+char 	**expand(t_env_node *env, t_garbage_collect **gc, char **arrays, char *error_value);
 
 //BUILT INS
 int		unset(t_env_node *env_dup_root, char *env_to_find);

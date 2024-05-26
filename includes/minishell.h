@@ -6,7 +6,7 @@
 /*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/24 13:50:21 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/26 11:11:07 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,7 @@ int		exit_status(int status);
 
 
 ///------------------------Execution------------------------///
-void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds, int status);
+void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds, char *error_value);
 int		**open_pipes(t_cmd *cmds, t_garbage_collect **gc, int number_of_pipes);
 int 	exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes);
 int		count_pipes(t_token *token_list);

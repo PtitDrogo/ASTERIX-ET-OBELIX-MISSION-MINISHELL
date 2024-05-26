@@ -6,7 +6,7 @@
 /*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/24 01:06:38 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/26 11:27:21 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,10 @@ int main(int argc, char const *argv[], char **envp)
 	if (envp == NULL)
 		return (1);
 	generate_env_llist(&env_dup_root, &gc, envp);
+	status = exit_status(0); // Initializing it, not sure if needed
 	while (1) 
 	{
+		status = exit_status(-1);
 		signal(SIGINT, new_prompt);
 		signal(SIGQUIT, SIG_IGN);
 		input = readline("myshell> ");
@@ -72,7 +74,8 @@ int main(int argc, char const *argv[], char **envp)
 			// check_fd(token->here_doc_pipe);
 			// printf("token address is %p and cmd redir address is %p\n", &cmds->redirection_in->here_doc_pipe, &token->here_doc_pipe);
 			//DEBUG
-			expander(env_dup_root, &gc, cmds, status); //WORK IN PROGRESS
+			printf("before expanding status has value %i\n", status);
+			expander(env_dup_root, &gc, cmds, ft_itoa(status)); //WORK IN PROGRESS
 			int number_of_pipes = count_pipes(token);
 			pipes = open_pipes(cmds, &gc, number_of_pipes);
 			if (number_of_pipes == 0 && is_builtin(cmds->str))
@@ -99,7 +102,6 @@ int main(int argc, char const *argv[], char **envp)
 			add_history(input);
 		recycle_trash(&gc, &env_dup_root);
 		ft_printf("- Errno : %i -", exit_status(-1));
-
 	}
 	// printf("Exit.\n");
 	rl_clear_history();

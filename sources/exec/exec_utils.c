@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 20:27:10 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/24 18:31:17 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,6 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 	signal(SIGINT, cancel_cmd);
 	while (current)
 	{
-		
 		child_process(root_env, envp, current, gc, pipes_fds, number_of_pipes); //giving current command !!
 		current = current->next;
 	}
@@ -99,9 +98,7 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 	//status = get_status_code(gc, status);
 	return (status); //replace by exit status;
 }
-//plusieurs moyen de compter le nombre de commande, je peux le faire avec le nombre
-// de Pipe token, ou a priori je peux le faire juste en comptant le nombre de nodes commandes
-//a voir lequel est le plus pertinent
+
 void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes)
 {
 	char	*valid_path;
@@ -112,7 +109,8 @@ void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect 
 	if (cmds->cmd_id == 0)
 	{
 		
-		process_behavior(cmds, gc, pipes, number_of_pipes);	
+		process_behavior(cmds, gc, pipes, number_of_pipes);
+		//in close all pipes add function to close all Heredoc pipes (need to give the root of cmd to see function);
 		close_all_pipes(pipes, *gc, number_of_pipes);
 		valid_path = find_valid_path(cmds, envp, gc);
 		if (valid_path == NULL && cmds && cmds->str && is_builtin(cmds->str) == false) //last condition is important !
@@ -149,7 +147,6 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 	in = cmds->redirection_in;
 	out = cmds->redirection_out;
 	status = 0;
-	printf("Alloaa ?\n");
 	while (in)
 	{	
 		if (in->type == LESS)
@@ -158,35 +155,10 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 			if (tmp_fd == -1)
 				print_open_err_msg_exit(errno, in->next->str, *gc);
 		}
+		//TODO, Close the pipes of the HEREDOC somehow
+		//EITHER close all of them now or somehow close them before idk;
 		if (in->type == D_LESS)
-		{
-			//open(PIPE);
 			tmp_fd = in->here_doc_pipe;
-			// printf("L'here est HS repasser plus tard\n");
-			//DEBUG
-			printf("checking in exec\n");
-			printf("token is %s\n", in->str);
-			check_fd(tmp_fd);
-			//thats the main idea, to make that happen;
-			
-			// tmp_fd = open(HEREDOC_FILE, O_CREAT | O_WRONLY | O_TRUNC, 0777);
-			// if (tmp_fd == -1)
-			// 	print_open_err_msg_exit(errno, in->next->str, *gc);
-			// status = here_doc(in->next->str, gc, tmp_fd);
-			// if (status == EXIT_SUCCESS)
-			// {
-			// 	ft_printf("Heredoc success\n");
-			// 	close(tmp_fd);
-			// 	tmp_fd = open(HEREDOC_FILE, O_RDONLY);
-			// }
-			// else
-			// {
-			// 	ft_printf("Errno to update somehow : %i\n", status);
-			// 	new_prompt(0);
-			// 	close(tmp_fd);
-			// 	return ;
-			// }q
-		}
 		if (in->type == PIPE)
 			tmp_fd = in->pipe_fd;
 		if (in->next && in->next->next == NULL || in->type == PIPE)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   here_doc.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 20:27:46 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/26 15:57:05 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,65 +17,37 @@ static char		*readline_n_add_n(char *readline, t_garbage_collect **gc);
 static int		ft_strncmp_n(char *input, char *delimiter, size_t n);
 static void		child_here_doc(char *delimiter, t_garbage_collect **gc, int fd);
 // int				new_here_doc_check(t_token *here_doc_token, int **pipe, t_garbage_collect **gc);
-int				count_here_docs(t_cmd *cmds);
 static void	here_doc_process(char *delimiter, t_garbage_collect **gc, int fd);
 
-
+//I want this function to exit with only one open pipe end per USED heredoc;
 void parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc)
 {
-	int number_of_pipes;
-	int **pipe_array;
-	int	i;
+	t_token *current;
+	// int	last_here_doc;
 	
-	i = 0;
-	number_of_pipes = count_here_docs(cmds);
-	if (number_of_pipes == 0)
-		return ;
-	pipe_array = malloc_trash(sizeof(int *) * (number_of_pipes + 1), gc);
-	pipe_array[number_of_pipes] = NULL;
 	while (cmds)
 	{
-		while (cmds->redirection_in && cmds->redirection_in->type == D_LESS)
+		// last_here_doc = -1;
+		current = cmds->redirection_in;
+		while (current)
 		{
-			pipe_array[i] = malloc_trash(sizeof(int) * 2, gc);
-			pipe(pipe_array[i]);
-			here_doc(cmds->redirection_in->next->str, gc, pipe_array[i][1]);//wallah
-			cmds->redirection_in->here_doc_pipe = pipe_array[i][0];
-			close(pipe_array[i][1]);
-			printf("In parse all here doc\n");
-			printf("the value of token heredoc pipe is %i\n", cmds->redirection_in->here_doc_pipe);
-			check_fd(cmds->redirection_in->here_doc_pipe);
-			cmds->redirection_in = cmds->redirection_in->next;
-			cmds->redirection_in = cmds->redirection_in->next;
-			i++;
-		}
-		printf("yoyo\n");
-		cmds = cmds->next;
-	}
-	return ;
-}
-
-int	count_here_docs(t_cmd *cmds)
-{
-
-	int i;
-
-	i = 0;
-	while (cmds)
-	{
-		while (cmds->redirection_in && cmds->redirection_in->type == D_LESS)
-		{	
-			i++;
-			cmds->redirection_in = cmds->redirection_in->next;
-			cmds->redirection_in = cmds->redirection_in->next;
-			printf("bonjour\n");
-			//INCHALLAH CA DOIT PASSER NORMALEMENT;
-			//Vu que j'ai syntax error un D_LESS doit tj avoir son delim just apres;
+			if (current->type == D_LESS)
+			{
+				int pipe_heredoc[2];
+				// if (last_here_doc != -1)
+				// 	close(last_here_doc);
+				pipe(pipe_heredoc);
+				here_doc(current->next->str, gc, pipe_heredoc[1]);//wallah
+				current->here_doc_pipe = pipe_heredoc[0];
+				close(pipe_heredoc[1]);
+				check_fd(current->here_doc_pipe);
+				// last_here_doc = pipe_heredoc[0];
+				current = current->next;
+			}
+			current = current->next;
 		}
 		cmds = cmds->next;
 	}
-	return (i);
-	
 }
 
 int	here_doc(char *delimiter, t_garbage_collect **gc, int fd)
@@ -87,21 +59,6 @@ int	here_doc(char *delimiter, t_garbage_collect **gc, int fd)
 	global_fd(fd);
 	signal(SIGINT, cancel_heredoc);
 	here_doc_process(delimiter, gc, fd);
-	/*fork_id = fork();
-	if (fork_id == -1)
-		empty_trash_exit(*gc, 0);
-	if (fork_id == 0)
-		child_here_doc(delimiter, gc, fd);
-	else
-	{
-		waitpid(fork_id, &status, 0);
-		if (WIFEXITED(status))
-			status = WEXITSTATUS(status);
-		else
-			status = 0;
-	}
-	ft_printf("status returned : %i ", status);
-	return (status);*/
 	return (0);
 }
 
@@ -132,18 +89,19 @@ static void	here_doc_process(char *delimiter, t_garbage_collect **gc, int fd)
 	{
 		input = readline_n_add_n(readline("heredoc> "), gc);
 		if (input == NULL)
-			if (ft_printf_err("bash: warning: here-document delimited by end-of-file (wanted `%s')\n", delimiter) == -1)
-				exit(EXIT_SUCCESS);//return (0);//TODO MAKE UP MY MIND //CTRL D doesnt exit shell just the current heredoc; (if its the last here_doc it exits the shell tho);
-        if (ft_strncmp_n(input, delimiter, ft_strlen(input)) == 0)
 		{	
-			// printf("I am breaking out of heredoc loop'n");
-			break ;
+			if (ft_printf_err("bash: warning: here-document delimited by end-of-file (wanted `%s')\n", delimiter) == -1)
+				perror_exit(*gc, errno, WRITE_ERR_MSG);
+			return ;
 		}
+		if (ft_strncmp_n(input, delimiter, ft_strlen(input)) == 0)
+			break ;
+		//if we want to expand before writing in here doc it would be here;
 		if (write(fd, input, ft_strlen(input)) == -1)
             perror_exit(*gc, errno, WRITE_ERR_MSG);
 	}
 	printf("Returning 1 in heredoc\n");
-	exit(EXIT_SUCCESS);
+	// exit(EXIT_SUCCESS);
 }
 
 char	*readline_n_add_n(char *readline, t_garbage_collect **gc)

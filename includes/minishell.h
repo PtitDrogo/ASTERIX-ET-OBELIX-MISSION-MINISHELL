@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 19:19:37 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/26 15:56:33 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,9 +56,7 @@ typedef enum e_tok_val //
 typedef struct s_token
 {
 	char			*str;
-	//test
 	int				here_doc_pipe;
-	//est
 	int				pipe_fd; //maybe fuse this and str later idk;
 	t_tok_val		type;
 	struct s_token	*next;
@@ -72,8 +70,6 @@ typedef struct s_cmd
 	t_token					*redirection_out;
 	struct s_cmd			*next;
 	int						cmd_id;
-	//int						(*builtin)(t_tools *, struct s_simple_cmds *);
-	// int		input;
 }	t_cmd;
 
 ///------------------------Defines------------------------///
@@ -105,7 +101,8 @@ void    malloc_check(void *ptr, t_garbage_collect *gc);
 int					here_doc(char *delimiter, t_garbage_collect **gc, int fd);
 t_garbage_collect	**global_gc(t_garbage_collect **gc);
 int					global_fd(int fd);
-void	parse_all_here_docs(t_cmd *tokens, t_garbage_collect **gc);
+void	parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc);
+char 	**expand(t_env_node *env, t_garbage_collect **gc, char **arrays, char *error_value);
 
 //BUILT INS
 int		unset(t_env_node *env_dup_root, char *env_to_find);
@@ -140,7 +137,7 @@ int		exit_status(int status);
 
 
 ///------------------------Execution------------------------///
-void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds, int status);
+void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds, char *error_value);
 int		**open_pipes(t_cmd *cmds, t_garbage_collect **gc, int number_of_pipes);
 int 	exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes);
 int		count_pipes(t_token *token_list);

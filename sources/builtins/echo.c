@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:40:04 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/21 13:40:27 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/26 16:18:57 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 static	char    *n_flag_logic(char *str, bool *n_flag);
 static	char	*join_echo(char **to_echo, t_garbage_collect **gc);
+static char *remove_white_spaces(char *str);
 //I want a function i can just dump all the word content to the
 //right of echo and be happy with my life
 
@@ -26,7 +27,16 @@ int echo(char **to_echo, t_garbage_collect **gc)
 {
 	bool    n_flag;
 	char	*joined_string;
+
+
+	int i = 0;
 	
+	// while (to_echo[i])
+	// {
+	// 	printf("fed into echo : %s\n", to_echo[i]);
+	// 	i++;
+	// }
+	// printf("after print : %s\n", to_echo[i]);
 	if (to_echo == NULL)
 		return (1);
 	if (to_echo[1] == NULL)
@@ -38,7 +48,8 @@ int echo(char **to_echo, t_garbage_collect **gc)
 	// printf("toecho [1] == %s, to echo 2 = %s\n\n\n", to_echo[1],to_echo[2]);
 	joined_string = join_echo(&to_echo[1], gc);
 	joined_string = n_flag_logic(joined_string, &n_flag);
-	
+	// I actually only want to remove white_space when echoing ENV variable, maybe add something in the env or in the expand about it ? idk
+	// joined_string = remove_white_spaces(joined_string);
 	if (printf("%s", joined_string) == -1)
 		perror_exit(*gc, errno, WRITE_ERR_MSG);
 	if (n_flag == false)    
@@ -59,9 +70,17 @@ static	char	*join_echo(char **to_echo, t_garbage_collect **gc)
 		return (NULL);
 	i = 0;
 	letters = 0;
-	while (to_echo[i])
+	while (to_echo[i])	
+	{	
+		// printf("i = %i\n", i);
+		// printf("the word we are trying to get len is : %s\n", to_echo[i]);
+		// for (j = 0; to_echo[i][j]; j++)
+		// {
+		// 	printf("char is : %c\n", to_echo[i][j]);
+		// }
 		letters += ft_strlen(to_echo[i++]);
-	letters += count_arrays_in_doubleptr((void **)to_echo) - 1;
+	}
+	letters += count_arrays_in_doubleptr((void **)to_echo) - 1; // this is for the space between words
 	str_to_return = malloc_trash(letters + 1, gc);
 	str_to_return[letters] = '\0';
 	i = 0;
@@ -81,11 +100,13 @@ static	char	*join_echo(char **to_echo, t_garbage_collect **gc)
 
 //this function will update the bool pointer depending if its a valid flag
 //it will return the pointer where we should start printing (as in, we dont print the flag !)
+
+//TODO, rewrite this so it works with -n -n -n -n -n and try not to break it with other use case this is brittle;
 static	char    *n_flag_logic(char *str, bool *n_flag)
 {
 	int i;
 	
-	if (ft_strlen(str) <= 2)
+	if (ft_strlen(str) < 2)
 	{	
 		*n_flag = false;
 		return (str);
@@ -106,6 +127,8 @@ static	char    *n_flag_logic(char *str, bool *n_flag)
 		i++;
 	}
 	*n_flag = true;
-	return (&str[++i]);
+	if (str[i] == ' ')
+		i++;
+	return (&str[i]);
 }
 

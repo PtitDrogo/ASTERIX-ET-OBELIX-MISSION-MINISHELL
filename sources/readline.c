@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 19:20:55 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/28 14:11:47 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,10 @@ int main(int argc, char const *argv[], char **envp)
 	if (envp == NULL)
 		return (1);
 	generate_env_llist(&env_dup_root, &gc, envp);
+	status = exit_status(0); // Initializing it, not sure if needed
 	while (1) 
 	{
+		status = exit_status(-1);
 		signal(SIGINT, new_prompt);
 		signal(SIGQUIT, SIG_IGN);
 		input = readline("myshell> ");
@@ -55,26 +57,33 @@ int main(int argc, char const *argv[], char **envp)
 			break;
 		// Check for EOF (Ctrl+D)
 		//GROS caca pour tenter de faire passer le testeur, a ne pas keep;
-		// if (strcmp(input, "echo $?") == 0)
-		// 	printf("%i\n", status);
+		if (strcmp(input, "echo $?") == 0)
+		{	
+			printf("%i\n", status);
+			break ;
+		}
 		//J'ai rajoute un verify input sinon cat /dev/urandom/ fait crash le programme
-		else if (verify_input(input) && basic_parsing(&gc, input, &token, &cmds) && token)
+		if (verify_input(input) && basic_parsing(&gc, input, &token, &cmds) && token)
 		{
-			// parse_all_here_docs(token, &gc);
-
-			// //DEBUG//
+			
+			parse_all_here_docs(cmds, &gc);
 			// printf("midpoint check cmds pipe : %s\n", cmds->str[0]);
-			// // check_fd(cmds->redirection_in->here_doc_pipe);
+			// printf("cmd is %p\n", cmds);
+			// printf("cmd redir is %p and its type is %i\n", cmds->redirection_in, cmds->redirection_in->type);
+			// printf("POST FUNCTION cmd redir is %p\n", cmds->redirection_in);
+			//DEBUG//
+			// check_fd(cmds->redirection_in->here_doc_pipe);
 			// printf("midpoint check first token pipe : %s\n", token->str);
-			// // check_fd(token->here_doc_pipe);
+			// check_fd(token->here_doc_pipe);
 			// printf("token address is %p and cmd redir address is %p\n", &cmds->redirection_in->here_doc_pipe, &token->here_doc_pipe);
-			// //DEBUG
-			expander(env_dup_root, &gc, cmds, status); //WORK IN PROGRESS
+			//DEBUG
+			// printf("before expanding status has value %i\n", status);
+			expander(env_dup_root, &gc, cmds, ft_itoa(status)); //WORK IN PROGRESS
 			int number_of_pipes = count_pipes(token);
 			pipes = open_pipes(cmds, &gc, number_of_pipes);
 			if (number_of_pipes == 0 && is_builtin(cmds->str))
 			{	
-
+				
 				int backup_fds[2];
 				backup_fds[0] = dup(0);
 				backup_fds[1] = dup(1);
@@ -87,6 +96,7 @@ int main(int argc, char const *argv[], char **envp)
 			}
 			else
 			{	
+				
 				// printf("Am i here or no\n");
 				exit_status(exec(env_dup_root, cmds, &gc, pipes, number_of_pipes));
 			}
@@ -94,8 +104,7 @@ int main(int argc, char const *argv[], char **envp)
 		if (verify_input(input))
 			add_history(input);
 		recycle_trash(&gc, &env_dup_root);
-		ft_printf("- Errno : %i -", exit_status(-1));
-
+		// ft_printf("- Errno : %i -", exit_status(-1));
 	}
 	// printf("Exit.\n");
 	rl_clear_history();
@@ -156,6 +165,8 @@ int		verify_input(char *input)
 	int i;
 	
 	i = 0;
+	if (input[0] == '\n')
+		return (0);
 	while (input[i])
 	{
 		if (is_ascii((unsigned char)input[i]) == false)

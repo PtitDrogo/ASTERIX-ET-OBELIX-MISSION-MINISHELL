@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 14:57:56 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 13:48:43 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/28 14:12:39 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ static int		get_exit_return_value(char *arg)
 	}
 	else
 		result = result % 256;
-	ft_printf_err("exit with code %i\n", result);
+	// ft_printf_err("exit with code %i\n", result);
 	return (result);
 	
 }

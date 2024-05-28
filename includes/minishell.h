@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/28 20:12:05 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/28 22:42:29 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,7 @@ int		exit_status(int status);
 ///------------------------Execution------------------------///
 void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds, char *error_value);
 int		**open_pipes(t_cmd *cmds, t_garbage_collect **gc, int number_of_pipes);
-int 	exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes);
+int 	exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes, t_cmd *cmds_root);
 int		count_pipes(t_token *token_list);
 int		theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char **cmd, int backup_fds[2]);
 

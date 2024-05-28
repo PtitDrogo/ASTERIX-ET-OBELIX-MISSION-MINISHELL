@@ -6,11 +6,13 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/28 22:06:19 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/28 22:51:37 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	close_all_heredoc_pipes(t_cmd *cmds_root, t_garbage_collect *gc);
 
 void check_fd(int fd) {
     if (fcntl(fd, F_GETFD) == -1) {
@@ -46,7 +48,7 @@ void		print_open_err_msg_exit(int errnumber, char *file, t_garbage_collect *gc);
 
 void		process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes);
 char		*find_valid_path(t_cmd *cmds, char **envp, t_garbage_collect **gc);
-void		child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes);
+void		child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes, t_cmd *cmds_root);
 //ca fait beaucoup la non
 
 //execve a besoin de deux choses, le char ** de la commande, et envp avec un path valide;
@@ -65,7 +67,7 @@ int		get_status_code(t_garbage_collect **gc, int status)
 }
 
 
-int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes)
+int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes, t_cmd *cmds_root) //need root to clean pipes;
 {
 
 	//BUILTIN ARE MAIN PROCESS ALONE
@@ -78,10 +80,11 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 	signal(SIGINT, cancel_cmd);
 	while (current)
 	{
-		child_process(root_env, envp, current, gc, pipes_fds, number_of_pipes); //giving current command !!
+		child_process(root_env, envp, current, gc, pipes_fds, number_of_pipes, cmds_root); //giving current command !!
 		current = current->next;
 	}
 	close_all_pipes(pipes_fds, *gc, number_of_pipes);
+	close_all_heredoc_pipes(cmds_root, *gc);
     current = cmds;
 	while (current)
 	{
@@ -100,7 +103,25 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 	return (status); //replace by exit status;
 }
 
-void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes)
+void	close_all_heredoc_pipes(t_cmd *cmds_root, t_garbage_collect *gc)
+{
+	t_token *current;
+
+	while (cmds_root)
+	{
+		current = cmds_root->redirection_in;
+		while (current)
+		{
+			if (current->type == D_LESS)
+				close(current->here_doc_pipe); //should care about if this close can fail later;
+			current = current->next;
+		}
+		cmds_root = cmds_root->next;
+	}
+	return ;
+}
+
+void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes, t_cmd *cmds_root)
 {
 	char	*valid_path;
 	
@@ -113,6 +134,7 @@ void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect 
 		process_behavior(cmds, gc, pipes, number_of_pipes);
 		//in close all pipes add function to close all Heredoc pipes (need to give the root of cmd to see function);
 		close_all_pipes(pipes, *gc, number_of_pipes);
+		close_all_heredoc_pipes(cmds_root, *gc);
 		if (get_correct_cmd(cmds) == 0)
 			empty_trash_exit(*gc, 0); //Bash just exits with return 0 for $NOTEXIST;
 		valid_path = find_valid_path(cmds, envp, gc);
@@ -155,7 +177,7 @@ int	get_correct_cmd(t_cmd *cmds)
 	}
 	return (1);
 }
-//Replaced all errno by 1
+//Replaced errno by 1 in return value;
 void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes)
 {
 	//je veux just dup les redirections;

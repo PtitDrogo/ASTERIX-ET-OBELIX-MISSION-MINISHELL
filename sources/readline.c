@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/28 20:22:56 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/28 22:45:00 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ int main(int argc, char const *argv[], char **envp)
 			{	
 				
 				// printf("Am i here or no\n");
-				exit_status(exec(env_dup_root, cmds, &gc, pipes, number_of_pipes));
+				exit_status(exec(env_dup_root, cmds, &gc, pipes, number_of_pipes, cmds));
 			}
 		}
 		if (verify_input(input))

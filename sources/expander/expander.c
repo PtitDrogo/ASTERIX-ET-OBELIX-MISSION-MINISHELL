@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/28 17:21:28 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/28 18:32:55 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ char *expand_single_str(t_env_node *env, t_garbage_collect **gc, char *array, ch
 			{	
 				expanded_var[size++] = '$';
 				i++;
+				// i += 2;
 			}
 			else
 			{
@@ -227,7 +228,7 @@ int	count_new_size_of_array(char *array, t_env_node *env, t_garbage_collect **gc
 			else if (array[i + 1] == '?') //We know previous char is $ and we know '?' stops expanding
 			{
 				size += ft_strlen(error_value); //Might as well give the string of error value already ?
-				i++;
+				i += 2;
 			}
 			else
 			{

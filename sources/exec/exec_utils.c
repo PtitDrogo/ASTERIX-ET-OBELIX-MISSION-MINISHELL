@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/28 17:39:29 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/28 19:41:12 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ void		child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect
 
 //execve a besoin de deux choses, le char ** de la commande, et envp avec un path valide;
 int			get_status_code(t_garbage_collect **gc, int status);
+void		get_correct_cmd(t_cmd *cmds);
 
 
 int		get_status_code(t_garbage_collect **gc, int status)
@@ -112,6 +113,7 @@ void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect 
 		process_behavior(cmds, gc, pipes, number_of_pipes);
 		//in close all pipes add function to close all Heredoc pipes (need to give the root of cmd to see function);
 		close_all_pipes(pipes, *gc, number_of_pipes);
+		get_correct_cmd(cmds);
 		valid_path = find_valid_path(cmds, envp, gc);
 		if (valid_path == NULL && cmds && cmds->str && is_builtin(cmds->str) == false) //last condition is important !
 		{
@@ -134,6 +136,19 @@ void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect 
 		else
 			empty_trash_exit(*gc, 127); //All of this shit purely because of heredoc without a cmd
 	}
+}
+void	get_correct_cmd(t_cmd *cmds)
+{
+	int i;
+	
+	i = 0;
+	if (cmds)
+	{
+		while (cmds->str && cmds->str[i] && cmds->str[i][0] == '\0')
+			i++;
+		cmds->str = &cmds->str[i];
+	}
+	return ;
 }
 
 void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes)

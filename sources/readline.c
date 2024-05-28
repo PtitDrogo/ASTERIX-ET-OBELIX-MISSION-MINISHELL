@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/28 14:11:47 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/28 19:46:49 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ bool	is_ascii(unsigned char c);
 int		verify_input(char *input);
 char    **rebuild_env_no_gc(t_env_node *root);
 void	recycle_trash(t_garbage_collect	**gc, t_env_node	**env_dup_root);
-void	process_solo_behavior(t_cmd *cmds, t_garbage_collect **gc);
+int		process_solo_behavior(t_cmd *cmds, t_garbage_collect **gc);
 void	print_open_err_msg(int errnumber, char *file, t_garbage_collect *gc);
 void	secure_dup2_no_exit(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int number_of_pipes);
 
@@ -57,11 +57,11 @@ int main(int argc, char const *argv[], char **envp)
 			break;
 		// Check for EOF (Ctrl+D)
 		//GROS caca pour tenter de faire passer le testeur, a ne pas keep;
-		if (strcmp(input, "echo $?") == 0)
-		{	
-			printf("%i\n", status);
-			break ;
-		}
+		// if (strcmp(input, "echo $?") == 0)
+		// {	
+		// 	printf("%i\n", status);
+		// 	break ;
+		// }
 		//J'ai rajoute un verify input sinon cat /dev/urandom/ fait crash le programme
 		if (verify_input(input) && basic_parsing(&gc, input, &token, &cmds) && token)
 		{
@@ -87,12 +87,14 @@ int main(int argc, char const *argv[], char **envp)
 				int backup_fds[2];
 				backup_fds[0] = dup(0);
 				backup_fds[1] = dup(1);
-				process_solo_behavior(cmds, &gc); //kinda weird, i shouldnt exit shell on a lot of cases where this exit the shell;
-				exit_status(theo_basic_parsing(&env_dup_root, &gc, cmds->str, backup_fds));
+				if (process_solo_behavior(cmds, &gc)) //kinda weird, i shouldnt exit shell on a lot of cases where this exit the shell;
+					exit_status(theo_basic_parsing(&env_dup_root, &gc, cmds->str, backup_fds));
+				//PUT STD back to normal
 				dup2(backup_fds[0], STDIN_FILENO);
 				dup2(backup_fds[1], STDOUT_FILENO);
 				close(backup_fds[0]);
 				close(backup_fds[1]);
+				//
 			}
 			else
 			{	
@@ -228,7 +230,7 @@ char    **rebuild_env_no_gc(t_env_node *root)
 
 //The only difference is that I dont exit the shell if theres an error
 //need to save stdin and out;
-void	process_solo_behavior(t_cmd *cmds, t_garbage_collect **gc)
+int	process_solo_behavior(t_cmd *cmds, t_garbage_collect **gc)
 {
 	//je veux just dup les redirections;
 	t_token	*in;
@@ -245,13 +247,13 @@ void	process_solo_behavior(t_cmd *cmds, t_garbage_collect **gc)
 		{	
 			tmp_fd = open(in->next->str, O_RDONLY);
 			if (tmp_fd == -1)
-				return (print_open_err_msg(errno, in->next->str, *gc));
+				return (print_open_err_msg(errno, in->next->str, *gc), 0);
 		}
 		if (in->type == D_LESS)
 		{
 			tmp_fd = open(HEREDOC_FILE, O_CREAT | O_WRONLY | O_TRUNC, 0777);
 			if (tmp_fd == -1)
-				return (print_open_err_msg(errno, in->next->str, *gc));
+				return (print_open_err_msg(errno, in->next->str, *gc), 0);
 			status = here_doc(in->next->str, gc, tmp_fd);
 			if (status == EXIT_SUCCESS)
 			{
@@ -264,15 +266,15 @@ void	process_solo_behavior(t_cmd *cmds, t_garbage_collect **gc)
 				ft_printf("Errno to update somehow : %i\n", status);
 				new_prompt(0);
 				close(tmp_fd);
-				return ;
+				return (0);
 			}
 		}
 		if (in->next && in->next->next == NULL || in->type == PIPE)
 			if (dup2(tmp_fd, STDIN_FILENO) == -1)
-				return (perror("Error duplicating file descriptor"));
+				return (perror("Error duplicating file descriptor"), 0);
 		if (in->type == LESS || in->type == D_LESS)
 			if (close(tmp_fd) == -1)
-				return (perror("Failed to close opened file"));
+				return (perror("Failed to close opened file"), 0);
 		in = in->next;
 	}
 	while (out)
@@ -281,23 +283,23 @@ void	process_solo_behavior(t_cmd *cmds, t_garbage_collect **gc)
 		{	
 			tmp_fd = open(out->next->str, O_WRONLY | O_TRUNC | O_CREAT, 0644);
 			if (tmp_fd == -1)
-				return (print_open_err_msg(errno, out->next->str, *gc));
+				return (print_open_err_msg(errno, out->next->str, *gc), 0);
 		}
 		if (out->type == D_GREAT)
 		{	
 			tmp_fd = open(out->next->str, O_WRONLY | O_APPEND | O_CREAT, 0644);
 			if (tmp_fd == -1)
-				return (print_open_err_msg(errno, out->next->str, *gc));
+				return (print_open_err_msg(errno, out->next->str, *gc), 0);
 		}
 		if ((out->next && out->next->next == NULL) || out->type == PIPE)
 			if (dup2(tmp_fd, STDOUT_FILENO) == -1)
-				return (perror("Error duplicating file descriptor"));
+				return (perror("Error duplicating file descriptor"), 0);
 		if (out->type == GREAT || out->type == D_GREAT)
 			if (close(tmp_fd) == -1)
-				return (perror("Failed to close opened file"));
+				return (perror("Failed to close opened file"), 0);
 		out = out->next;
 	}
-	return ; // if theres no redirection we just go to exec as usual;
+	return (1); // if theres no redirection we just go to exec as usual;
 }
 
 //no exit here;

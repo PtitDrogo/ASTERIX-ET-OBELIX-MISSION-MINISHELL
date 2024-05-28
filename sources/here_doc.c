@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   here_doc.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/26 15:57:05 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/28 18:31:24 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ static int		ft_strncmp_n(char *input, char *delimiter, size_t n);
 static void		child_here_doc(char *delimiter, t_garbage_collect **gc, int fd);
 // int				new_here_doc_check(t_token *here_doc_token, int **pipe, t_garbage_collect **gc);
 static void	here_doc_process(char *delimiter, t_garbage_collect **gc, int fd);
+char *expand_here_doc_str(t_env_node *env, t_garbage_collect **gc, char *array, char *error_value);
 
 //I want this function to exit with only one open pipe end per USED heredoc;
 void parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc)
@@ -97,6 +98,7 @@ static void	here_doc_process(char *delimiter, t_garbage_collect **gc, int fd)
 		if (ft_strncmp_n(input, delimiter, ft_strlen(input)) == 0)
 			break ;
 		//if we want to expand before writing in here doc it would be here;
+		// input = expand_here_doc_str(input); //WILL NEED TO FEED A STRUCT WITH ALL the Variables needed;
 		if (write(fd, input, ft_strlen(input)) == -1)
             perror_exit(*gc, errno, WRITE_ERR_MSG);
 	}
@@ -130,3 +132,47 @@ static int    ft_strncmp_n(char *input, char *delimiter, size_t n)
     return ((unsigned char)input[i] - (unsigned char)delimiter[i]);
 }
 
+// char *expand_here_doc_str(t_env_node *env, t_garbage_collect **gc, char *array, char *error_value)
+// {
+// 	int	i;
+// 	int size;
+// 	int total_size;
+// 	char *expanded_var;
+// 	char *tmp;
+// 	i = 0;
+// 	if (array == NULL)
+// 		return (NULL);
+
+// 	total_size = count_new_size_of_array(array, env, gc, error_value);
+// 	expanded_var = malloc_trash(total_size + 1, gc);
+// 	expanded_var[total_size] = '\0';
+// 	size = 0;
+// 	while (array[i])
+// 	{
+// 		if (array[i] == '$')
+// 		{
+// 			tmp = setter_gc(create_string_to_expand(&(array[i + 1]), gc), gc);
+// 			if (ft_strlen(tmp) == 0)
+// 			{	
+// 				expanded_var[size++] = '$';
+// 				i++;
+// 			}
+// 			else
+// 			{
+// 				i += ft_strlen(tmp) + 1;
+// 				if (tmp && tmp[0] == '?')
+// 					tmp = error_value;
+// 				else
+// 					tmp = setter_gc(get_env_variable(env, tmp), gc);
+// 				while (tmp && *tmp && size < total_size)
+// 				{	
+// 					expanded_var[size++] = *tmp;
+// 					tmp++;
+// 				}
+// 			}
+// 		}
+// 		else	
+// 			expanded_var[size++] = array[i++];
+// 	}
+// 	return (expanded_var);
+// }

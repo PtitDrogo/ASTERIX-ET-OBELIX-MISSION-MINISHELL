@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/28 19:46:49 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/28 20:22:56 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,8 @@ int main(int argc, char const *argv[], char **envp)
 				backup_fds[1] = dup(1);
 				if (process_solo_behavior(cmds, &gc)) //kinda weird, i shouldnt exit shell on a lot of cases where this exit the shell;
 					exit_status(theo_basic_parsing(&env_dup_root, &gc, cmds->str, backup_fds));
+				else
+					exit_status(1); //failed to do command so generic 1 ? for now its good
 				//PUT STD back to normal
 				dup2(backup_fds[0], STDIN_FILENO);
 				dup2(backup_fds[1], STDOUT_FILENO);
@@ -140,24 +142,24 @@ int	theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char *
 	if (cmd == NULL || cmd[0] == NULL)
 		return (1);
 	if (ft_strcmp(cmd[0], "unset") == 0)
-		unset(*env_dup_root, cmd[1]);
+		return (unset(*env_dup_root, cmd[1]));
 	if (ft_strcmp(cmd[0], "export") == 0)
 	{	
 		if (cmd[1] == NULL)
-			sorted_env_print(*env_dup_root, *gc);
+			return(sorted_env_print(*env_dup_root, *gc));
 		else
-			export(env_dup_root, (void *)cmd[1], gc);
+			return(export(env_dup_root, (void *)cmd[1], gc));
 	}
 	if (ft_strcmp(cmd[0], "env") == 0)
-		env(*env_dup_root, *gc);
+		return (env(*env_dup_root, *gc));
 	if (ft_strcmp(cmd[0], "exit") == 0)
-		ft_exit(&cmd[1], *gc, backup_fds);
+		return (ft_exit(&cmd[1], *gc, backup_fds));
 	if (ft_strcmp(cmd[0], "pwd") == 0)
 		pwd(gc);
 	if (ft_strcmp(cmd[0], "cd") == 0)
-		cd(cmd, gc, *env_dup_root);
+		return (cd(cmd, gc, *env_dup_root));
 	if (ft_strcmp(cmd[0], "echo") == 0)
-		echo(cmd, gc);
+		return(echo(cmd, gc));
 	return (0);
 }
 

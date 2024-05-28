@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/28 19:41:12 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/28 22:06:19 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void		child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect
 
 //execve a besoin de deux choses, le char ** de la commande, et envp avec un path valide;
 int			get_status_code(t_garbage_collect **gc, int status);
-void		get_correct_cmd(t_cmd *cmds);
+int			get_correct_cmd(t_cmd *cmds);
 
 
 int		get_status_code(t_garbage_collect **gc, int status)
@@ -113,7 +113,8 @@ void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect 
 		process_behavior(cmds, gc, pipes, number_of_pipes);
 		//in close all pipes add function to close all Heredoc pipes (need to give the root of cmd to see function);
 		close_all_pipes(pipes, *gc, number_of_pipes);
-		get_correct_cmd(cmds);
+		if (get_correct_cmd(cmds) == 0)
+			empty_trash_exit(*gc, 0); //Bash just exits with return 0 for $NOTEXIST;
 		valid_path = find_valid_path(cmds, envp, gc);
 		if (valid_path == NULL && cmds && cmds->str && is_builtin(cmds->str) == false) //last condition is important !
 		{
@@ -137,20 +138,24 @@ void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect 
 			empty_trash_exit(*gc, 127); //All of this shit purely because of heredoc without a cmd
 	}
 }
-void	get_correct_cmd(t_cmd *cmds)
+int	get_correct_cmd(t_cmd *cmds)
 {
 	int i;
 	
 	i = 0;
-	if (cmds)
+	if (cmds && cmds->str)
 	{
-		while (cmds->str && cmds->str[i] && cmds->str[i][0] == '\0')
+		while (cmds && cmds->str && cmds->str[i] && cmds->str[i][0] == '\0')
 			i++;
 		cmds->str = &cmds->str[i];
+		// printf("i is %i\n", i);
+		// printf("after change cmds str is %s\n", cmds->str[0]);
+		if (cmds->str[0] == NULL)
+			return (0);
 	}
-	return ;
+	return (1);
 }
-
+//Replaced all errno by 1
 void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes)
 {
 	//je veux just dup les redirections;
@@ -180,7 +185,7 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 			secure_dup2(tmp_fd, STDIN_FILENO, pipes, *gc, number_of_pipes);
 		if (in->type == LESS || in->type == D_LESS)
 			if (close(tmp_fd) == -1)
-				perror_exit(*gc, errno, "Failed to close opened file");
+				perror_exit(*gc, 1, "Failed to close opened file");
 		in = in->next;
 	}
 	while (out)
@@ -203,7 +208,7 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 			secure_dup2(tmp_fd, STDOUT_FILENO, pipes, *gc, number_of_pipes);
 		if (out->type == GREAT || out->type == D_GREAT)
 			if (close(tmp_fd) == -1)
-				perror_exit(*gc, errno, "Failed to close opened file");
+				perror_exit(*gc, 1, "Failed to close opened file");
 		out = out->next;
 	}
 	return ; // if theres no redirection we just go to exec as usual;
@@ -306,7 +311,7 @@ char	*find_valid_path(t_cmd *cmds, char **envp, t_garbage_collect **gc)
 	char **possible_paths;
 	int i;
 	
-	if (envp == NULL || cmds == NULL || cmds->str == NULL) // maybe add an error message for some of these cases;
+	if (envp == NULL || cmds == NULL || cmds->str == NULL || cmds->str[0] == NULL) //yes we need all of these
 		return (NULL);
 	if (access(*(cmds->str), X_OK) == 0)
 		return (*(cmds->str));
@@ -358,6 +363,7 @@ void	secure_dup2(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int
 
 void	print_open_err_msg_exit(int errnumber, char *file, t_garbage_collect *gc)
 {
+	// printf("HIIIIII IM PRINTING ERROR\n");
 	if (errnumber == ENOENT)
 		if (ft_printf_err("bash: %s: No such file or directory\n", file) == -1)
 			perror_exit(gc, errnumber, WRITE_ERR_MSG);
@@ -370,5 +376,5 @@ void	print_open_err_msg_exit(int errnumber, char *file, t_garbage_collect *gc)
 	if (errnumber == EMFILE)
 		if (ft_printf_err("bash: %s: Too many files opened", file) == -1)
 			perror_exit(gc, errnumber, WRITE_ERR_MSG);
-	empty_trash_exit(gc, errnumber);
+	empty_trash_exit(gc, 1);
 }

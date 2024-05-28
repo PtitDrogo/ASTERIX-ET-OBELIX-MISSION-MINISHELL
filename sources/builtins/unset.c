@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 12:48:32 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/07 15:44:16 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/28 19:51:48 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int	unset(t_env_node *env_dup_root, char *env_to_find)
 		if (ft_strcmp(current->variable_name, env_to_find) == 0)
 		{	
 			pop(env_dup_root, current);
-			return (1);
+			return (0);
 		}
 		current = current->next;
 	}

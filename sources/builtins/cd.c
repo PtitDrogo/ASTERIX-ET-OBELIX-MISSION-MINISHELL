@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:54:37 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/21 14:28:37 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/28 20:04:25 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static void	handle_error(char *dir_path, t_garbage_collect *gc);
 static char	*join_path_to_home(char *dir_path, char *home, t_garbage_collect **gc);
-static void	update_pwd(t_garbage_collect **gc, t_env_node *env, char *dir_path);
+static int	update_pwd(t_garbage_collect **gc, t_env_node *env, char *dir_path);
 char	*safe_get_var(t_env_node *env, t_garbage_collect *gc, char *variable);
 
 // Should be all done, work with cd - and with ~/ at the start;
@@ -40,7 +40,7 @@ int cd(char **cmd, t_garbage_collect **gc, t_env_node *env)
 		dir_path = join_path_to_home(dir_path, safe_get_var(env, *gc, "HOME"), gc);
 	if (dir_path == NULL)
 		return (1);
-	update_pwd(gc, env, dir_path);
+	return (update_pwd(gc, env, dir_path));
 	return (0);
 }
 
@@ -106,7 +106,7 @@ char	*join_path_to_home(char *dir_path, char *home, t_garbage_collect **gc)
 	return (to_return);
 }
 //CD AND PWD FAILURE DONT EXIT SHELL
-void	update_pwd(t_garbage_collect **gc, t_env_node *env, char *dir_path)
+int	update_pwd(t_garbage_collect **gc, t_env_node *env, char *dir_path)
 {
 	t_env_node *pwd_old;
 	t_env_node *pwd_curr;
@@ -116,7 +116,7 @@ void	update_pwd(t_garbage_collect **gc, t_env_node *env, char *dir_path)
 	// if (back_up_old_pwd == NULL)
 	// 	perror_exit(*gc, errno, "Failed to get current path");
 	if (chdir(dir_path) == -1)
-		handle_error(dir_path, *gc);
+		return (handle_error(dir_path, *gc), 1);
 	pwd_curr = get_env_node(env, "PWD");
 	pwd_old = get_env_node(env, "OLDPWD");
 	if (pwd_old && pwd_curr)
@@ -129,5 +129,5 @@ void	update_pwd(t_garbage_collect **gc, t_env_node *env, char *dir_path)
 	}
 	if (pwd_old && pwd_curr == NULL)
 		pwd_old->variable = back_up_old_pwd;
-	return ;
+	return (0);
 }

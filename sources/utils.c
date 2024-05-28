@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 14:47:08 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/28 17:03:44 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/28 20:55:49 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ bool	is_builtin(char **cmd)
 	int	i;
 	
 	i = 0;
-	if (cmd == NULL)
+	if (cmd == NULL || cmd[0] == NULL)
 		return (false);
 	while (builtins[i])
 	{

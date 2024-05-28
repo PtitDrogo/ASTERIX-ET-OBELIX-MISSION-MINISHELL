@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/26 15:56:33 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/28 20:12:05 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ int		unset(t_env_node *env_dup_root, char *env_to_find);
 int		export(t_env_node **root, void *variable, t_garbage_collect **gc);
 int 	env(t_env_node *env_dup_root, t_garbage_collect *gc);
 int 	ft_exit(char **args, t_garbage_collect *gc, int backup_fds[2]);
-void	sorted_env_print(t_env_node *env_dup_root, t_garbage_collect *gc);
+int		sorted_env_print(t_env_node *env_dup_root, t_garbage_collect *gc);
 int		pwd(t_garbage_collect **gc);
 int		echo(char **to_echo, t_garbage_collect **gc);
 int 	cd(char **cmd, t_garbage_collect **gc, t_env_node *env);

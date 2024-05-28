@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 14:47:08 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/26 11:17:53 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/28 17:03:44 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,4 +122,14 @@ int	count_arrays_in_doubleptr(void **array)
 		i++;
 	}
 	return(i);
+}
+
+char **wrap_str_in_double_str(t_garbage_collect **gc, char *array)
+{
+	char **to_return;
+
+	to_return = malloc_trash(sizeof(char *) * 2, gc);
+	to_return[1] = NULL;
+	to_return[0] = array;
+	return (to_return);
 }

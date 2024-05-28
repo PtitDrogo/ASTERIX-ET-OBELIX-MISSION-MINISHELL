@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/24 18:31:17 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/28 17:39:29 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -272,7 +272,6 @@ void	close_all_pipes(int **pipes_fds, t_garbage_collect *gc, int number_of_pipes
 	i = 0;
 	if (pipes_fds == NULL)
 		return ;
-	
 	while (i < number_of_pipes)
 	{
 		if (close(pipes_fds[i][0]) == -1)

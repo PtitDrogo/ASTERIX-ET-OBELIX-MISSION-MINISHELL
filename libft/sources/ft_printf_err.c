@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 17:09:05 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/23 15:44:50 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/28 17:49:33 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void	ft_putncount_str_err(char *str, int *size)
 	strlen = ft_strlen_printf_err(str);
 	if (!str)
 		ft_putncount_str("(null)", size);
-	else if (write(1, str, strlen) == -1)
+	else if (write(2, str, strlen) == -1)
 		*size = -1;
 	else
 		*size += strlen;

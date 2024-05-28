@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/26 16:05:37 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/28 17:21:28 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,16 +25,31 @@ char	*create_string_to_expand(char *str, t_garbage_collect **gc);
 char 	**expand(t_env_node *env, t_garbage_collect **gc, char **arrays, char *error_value);
 int		chars_to_expand(char *str);
 int		update_current_quote(char c, char *current_quotes);
-
+char	**wrap_str_in_double_str(t_garbage_collect **gc, char *array);
+char *expand_single_str(t_env_node *env, t_garbage_collect **gc, char *array, char *error_value);
 
 void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds, char *error_value)
 {
+	t_token *current;
+	
+	
 	setter_gc(error_value, gc);
 	malloc_check(error_value, *gc);
-	// printf("at the very start error value is %s\n", error_value);
 	while (cmds)
 	{
 		cmds->str = expand(env, gc, cmds->str, error_value);
+		current = cmds->redirection_in;
+		while (current)
+		{
+			current->str = expand_single_str(env, gc, current->str, error_value);
+			current = current->next;
+		}
+		current = cmds->redirection_out;
+		while (current)
+		{
+			current->str = expand_single_str(env, gc, current->str, error_value);
+			current = current->next;
+		}
 		// for (int i = 0; cmds->str[i]; i++)
 		// {
 		// 	printf("after expanding : %s\n", cmds->str[i]);
@@ -43,6 +58,62 @@ void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds, char *error_
 	}
 	return ;
 }
+
+char *expand_single_str(t_env_node *env, t_garbage_collect **gc, char *array, char *error_value)
+{
+	int	i;
+	int size;
+	int total_size;
+	char *expanded_var;
+	char *tmp;
+	i = 0;
+	char current_quotes = '\0';
+	if (array == NULL)
+		return (NULL);
+
+	total_size = count_new_size_of_array(array, env, gc, error_value);
+	expanded_var = malloc_trash(total_size + 1, gc);
+	expanded_var[total_size] = '\0';
+	size = 0;
+	while (array[i])
+	{
+		if (array[i] == '\'' || array[i] == '\"')
+		{	
+			if (update_current_quote(array[i], &current_quotes) == 1)
+				expanded_var[size++] = array[i++];
+			else
+				i++;
+		}
+		else if (array[i] == '$' && can_expand(&current_quotes))
+		{
+			tmp = setter_gc(create_string_to_expand(&(array[i + 1]), gc), gc);
+			if (ft_strlen(tmp) == 0)
+			{	
+				expanded_var[size++] = '$';
+				i++;
+			}
+			else
+			{
+				i += ft_strlen(tmp) + 1;
+				if (tmp && tmp[0] == '?')
+					tmp = error_value;
+				else
+					tmp = setter_gc(get_env_variable(env, tmp), gc);
+				while (tmp && *tmp && size < total_size)
+				{	
+					expanded_var[size++] = *tmp;
+					tmp++;
+				}
+			}
+		}
+		else	
+			expanded_var[size++] = array[i++];
+		// printf("hi\n");
+		// sleep(1);
+	}
+	return (expanded_var);
+}
+
 
 //Takes a double pointer and return its with ENV var expanded and quotes removed;
 char **expand(t_env_node *env, t_garbage_collect **gc, char **arrays, char *error_value)
@@ -63,7 +134,6 @@ char **expand(t_env_node *env, t_garbage_collect **gc, char **arrays, char *erro
 	// }
 	if (arrays == NULL)
 		return (NULL);
-
 	while (arrays[i])
 	{
 		int total_size = count_new_size_of_array(arrays[i], env, gc, error_value);

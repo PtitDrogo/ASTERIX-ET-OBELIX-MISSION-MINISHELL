@@ -6,13 +6,14 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/29 16:58:14 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/29 20:52:54 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 void	close_all_heredoc_pipes(t_cmd *cmds_root, t_garbage_collect *gc);
+t_token	*get_next_first_token(t_token *cmds_root);
 
 void check_fd(int fd) {
     if (fcntl(fd, F_GETFD) == -1) {
@@ -46,9 +47,9 @@ char		*find_env_variable(char **envp, char *env_to_find);
 void		secure_dup2(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int number_of_pipes);
 void		print_open_err_msg_exit(int errnumber, char *file, t_garbage_collect *gc);
 
-void		process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes);
+void		process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes, t_token *token_root);
 char		*find_valid_path(t_cmd *cmds, char **envp, t_garbage_collect **gc);
-void		child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes, t_cmd *cmds_root);
+void		child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes, t_cmd *cmds_root, t_token *token_root);
 //ca fait beaucoup la non
 
 //execve a besoin de deux choses, le char ** de la commande, et envp avec un path valide;
@@ -67,20 +68,23 @@ int		get_status_code(t_garbage_collect **gc, int status)
 }
 
 
-int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes, t_cmd *cmds_root) //need root to clean pipes;
+int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes, t_cmd *cmds_root, t_token *token_root) //need root to clean pipes;
 {
 
 	//BUILTIN ARE MAIN PROCESS ALONE
 	//CHILDREN PROCESS OTHERWISE
 	char	**envp;
 	t_cmd *current = cmds;
+	t_token *token_current;
 	int	status;
 
 	envp = rebuild_env(root_env, gc);
+	token_current = token_root;
 	signal(SIGINT, cancel_cmd);
 	while (current)
 	{
-		child_process(root_env, envp, current, gc, pipes_fds, number_of_pipes, cmds_root); //giving current command !!
+		child_process(root_env, envp, current, gc, pipes_fds, number_of_pipes, cmds_root, token_current); //giving current command !!
+		token_current = get_next_first_token(token_current);
 		current = current->next;
 	}
 	close_all_pipes(pipes_fds, *gc, number_of_pipes);
@@ -103,6 +107,22 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 	return (status); //replace by exit status;
 }
 
+t_token *get_next_first_token(t_token *token_root)
+{
+	//We want to give the token right after the pipe;
+	t_token *current;
+
+	current = token_root;
+	while (current)
+	{
+		if (current->type == PIPE)
+			return (current);
+		current = current->next;
+	}
+	return (NULL);
+}
+
+
 void	close_all_heredoc_pipes(t_cmd *cmds_root, t_garbage_collect *gc)
 {
 	t_token *current;
@@ -121,7 +141,7 @@ void	close_all_heredoc_pipes(t_cmd *cmds_root, t_garbage_collect *gc)
 	return ;
 }
 
-void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes, t_cmd *cmds_root)
+void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes, t_cmd *cmds_root, t_token *token_current)
 {
 	char	*valid_path;
 	
@@ -131,7 +151,7 @@ void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect 
 	if (cmds->cmd_id == 0)
 	{
 		
-		process_behavior(cmds, gc, pipes, number_of_pipes);
+		process_behavior(cmds, gc, pipes, number_of_pipes, token_current);
 		//in close all pipes add function to close all Heredoc pipes (need to give the root of cmd to see function);
 		close_all_pipes(pipes, *gc, number_of_pipes);
 		close_all_heredoc_pipes(cmds_root, *gc);
@@ -178,7 +198,7 @@ int	get_correct_cmd(t_cmd *cmds)
 	return (1);
 }
 //Replaced errno by 1 in return value;
-void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes)
+void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes, t_token *token_current)
 {
 	//je veux just dup les redirections;
 	t_token	*in;
@@ -189,49 +209,85 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 	in = cmds->redirection_in;
 	out = cmds->redirection_out;
 	status = 0;
-	while (in)
-	{	
-		if (in->type == LESS)
-		{	
-			tmp_fd = open(in->next->str, O_RDONLY);
-			if (tmp_fd == -1)
-				print_open_err_msg_exit(errno, in->next->str, *gc);
-		}
-		//TODO, Close the pipes of the HEREDOC somehow
-		//EITHER close all of them now or somehow close them before idk;
-		if (in->type == D_LESS)
-			tmp_fd = in->here_doc_pipe;
-		if (in->type == PIPE)
-			tmp_fd = in->pipe_fd;
-		if (in->next && in->next->next == NULL || in->type == PIPE)
-			secure_dup2(tmp_fd, STDIN_FILENO, pipes, *gc, number_of_pipes);
-		if (in->type == LESS || in->type == D_LESS)
-			if (close(tmp_fd) == -1)
-				perror_exit(*gc, 1, "Failed to close opened file");
-		in = in->next;
-	}
-	while (out)
+
+	//handling very first token (thats always a pipe)
+	//honestly this should always trigger so maybe i can raw dog it
+	//with tmp_fd = in->pipe_fd; everytime ? Im not sure how bad it would be, gotta try;
+	// printf("Dup token is %s\n", token_current->str);
+	if (token_current->type == PIPE)
 	{
-		if (out->type == GREAT)
-		{	
-			tmp_fd = open(out->next->str, O_WRONLY | O_TRUNC | O_CREAT, 0644);
-			if (tmp_fd == -1)
-				print_open_err_msg_exit(errno, out->next->str, *gc);
+		if (in)
+		{
+			if (in->type == PIPE)
+			{	
+				tmp_fd = in->pipe_fd;
+				secure_dup2(tmp_fd, STDIN_FILENO, pipes, *gc, number_of_pipes);
+			}
+			in = in->next;
 		}
-		if (out->type == D_GREAT)
-		{	
-			tmp_fd = open(out->next->str, O_WRONLY | O_APPEND | O_CREAT, 0644);
-			if (tmp_fd == -1)
-				print_open_err_msg_exit(errno, out->next->str, *gc);
-		}	
-		if (out->type == PIPE)
-			tmp_fd = out->pipe_fd;
-		if ((out->next && out->next->next == NULL) || out->type == PIPE)
-			secure_dup2(tmp_fd, STDOUT_FILENO, pipes, *gc, number_of_pipes);
-		if (out->type == GREAT || out->type == D_GREAT)
-			if (close(tmp_fd) == -1)
-				perror_exit(*gc, 1, "Failed to close opened file");
-		out = out->next;
+		token_current = token_current->next;
+	}
+	
+	while (token_current)
+	{
+		if (token_current->type == D_LESS || token_current->type == LESS)
+		{
+			if (in)
+			{	
+				if (in->type == LESS)
+				{	
+					tmp_fd = open(in->next->str, O_RDONLY);
+					if (tmp_fd == -1)
+						print_open_err_msg_exit(errno, in->next->str, *gc);
+					in = in->next;
+				}
+				if (in->type == D_LESS)
+				{	
+					tmp_fd = in->here_doc_pipe;
+					in = in->next;
+				}
+				if ((in->next == NULL) || in->type == PIPE)
+					secure_dup2(tmp_fd, STDIN_FILENO, pipes, *gc, number_of_pipes);
+				if (in->type == LESS || in->type == D_LESS)
+					if (close(tmp_fd) == -1)
+						perror_exit(*gc, 1, "Failed to close opened file");
+				in = in->next;
+			}	
+		}
+		else if (token_current->type == D_GREAT || token_current->type == GREAT || token_current->type == PIPE)
+		{
+			if (out)
+			{
+				// printf("out is %s\n", out->str);
+				if (out->type == GREAT)
+				{	
+					// printf("yo in great\n");
+					tmp_fd = open(out->next->str, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+					if (tmp_fd == -1)
+						print_open_err_msg_exit(errno, out->next->str, *gc);
+					out = out->next;
+				}
+				if (out->type == D_GREAT)
+				{	
+					// printf("yo in D great\n");
+					tmp_fd = open(out->next->str, O_WRONLY | O_APPEND | O_CREAT, 0644);
+					if (tmp_fd == -1)
+						print_open_err_msg_exit(errno, out->next->str, *gc);
+					out = out->next;
+				}	
+				if (out->type == PIPE)
+					tmp_fd = out->pipe_fd;
+				if ((out->next == NULL) || out->type == PIPE)
+					secure_dup2(tmp_fd, STDOUT_FILENO, pipes, *gc, number_of_pipes);
+				if (out->type == GREAT || out->type == D_GREAT)
+					if (close(tmp_fd) == -1) //not closing pipe because i am closing all pipes right outside this function
+						perror_exit(*gc, 1, "Failed to close opened file");
+				out = out->next;
+			}
+		}
+		if (token_current->type == PIPE)
+			break ;
+		token_current = token_current->next;
 	}
 	return ; // if theres no redirection we just go to exec as usual;
 }

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/29 18:22:39 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/29 19:46:42 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ int main(int argc, char const *argv[], char **envp)
 			{	
 				
 				// printf("Am i here or no\n");
-				exit_status(exec(env_dup_root, cmds, &gc, pipes, number_of_pipes, cmds));
+				exit_status(exec(env_dup_root, cmds, &gc, pipes, number_of_pipes, cmds, token));
 			}
 		}
 		if (verify_input(input))
@@ -256,23 +256,6 @@ int	process_solo_behavior(t_cmd *cmds, t_garbage_collect **gc)
 		if (in->type == D_LESS)
 		{
 			tmp_fd = in->here_doc_pipe;
-			// tmp_fd = open(HEREDOC_FILE, O_CREAT | O_WRONLY | O_TRUNC, 0777);
-			// if (tmp_fd == -1)
-			// 	return (print_open_err_msg(errno, in->next->str, *gc), 0);
-			// status = here_doc(in->next->str, gc, tmp_fd);
-			// if (status == EXIT_SUCCESS)
-			// {
-			// 	ft_printf("Heredoc success\n");
-			// 	close(tmp_fd);
-			// 	tmp_fd = open(HEREDOC_FILE, O_RDONLY);
-			// }
-			// else
-			// {
-			// 	ft_printf("Errno to update somehow : %i\n", status);
-			// 	new_prompt(0);
-			// 	close(tmp_fd);
-			// 	return (0);
-			// }
 		}
 		if (in->next && in->next->next == NULL || in->type == PIPE)
 			if (dup2(tmp_fd, STDIN_FILENO) == -1)

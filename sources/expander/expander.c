@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/29 18:22:12 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/29 20:36:00 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds, char *error_
 	while (cmds)
 	{
 		cmds->str = expand(env, gc, cmds->str, error_value);
+		// printf("after expanding %s and %s\n", cmds->str[0], cmds->str[1]);
 		current = cmds->redirection_in;
 		while (current)
 		{
@@ -230,7 +231,7 @@ int	count_new_size_of_array(char *array, t_env_node *env, t_garbage_collect **gc
 			}
 			else
 			{
-				size += count_new_size_of_array(get_env_variable(env, cur_var), env, gc, error_value) - 1; //Recursion baby (-1 for the $ sign)
+				size += ft_strlen(get_env_variable(env, cur_var)) - 1; //Recursion baby (-1 for the $ sign)
 				i += ft_strlen(cur_var); //if $ECHO, we jump by 4 characters;
 			}
 		}
@@ -476,7 +477,7 @@ int	count_new_size_always_expand(char *array, t_env_node *env, t_garbage_collect
 			}
 			else
 			{
-				size += count_new_size_always_expand(get_env_variable(env, cur_var), env, gc, error_value) - 1; //Recursion baby (-1 for the $ sign)
+				size += ft_strlen(get_env_variable(env, cur_var)) - 1; //Recursion baby (-1 for the $ sign)
 				i += ft_strlen(cur_var); //if $ECHO, we jump by 4 characters;
 			}
 		}

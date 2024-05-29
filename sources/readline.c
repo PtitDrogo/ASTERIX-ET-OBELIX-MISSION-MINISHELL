@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/29 13:31:26 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/29 18:22:39 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,8 +65,10 @@ int main(int argc, char const *argv[], char **envp)
 		//J'ai rajoute un verify input sinon cat /dev/urandom/ fait crash le programme
 		if (verify_input(input) && basic_parsing(&gc, input, &token, &cmds) && token)
 		{
-			
-			parse_all_here_docs(cmds, &gc);
+			char *str_status = ft_itoa(status);
+			setter_gc(str_status, &gc);
+			malloc_check(str_status, gc);
+			parse_all_here_docs(cmds, &gc, env_dup_root, str_status);
 			// printf("midpoint check cmds pipe : %s\n", cmds->str[0]);
 			// printf("cmd is %p\n", cmds);
 			// printf("cmd redir is %p and its type is %i\n", cmds->redirection_in, cmds->redirection_in->type);
@@ -78,7 +80,7 @@ int main(int argc, char const *argv[], char **envp)
 			// printf("token address is %p and cmd redir address is %p\n", &cmds->redirection_in->here_doc_pipe, &token->here_doc_pipe);
 			//DEBUG
 			// printf("before expanding status has value %i\n", status);
-			expander(env_dup_root, &gc, cmds, ft_itoa(status)); //WORK IN PROGRESS
+			expander(env_dup_root, &gc, cmds, str_status); //WORK IN PROGRESS
 			int number_of_pipes = count_pipes(token);
 			pipes = open_pipes(cmds, &gc, number_of_pipes);
 			if (number_of_pipes == 0 && is_builtin(cmds->str))
@@ -253,23 +255,24 @@ int	process_solo_behavior(t_cmd *cmds, t_garbage_collect **gc)
 		}
 		if (in->type == D_LESS)
 		{
-			tmp_fd = open(HEREDOC_FILE, O_CREAT | O_WRONLY | O_TRUNC, 0777);
-			if (tmp_fd == -1)
-				return (print_open_err_msg(errno, in->next->str, *gc), 0);
-			status = here_doc(in->next->str, gc, tmp_fd);
-			if (status == EXIT_SUCCESS)
-			{
-				ft_printf("Heredoc success\n");
-				close(tmp_fd);
-				tmp_fd = open(HEREDOC_FILE, O_RDONLY);
-			}
-			else
-			{
-				ft_printf("Errno to update somehow : %i\n", status);
-				new_prompt(0);
-				close(tmp_fd);
-				return (0);
-			}
+			tmp_fd = in->here_doc_pipe;
+			// tmp_fd = open(HEREDOC_FILE, O_CREAT | O_WRONLY | O_TRUNC, 0777);
+			// if (tmp_fd == -1)
+			// 	return (print_open_err_msg(errno, in->next->str, *gc), 0);
+			// status = here_doc(in->next->str, gc, tmp_fd);
+			// if (status == EXIT_SUCCESS)
+			// {
+			// 	ft_printf("Heredoc success\n");
+			// 	close(tmp_fd);
+			// 	tmp_fd = open(HEREDOC_FILE, O_RDONLY);
+			// }
+			// else
+			// {
+			// 	ft_printf("Errno to update somehow : %i\n", status);
+			// 	new_prompt(0);
+			// 	close(tmp_fd);
+			// 	return (0);
+			// }
 		}
 		if (in->next && in->next->next == NULL || in->type == PIPE)
 			if (dup2(tmp_fd, STDIN_FILENO) == -1)

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/28 22:51:37 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/29 16:58:14 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -336,7 +336,11 @@ char	*find_valid_path(t_cmd *cmds, char **envp, t_garbage_collect **gc)
 	if (envp == NULL || cmds == NULL || cmds->str == NULL || cmds->str[0] == NULL) //yes we need all of these
 		return (NULL);
 	if (access(*(cmds->str), X_OK) == 0)
+	{	
+		//Faut hardcode le fait de run cette partie que si ./ ou / ou ../; 
+		printf("J'adore le sex\n");
 		return (*(cmds->str));
+	}
 	path = find_env_variable(envp, "PATH");
 	if (path == NULL)
 		return (NULL);

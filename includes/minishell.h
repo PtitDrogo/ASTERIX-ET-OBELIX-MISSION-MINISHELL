@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/28 22:42:29 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/29 18:01:32 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,11 +98,17 @@ void	**setter_double_p_gc(void **data_to_set, t_garbage_collect **gc);
 void    malloc_check(void *ptr, t_garbage_collect *gc);
 
 //Here_doc
-int					here_doc(char *delimiter, t_garbage_collect **gc, int fd);
+int					here_doc(char *delimiter, t_garbage_collect **gc, int fd, bool do_expand, t_env_node *env, char *error_value);
 t_garbage_collect	**global_gc(t_garbage_collect **gc);
 int					global_fd(int fd);
-void	parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc);
+void	parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc, t_env_node *env, char *error_value);
+
+
+//EXPANDER
+char *remove_quotes(t_garbage_collect **gc, char *array);
 char 	**expand(t_env_node *env, t_garbage_collect **gc, char **arrays, char *error_value);
+int	count_size_no_quotes(char *array, t_garbage_collect **gc);
+char *expand_here_doc_str(t_env_node *env, t_garbage_collect **gc, char *array, char *error_value);
 
 //BUILT INS
 int		unset(t_env_node *env_dup_root, char *env_to_find);

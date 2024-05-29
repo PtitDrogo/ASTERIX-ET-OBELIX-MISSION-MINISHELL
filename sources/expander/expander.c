@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/28 20:51:32 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/29 18:22:12 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,14 +27,12 @@ int		chars_to_expand(char *str);
 int		update_current_quote(char c, char *current_quotes);
 char	**wrap_str_in_double_str(t_garbage_collect **gc, char *array);
 char *expand_single_str(t_env_node *env, t_garbage_collect **gc, char *array, char *error_value);
+int	count_new_size_always_expand(char *array, t_env_node *env, t_garbage_collect **gc, char *error_value);
 
 void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds, char *error_value)
 {
 	t_token *current;
 	
-	
-	setter_gc(error_value, gc);
-	malloc_check(error_value, *gc);
 	while (cmds)
 	{
 		cmds->str = expand(env, gc, cmds->str, error_value);
@@ -331,5 +329,169 @@ int	chars_to_expand(char *str)
 		i++;
 	}
 	return (i);
+}
+
+
+char *remove_quotes(t_garbage_collect **gc, char *array)
+{
+	int	i;
+	int size;
+	int total_size;
+	char *expanded_var;
+	char *tmp;
+	i = 0;
+	char current_quotes = '\0';
+	if (array == NULL)
+		return (NULL);
+
+	total_size = count_size_no_quotes(array, gc);
+	expanded_var = malloc_trash(total_size + 1, gc);
+	expanded_var[total_size] = '\0';
+	size = 0;
+	while (array[i])
+	{
+		if (array[i] == '\'' || array[i] == '\"')
+		{	
+			if (update_current_quote(array[i], &current_quotes) == 1)
+				expanded_var[size++] = array[i++];
+			else
+				i++;
+		}
+		else	
+			expanded_var[size++] = array[i++];
+	}
+	return (expanded_var);
+}
+
+int	count_size_no_quotes(char *array, t_garbage_collect **gc)
+{
+	int	i;
+	int size;
+	char current_quotes;
+
+	i = 0;
+	size = 0;
+	current_quotes = '\0';
+	if (array == NULL)
+		return (0);
+	while (array[i])
+	{
+		if (array[i] == '\'' || array[i] == '\"')
+			size += update_current_quote(array[i], &current_quotes); //absolute dark magic
+		else
+			size++;
+		i++;
+	}
+	return (size);
+}
+
+char *expand_here_doc_str(t_env_node *env, t_garbage_collect **gc, char *array, char *error_value)
+{
+	int	i;
+	int size;
+	int total_size;
+	char *expanded_var;
+	char *tmp;
+	char current_quotes;
+
+	current_quotes = '\0';
+	i = 0;
+	if (array == NULL)
+		return (NULL);
+
+	total_size = count_new_size_always_expand(array, env, gc, error_value);
+	expanded_var = malloc_trash(total_size + 1, gc);
+	expanded_var[total_size] = '\0';
+	size = 0;
+	while (size < total_size)
+	{
+		if (array[i] == '\'' || array[i] == '\"')
+		{	
+			if (update_current_quote(array[i], &current_quotes) == 1)
+				expanded_var[size++] = array[i++];
+			else
+				i++;
+		}
+		if (array[i] == '$')
+		{
+			tmp = setter_gc(create_string_to_expand(&(array[i + 1]), gc), gc);
+			if (ft_strlen(tmp) == 0)
+			{	
+				expanded_var[size++] = '$';
+				i++;
+			}
+			else
+			{
+				i += ft_strlen(tmp) + 1;
+				if (tmp && tmp[0] == '?')
+					tmp = error_value;
+				else
+					tmp = setter_gc(get_env_variable(env, tmp), gc);
+				while (tmp && *tmp && size < total_size)
+				{	
+					expanded_var[size++] = *tmp;
+					tmp++;
+				}
+			}
+		}
+		else	
+			expanded_var[size++] = array[i++];
+	}
+	return (expanded_var);
+}
+
+
+int	count_new_size_always_expand(char *array, t_env_node *env, t_garbage_collect **gc, char *error_value)
+{
+	int	i;
+	int size;
+	char *cur_var;
+	char current_quotes;
+
+	i = 0;
+	size = 0;
+	current_quotes = '\0';
+	if (array == NULL)
+		return (0);
+	
+	while (array[i])
+	{
+		if (array[i] == '\'' || array[i] == '\"')
+		{	
+			size += update_current_quote(array[i], &current_quotes); //absolute dark magic
+			i++; 
+		}
+		else if (array[i] == '$')
+		{
+			cur_var = create_string_to_expand(&array[i + 1], gc);
+			if (ft_strlen(cur_var) == 0)
+			{
+				size++;
+				i++;
+			}
+			else if (array[i + 1] == '?') //We know previous char is $ and we know '?' stops expanding
+			{
+				size += ft_strlen(error_value); //Might as well give the string of error value already ?
+				i += 2;
+			}
+			else
+			{
+				size += count_new_size_always_expand(get_env_variable(env, cur_var), env, gc, error_value) - 1; //Recursion baby (-1 for the $ sign)
+				i += ft_strlen(cur_var); //if $ECHO, we jump by 4 characters;
+			}
+		}
+		else
+		{	
+			size++;
+			i++;
+		}
+	}
+	// printf("in count size, for string %s size is %i\n", array, size);
+	return (size);
+	//STEP 1 = JE CREE UNE STRING AVEC LE $ ET les chars jusqu'a un espace ou fin
+	//STEP 1.5 = Je stock la taille de la str $TESTEST;
+	//STEP 2 = Je compte la taille de la VAR ENV et je rajoute ca a size;
+	//STEP 3 = je saute a l'indice i + size_of_var_name;
+	//Je continue;
 }
 

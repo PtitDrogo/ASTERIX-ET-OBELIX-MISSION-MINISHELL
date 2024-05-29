@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/29 20:52:54 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/29 21:41:30 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,10 +158,31 @@ void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect 
 		if (get_correct_cmd(cmds) == 0)
 			empty_trash_exit(*gc, 0); //Bash just exits with return 0 for $NOTEXIST;
 		valid_path = find_valid_path(cmds, envp, gc);
+		// printf("valid path is %s\n", valid_path);
 		if (valid_path == NULL && cmds && cmds->str && is_builtin(cmds->str) == false) //last condition is important !
 		{
-			ft_printf_err("%s: command not found\n", cmds->str[0]); //need to check real err msg
-			empty_trash_exit(*gc, 127);
+			// printf("sex\n");
+			if (errno == EISDIR )
+			{
+				ft_printf_err("%s: Is a directory\n", cmds->str[0]); //need to check real err msg
+				empty_trash_exit(*gc, 126);
+			}
+			else if (errno == EACCES)
+			{
+				ft_printf_err("%s: Permission denied\n", cmds->str[0]); //need to check real err msg
+				empty_trash_exit(*gc, 126);
+			}
+			// else if (errno == ENOENT)
+			// {
+			// 	ft_printf_err("%s: No such file or directory\n", cmds->str[0]); //need to check real err msg
+			// 	empty_trash_exit(*gc, 127);
+			// }
+			else
+			{
+				ft_printf_err("%s: command not found\n", cmds->str[0]); //need to check real err msg
+				empty_trash_exit(*gc, 127);
+			}
+			
 		}
 		else if (cmds && cmds->str)
 		{
@@ -391,11 +412,15 @@ char	*find_valid_path(t_cmd *cmds, char **envp, t_garbage_collect **gc)
 	
 	if (envp == NULL || cmds == NULL || cmds->str == NULL || cmds->str[0] == NULL) //yes we need all of these
 		return (NULL);
-	if (access(*(cmds->str), X_OK) == 0)
-	{	
-		//Faut hardcode le fait de run cette partie que si ./ ou / ou ../; 
-		printf("J'adore le sex\n");
-		return (*(cmds->str));
+	if (is_char_in_str(*(cmds->str), '/') == true)
+	{
+		if (access(*(cmds->str), X_OK) == 0)
+		{	
+			// printf("nique ta mere\n");
+			return (*(cmds->str));
+		}
+		else
+			return (NULL);
 	}
 	path = find_env_variable(envp, "PATH");
 	if (path == NULL)
@@ -412,6 +437,7 @@ char	*find_valid_path(t_cmd *cmds, char **envp, t_garbage_collect **gc)
 	}
 	return (NULL);
 }
+
 //tries to find env and return NULL if it doesnt find it;
 char	*find_env_variable(char **envp, char *env_to_find)
 {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   here_doc.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/28 18:31:24 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/29 12:49:47 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,25 +24,20 @@ char *expand_here_doc_str(t_env_node *env, t_garbage_collect **gc, char *array, 
 void parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc)
 {
 	t_token *current;
-	// int	last_here_doc;
 	
 	while (cmds)
 	{
-		// last_here_doc = -1;
 		current = cmds->redirection_in;
 		while (current)
 		{
 			if (current->type == D_LESS)
 			{
 				int pipe_heredoc[2];
-				// if (last_here_doc != -1)
-				// 	close(last_here_doc);
 				pipe(pipe_heredoc);
-				here_doc(current->next->str, gc, pipe_heredoc[1]);//wallah
+				here_doc(current->next->str, gc, pipe_heredoc[1]);
 				current->here_doc_pipe = pipe_heredoc[0];
 				close(pipe_heredoc[1]);
 				check_fd(current->here_doc_pipe);
-				// last_here_doc = pipe_heredoc[0];
 				current = current->next;
 			}
 			current = current->next;

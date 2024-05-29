@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/28 22:45:00 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/29 13:31:26 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ int main(int argc, char const *argv[], char **envp)
 				int backup_fds[2];
 				backup_fds[0] = dup(0);
 				backup_fds[1] = dup(1);
-				if (process_solo_behavior(cmds, &gc)) //kinda weird, i shouldnt exit shell on a lot of cases where this exit the shell;
+				if (process_solo_behavior(cmds, &gc))
 					exit_status(theo_basic_parsing(&env_dup_root, &gc, cmds->str, backup_fds));
 				else
 					exit_status(1); //failed to do command so generic 1 ? for now its good

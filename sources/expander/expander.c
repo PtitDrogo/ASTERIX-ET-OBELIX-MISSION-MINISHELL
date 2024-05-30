@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/29 22:10:58 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/30 02:48:31 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@ char 	**expand(t_env_node *env, t_garbage_collect **gc, char **arrays, char *err
 int		chars_to_expand(char *str);
 int		update_current_quote(char c, char *current_quotes);
 char	**wrap_str_in_double_str(t_garbage_collect **gc, char *array);
-char *expand_single_str(t_env_node *env, t_garbage_collect **gc, char *array, char *error_value);
-int	count_new_size_always_expand(char *array, t_env_node *env, t_garbage_collect **gc, char *error_value);
+char 	*expand_single_str(t_env_node *env, t_garbage_collect **gc, char *array, char *error_value);
+int		count_new_size_always_expand(char *array, t_env_node *env, t_garbage_collect **gc, char *error_value);
 
 void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds, char *error_value)
 {
@@ -36,7 +36,6 @@ void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds, char *error_
 	while (cmds)
 	{
 		cmds->str = expand(env, gc, cmds->str, error_value);
-		// printf("after expanding %s and %s\n", cmds->str[0], cmds->str[1]);
 		current = cmds->redirection_in;
 		while (current)
 		{
@@ -49,10 +48,6 @@ void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds, char *error_
 			current->str = expand_single_str(env, gc, current->str, error_value);
 			current = current->next;
 		}
-		// for (int i = 0; cmds->str[i]; i++)
-		// {
-		// 	printf("after expanding : %s\n", cmds->str[i]);
-		// }
 		cmds = cmds->next;
 	}
 	return ;
@@ -90,7 +85,6 @@ char *expand_single_str(t_env_node *env, t_garbage_collect **gc, char *array, ch
 			{	
 				expanded_var[size++] = '$';
 				i++;
-				// i += 2;
 			}
 			else
 			{
@@ -108,12 +102,9 @@ char *expand_single_str(t_env_node *env, t_garbage_collect **gc, char *array, ch
 		}
 		else	
 			expanded_var[size++] = array[i++];
-		// printf("hi\n");
-		// sleep(1);
 	}
 	return (expanded_var);
 }
-
 
 //Takes a double pointer and return its with ENV var expanded and quotes removed;
 char **expand(t_env_node *env, t_garbage_collect **gc, char **arrays, char *error_value)
@@ -126,28 +117,17 @@ char **expand(t_env_node *env, t_garbage_collect **gc, char **arrays, char *erro
 	char *tmp;
 	i = 0;
 	char current_quotes = '\0';
-	// printf("\n\n\n\n\n");
-	// printf("I am feeding proper strings into this fucking function\n");
-	// for (int test = 0; arrays[test]; test++)
-	// {
-	// 	printf("%s\n", arrays[test]);
-	// }
 	if (arrays == NULL)
 		return (NULL);
 	while (arrays[i])
 	{
 		int total_size = count_new_size_of_array(arrays[i], env, gc, error_value);
-		// printf("size of %s is %i\n", arrays[i], total_size);
-		// printf("after counting size, arrays[0] is %s and [1] is %s\n", arrays[i], arrays[i + 1]);
-		// write(1, "allo", 4);
-		
 		expanded_var = malloc_trash(total_size + 1, gc);
 		expanded_var[total_size] = '\0';
 		size = 0;
 		j = 0;
 		while (arrays[i][j])
 		{
-			// printf("hello I am in expand current char is %c\n", arrays[i][j]);
 			if (arrays[i][j] == '\'' || arrays[i][j] == '\"')
 			{	
 				if (update_current_quote(arrays[i][j], &current_quotes) == 1)
@@ -155,11 +135,8 @@ char **expand(t_env_node *env, t_garbage_collect **gc, char **arrays, char *erro
 				else
 					j++;
 			}
-			// printf("about to check can expand, in current quote : %c\n", current_quotes);
 			else if (arrays[i][j] == '$' && can_expand(&current_quotes))
 			{
-				// printf("I am lined up with false declaration\n");
-				// printf("feeding into getenv %s\n", create_string_to_expand(&(arrays[i][j + 1]), gc));
 				tmp = setter_gc(create_string_to_expand(&(arrays[i][j + 1]), gc), gc);
 				if (ft_strlen(tmp) == 0)
 				{	
@@ -168,20 +145,15 @@ char **expand(t_env_node *env, t_garbage_collect **gc, char **arrays, char *erro
 				}
 				else
 				{
-					j += ft_strlen(tmp) + 1; // + 1 maybe
-					// printf("is this undefined %s\n", &arrays[i][j]);
+					j += ft_strlen(tmp) + 1;
 					if (tmp && tmp[0] == '?')
 						tmp = error_value;
 					else
 						tmp = setter_gc(get_env_variable(env, tmp), gc);
-					// printf("tmp, the thing getting the env variable is %s\n", tmp);
-					// printf("size is %i and total size is %i\n", size, total_size);
 					while (tmp && *tmp && size < total_size)
 					{	
-						// printf("%c is the current char we are writing to new string\n", *tmp);
-						expanded_var[size++] = *tmp; //not ++j so we write over the $
+						expanded_var[size++] = *tmp;
 						tmp++;
-						// printf("array[i][j] == %c and tmp %c", arrays[i][j - 1], *(tmp - 1));
 					}
 				}
 			}
@@ -190,9 +162,7 @@ char **expand(t_env_node *env, t_garbage_collect **gc, char **arrays, char *erro
 		}
 		arrays[i] = expanded_var;
 		i++;
-		// printf("i = %i\n", i);
 		}
-	// printf("I am returning arrays[0] : %s and expanded var arrays[1] : %s\n", arrays[0], arrays[1]);
 	return (arrays);
 }
 //Returns the size of a string after quotes removal and $ expansion;
@@ -241,24 +211,13 @@ int	count_new_size_of_array(char *array, t_env_node *env, t_garbage_collect **gc
 			i++;
 		}
 	}
-	// printf("in count size, for string %s size is %i\n", array, size);
 	return (size);
-	//STEP 1 = JE CREE UNE STRING AVEC LE $ ET les chars jusqu'a un espace ou fin
-	//STEP 1.5 = Je stock la taille de la str $TESTEST;
-	//STEP 2 = Je compte la taille de la VAR ENV et je rajoute ca a size;
-	//STEP 3 = je saute a l'indice i + size_of_var_name;
-	//Je continue;
 }
 
 bool	can_expand(char *current_quotes)
 {
-	// printf("Im in can expand and current quotes is %c\n", *current_quotes);
-	
 	if (*current_quotes == '\'')
-	{	
-		// printf("I should be here, returning false\n");
 		return (false);
-	}
 	else
 		return (true);
 }
@@ -487,12 +446,6 @@ int	count_new_size_always_expand(char *array, t_env_node *env, t_garbage_collect
 			i++;
 		}
 	}
-	// printf("in count size, for string %s size is %i\n", array, size);
 	return (size);
-	//STEP 1 = JE CREE UNE STRING AVEC LE $ ET les chars jusqu'a un espace ou fin
-	//STEP 1.5 = Je stock la taille de la str $TESTEST;
-	//STEP 2 = Je compte la taille de la VAR ENV et je rajoute ca a size;
-	//STEP 3 = je saute a l'indice i + size_of_var_name;
-	//Je continue;
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/26 15:56:33 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/30 02:24:28 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,11 +98,12 @@ void	**setter_double_p_gc(void **data_to_set, t_garbage_collect **gc);
 void    malloc_check(void *ptr, t_garbage_collect *gc);
 
 //Here_doc
-int					here_doc(char *delimiter, t_garbage_collect **gc, int fd);
-t_garbage_collect	**global_gc(t_garbage_collect **gc);
-int					global_fd(int fd);
-void	parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc);
+int				here_doc(char *delimiter, t_garbage_collect **gc, int fd);
+int	parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc);
 char 	**expand(t_env_node *env, t_garbage_collect **gc, char **arrays, char *error_value);
+t_garbage_collect	**global_gc(t_garbage_collect **gc);
+t_cmd	*global_cmd(t_cmd *cmds);
+int		global_fd(int fd);
 
 //BUILT INS
 int		unset(t_env_node *env_dup_root, char *env_to_find);
@@ -134,6 +135,8 @@ void    perror_exit(t_garbage_collect *gc, int exit_code, char *err_msg);
 void	empty_trash_exit(t_garbage_collect *gc, int exit_code);
 void    ft_error(char *error, t_garbage_collect *gc);
 int		exit_status(int status);
+void	exit_heredoc(int status);
+void	free_heredoc(void);
 
 
 ///------------------------Execution------------------------///
@@ -142,6 +145,7 @@ int		**open_pipes(t_cmd *cmds, t_garbage_collect **gc, int number_of_pipes);
 int 	exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes);
 int		count_pipes(t_token *token_list);
 int		theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char **cmd, int backup_fds[2]);
+void    close_all_heredoc_pipes(t_cmd *cmds_root, t_garbage_collect *gc);
 
 ///------------------------Parser/Lexer------------------------///
 int		parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cmd_chain);

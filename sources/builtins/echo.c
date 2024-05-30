@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:40:04 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/26 16:18:57 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/29 18:45:49 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ static char *remove_white_spaces(char *str);
 int echo(char **to_echo, t_garbage_collect **gc)
 {
 	bool    n_flag;
+	bool	n_n_flag;
 	char	*joined_string;
 
 
@@ -47,7 +48,10 @@ int echo(char **to_echo, t_garbage_collect **gc)
 	}
 	// printf("toecho [1] == %s, to echo 2 = %s\n\n\n", to_echo[1],to_echo[2]);
 	joined_string = join_echo(&to_echo[1], gc);
-	joined_string = n_flag_logic(joined_string, &n_flag);
+	joined_string = n_flag_logic(joined_string, &n_n_flag);
+	n_flag = n_n_flag;
+	while (n_n_flag == true)
+		joined_string = n_flag_logic(joined_string, &n_n_flag);
 	// I actually only want to remove white_space when echoing ENV variable, maybe add something in the env or in the expand about it ? idk
 	// joined_string = remove_white_spaces(joined_string);
 	if (printf("%s", joined_string) == -1)
@@ -105,7 +109,7 @@ static	char	*join_echo(char **to_echo, t_garbage_collect **gc)
 static	char    *n_flag_logic(char *str, bool *n_flag)
 {
 	int i;
-	
+
 	if (ft_strlen(str) < 2)
 	{	
 		*n_flag = false;

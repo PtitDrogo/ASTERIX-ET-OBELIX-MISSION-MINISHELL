@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 16:01:27 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/23 18:09:17 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/30 02:24:33 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,3 +45,21 @@ int	exit_status(int status)
 	return (exit_status);
 }
 
+void	exit_heredoc(int status)
+{
+	t_garbage_collect	**gc;
+
+	gc = global_gc(NULL);
+	close_all_heredoc_pipes(global_cmd(NULL), *gc);
+	close(global_fd(-1));
+	empty_trash_exit(*gc, status);
+}
+
+void	free_heredoc(void)
+{
+	t_garbage_collect	**gc;
+
+	gc = global_gc(NULL);
+	close_all_heredoc_pipes(global_cmd(NULL), *gc);
+	close(global_fd(-1));
+}

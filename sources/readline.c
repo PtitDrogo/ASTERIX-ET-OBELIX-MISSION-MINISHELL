@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/29 19:46:42 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/30 02:36:13 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ bool	is_ascii(unsigned char c);
 int		verify_input(char *input);
 char    **rebuild_env_no_gc(t_env_node *root);
 void	recycle_trash(t_garbage_collect	**gc, t_env_node	**env_dup_root);
-int		process_solo_behavior(t_cmd *cmds, t_garbage_collect **gc);
 void	print_open_err_msg(int errnumber, char *file, t_garbage_collect *gc);
 void	secure_dup2_no_exit(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int number_of_pipes);
 
@@ -87,17 +86,23 @@ int main(int argc, char const *argv[], char **envp)
 			{	
 				
 				int backup_fds[2];
+				int process_status;
 				backup_fds[0] = dup(0);
 				backup_fds[1] = dup(1);
-				if (process_solo_behavior(cmds, &gc))
+
+				process_status = process_behavior(cmds, &gc, token);
+				if (process_status == 0)
 					exit_status(theo_basic_parsing(&env_dup_root, &gc, cmds->str, backup_fds));
-				else
-					exit_status(1); //failed to do command so generic 1 ? for now its good
+				
 				//PUT STD back to normal
 				dup2(backup_fds[0], STDIN_FILENO);
 				dup2(backup_fds[1], STDOUT_FILENO);
 				close(backup_fds[0]);
 				close(backup_fds[1]);
+				if (process_status == 1)
+					exit_status(1); //if regular fail exit status is 1;
+				else if (process_status == 2)
+					empty_trash_exit(gc, errno); //if a write failed we exit shell
 				//
 			}
 			else
@@ -230,64 +235,6 @@ char    **rebuild_env_no_gc(t_env_node *root)
     }
 	envp[i] = NULL;
 	return (envp);
-}
-
-//The only difference is that I dont exit the shell if theres an error
-//need to save stdin and out;
-int	process_solo_behavior(t_cmd *cmds, t_garbage_collect **gc)
-{
-	//je veux just dup les redirections;
-	t_token	*in;
-	t_token	*out;
-	int		tmp_fd;
-	int		status;
-
-	in = cmds->redirection_in;
-	out = cmds->redirection_out;
-	status = 0;
-	while (in)
-	{	
-		if (in->type == LESS)
-		{	
-			tmp_fd = open(in->next->str, O_RDONLY);
-			if (tmp_fd == -1)
-				return (print_open_err_msg(errno, in->next->str, *gc), 0);
-		}
-		if (in->type == D_LESS)
-		{
-			tmp_fd = in->here_doc_pipe;
-		}
-		if (in->next && in->next->next == NULL || in->type == PIPE)
-			if (dup2(tmp_fd, STDIN_FILENO) == -1)
-				return (perror("Error duplicating file descriptor"), 0);
-		if (in->type == LESS || in->type == D_LESS)
-			if (close(tmp_fd) == -1)
-				return (perror("Failed to close opened file"), 0);
-		in = in->next;
-	}
-	while (out)
-	{
-		if (out->type == GREAT)
-		{	
-			tmp_fd = open(out->next->str, O_WRONLY | O_TRUNC | O_CREAT, 0644);
-			if (tmp_fd == -1)
-				return (print_open_err_msg(errno, out->next->str, *gc), 0);
-		}
-		if (out->type == D_GREAT)
-		{	
-			tmp_fd = open(out->next->str, O_WRONLY | O_APPEND | O_CREAT, 0644);
-			if (tmp_fd == -1)
-				return (print_open_err_msg(errno, out->next->str, *gc), 0);
-		}
-		if ((out->next && out->next->next == NULL) || out->type == PIPE)
-			if (dup2(tmp_fd, STDOUT_FILENO) == -1)
-				return (perror("Error duplicating file descriptor"), 0);
-		if (out->type == GREAT || out->type == D_GREAT)
-			if (close(tmp_fd) == -1)
-				return (perror("Failed to close opened file"), 0);
-		out = out->next;
-	}
-	return (1); // if theres no redirection we just go to exec as usual;
 }
 
 //no exit here;

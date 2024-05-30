@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/29 21:41:30 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/30 02:07:15 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,9 @@ void		close_all_pipes(int **pipes_fds, t_garbage_collect *gc, int number_of_pipe
 char		*find_env_variable(char **envp, char *env_to_find);
 
 void		secure_dup2(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int number_of_pipes);
-void		print_open_err_msg_exit(int errnumber, char *file, t_garbage_collect *gc);
+int			print_open_err_msg_exit(int errnumber, char *file, t_garbage_collect *gc);
 
-void		process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes, t_token *token_root);
+int			process_behavior(t_cmd *cmds, t_garbage_collect **gc, t_token *token_root);
 char		*find_valid_path(t_cmd *cmds, char **envp, t_garbage_collect **gc);
 void		child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes, t_cmd *cmds_root, t_token *token_root);
 //ca fait beaucoup la non
@@ -144,6 +144,7 @@ void	close_all_heredoc_pipes(t_cmd *cmds_root, t_garbage_collect *gc)
 void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes, t_cmd *cmds_root, t_token *token_current)
 {
 	char	*valid_path;
+	int process_status; 
 	
 	cmds->cmd_id = fork();
 	if (cmds->cmd_id == -1)
@@ -151,10 +152,12 @@ void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect 
 	if (cmds->cmd_id == 0)
 	{
 		
-		process_behavior(cmds, gc, pipes, number_of_pipes, token_current);
+		process_status = process_behavior(cmds, gc, token_current); //I always exit since im in child;
 		//in close all pipes add function to close all Heredoc pipes (need to give the root of cmd to see function);
 		close_all_pipes(pipes, *gc, number_of_pipes);
 		close_all_heredoc_pipes(cmds_root, *gc);
+		if (process_status != 0)
+			empty_trash_exit(*gc, 1);
 		if (get_correct_cmd(cmds) == 0)
 			empty_trash_exit(*gc, 0); //Bash just exits with return 0 for $NOTEXIST;
 		valid_path = find_valid_path(cmds, envp, gc);
@@ -211,15 +214,13 @@ int	get_correct_cmd(t_cmd *cmds)
 		while (cmds && cmds->str && cmds->str[i] && cmds->str[i][0] == '\0')
 			i++;
 		cmds->str = &cmds->str[i];
-		// printf("i is %i\n", i);
-		// printf("after change cmds str is %s\n", cmds->str[0]);
 		if (cmds->str[0] == NULL)
 			return (0);
 	}
 	return (1);
 }
-//Replaced errno by 1 in return value;
-void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes, t_token *token_current)
+//This return 0 on success, 1 on regular error, 2 on CRITICAL error (write failing)
+int process_behavior(t_cmd *cmds, t_garbage_collect **gc, t_token *token_current)
 {
 	//je veux just dup les redirections;
 	t_token	*in;
@@ -242,7 +243,9 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 			if (in->type == PIPE)
 			{	
 				tmp_fd = in->pipe_fd;
-				secure_dup2(tmp_fd, STDIN_FILENO, pipes, *gc, number_of_pipes);
+				// secure_dup2(tmp_fd, STDIN_FILENO, pipes, *gc, number_of_pipes);
+				if (dup2(tmp_fd, STDIN_FILENO) == -1)
+					return (1); //one for error DO NOT BOTHER ME ABOUT INCONSISTENCY
 			}
 			in = in->next;
 		}
@@ -259,7 +262,7 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 				{	
 					tmp_fd = open(in->next->str, O_RDONLY);
 					if (tmp_fd == -1)
-						print_open_err_msg_exit(errno, in->next->str, *gc);
+						return (print_open_err_msg_exit(errno, in->next->str, *gc));
 					in = in->next;
 				}
 				if (in->type == D_LESS)
@@ -268,10 +271,19 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 					in = in->next;
 				}
 				if ((in->next == NULL) || in->type == PIPE)
-					secure_dup2(tmp_fd, STDIN_FILENO, pipes, *gc, number_of_pipes);
+					if (dup2(tmp_fd, STDIN_FILENO) == -1)
+					{	
+						if (ft_printf_err("bash: Error Dupplicating file\n") == -1)
+							return (2);
+						return (1);
+					}
 				if (in->type == LESS || in->type == D_LESS)
 					if (close(tmp_fd) == -1)
-						perror_exit(*gc, 1, "Failed to close opened file");
+					{	
+						if (ft_printf_err("Failed to close opened file")== -1)
+							return (2);
+						return (1); //maybe 2 ?
+					}
 				in = in->next;
 			}	
 		}
@@ -285,7 +297,7 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 					// printf("yo in great\n");
 					tmp_fd = open(out->next->str, O_WRONLY | O_TRUNC | O_CREAT, 0644);
 					if (tmp_fd == -1)
-						print_open_err_msg_exit(errno, out->next->str, *gc);
+						return (print_open_err_msg_exit(errno, out->next->str, *gc));
 					out = out->next;
 				}
 				if (out->type == D_GREAT)
@@ -293,16 +305,25 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 					// printf("yo in D great\n");
 					tmp_fd = open(out->next->str, O_WRONLY | O_APPEND | O_CREAT, 0644);
 					if (tmp_fd == -1)
-						print_open_err_msg_exit(errno, out->next->str, *gc);
+						return (print_open_err_msg_exit(errno, out->next->str, *gc));
 					out = out->next;
 				}	
 				if (out->type == PIPE)
 					tmp_fd = out->pipe_fd;
 				if ((out->next == NULL) || out->type == PIPE)
-					secure_dup2(tmp_fd, STDOUT_FILENO, pipes, *gc, number_of_pipes);
+					if (dup2(tmp_fd, STDOUT_FILENO) == -1)
+					{	
+						if (ft_printf_err("bash: Error Dupplicating file\n") == -1)
+							return (2);
+						return (1);
+					}
 				if (out->type == GREAT || out->type == D_GREAT)
 					if (close(tmp_fd) == -1) //not closing pipe because i am closing all pipes right outside this function
-						perror_exit(*gc, 1, "Failed to close opened file");
+					{	
+						if (ft_printf_err("Failed to close opened file")== -1)
+							return (2);
+						return (1); //maybe 2 ?
+					}
 				out = out->next;
 			}
 		}
@@ -310,7 +331,7 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 			break ;
 		token_current = token_current->next;
 	}
-	return ; // if theres no redirection we just go to exec as usual;
+	return (0); // if theres no redirection we just go to exec as usual;
 }
 
 char	*ft_strjoin_and_add(char const *s1, char const *s2, char c)
@@ -468,21 +489,22 @@ void	secure_dup2(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int
 	}
 	return ;
 }
-
-void	print_open_err_msg_exit(int errnumber, char *file, t_garbage_collect *gc)
+//Prints error message and return 2 it if couldnt do it instead of perror_exit(gc, errnumber, WRITE_ERR_MSG);
+int	print_open_err_msg_exit(int errnumber, char *file, t_garbage_collect *gc)
 {
 	// printf("HIIIIII IM PRINTING ERROR\n");
 	if (errnumber == ENOENT)
 		if (ft_printf_err("bash: %s: No such file or directory\n", file) == -1)
-			perror_exit(gc, errnumber, WRITE_ERR_MSG);
+			return (2);
 	if (errnumber == EACCES)
 		if (ft_printf_err("bash: %s: Permission denied\n", file) == -1)
-			perror_exit(gc, errnumber, WRITE_ERR_MSG);
+			return (2);
 	if (errnumber == EISDIR)
 		if (ft_printf_err("bash: %s: Is a directory\n", file) == -1)
-			perror_exit(gc, errnumber, WRITE_ERR_MSG);
+			return (2);
 	if (errnumber == EMFILE)
 		if (ft_printf_err("bash: %s: Too many files opened", file) == -1)
-			perror_exit(gc, errnumber, WRITE_ERR_MSG);
-	empty_trash_exit(gc, 1);
+			return (2);
+	return (1);
+	// empty_trash_exit(gc, 1);
 }

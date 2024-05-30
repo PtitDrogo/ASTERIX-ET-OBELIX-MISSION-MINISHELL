@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   here_doc.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/26 15:57:05 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/30 02:25:30 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,15 @@ static void		child_here_doc(char *delimiter, t_garbage_collect **gc, int fd);
 static void	here_doc_process(char *delimiter, t_garbage_collect **gc, int fd);
 
 //I want this function to exit with only one open pipe end per USED heredoc;
-void parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc)
+int parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc)
 {
 	t_token *current;
+	int		status;
 	// int	last_here_doc;
-	
+
+	status = EXIT_SUCCESS;
+	global_gc(gc);
+	global_cmd(cmds);
 	while (cmds)
 	{
 		// last_here_doc = -1;
@@ -37,10 +41,12 @@ void parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc)
 				// if (last_here_doc != -1)
 				// 	close(last_here_doc);
 				pipe(pipe_heredoc);
-				here_doc(current->next->str, gc, pipe_heredoc[1]);//wallah
+				status = here_doc(current->next->str, gc, pipe_heredoc[1]);//wallah
 				current->here_doc_pipe = pipe_heredoc[0];
 				close(pipe_heredoc[1]);
 				check_fd(current->here_doc_pipe);
+				if (status != EXIT_SUCCESS)
+					return (status);
 				// last_here_doc = pipe_heredoc[0];
 				current = current->next;
 			}
@@ -48,18 +54,32 @@ void parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc)
 		}
 		cmds = cmds->next;
 	}
+	return (status);
 }
 
 int	here_doc(char *delimiter, t_garbage_collect **gc, int fd)
 {
-	int	fork_id;
 	int	status;
+	int		pid;
 
-	global_gc(gc);
 	global_fd(fd);
-	signal(SIGINT, cancel_heredoc);
-	here_doc_process(delimiter, gc, fd);
-	return (0);
+	pid = fork();
+	if (pid == -1)
+		exit_heredoc(EXIT_FAILURE);
+	else if (pid == 0)
+	{
+		signal(SIGINT, cancel_heredoc);
+		here_doc_process(delimiter, gc, fd);
+		exit_heredoc(EXIT_SUCCESS);
+	}
+	waitpid(pid, &status, 0);
+	if (WIFEXITED(status))
+		status = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+		status = 128 + WTERMSIG(status);
+	if (status == 130)
+		ft_printf("\n");
+	return (status);
 }
 
 t_garbage_collect	**global_gc(t_garbage_collect **gc)
@@ -71,11 +91,20 @@ t_garbage_collect	**global_gc(t_garbage_collect **gc)
 	return (sgc);
 }
 
+t_cmd	*global_cmd(t_cmd *cmds)
+{
+	static t_cmd	*ccmds;
+
+	if (cmds)
+		ccmds = cmds;
+	return (ccmds);
+}
+
 int	global_fd(int fd)
 {
 	static int	ffd;
 
-	if (fd)
+	if (fd != -1)
 		ffd = fd;
 	return (ffd);
 }
@@ -91,17 +120,22 @@ static void	here_doc_process(char *delimiter, t_garbage_collect **gc, int fd)
 		if (input == NULL)
 		{	
 			if (ft_printf_err("bash: warning: here-document delimited by end-of-file (wanted `%s')\n", delimiter) == -1)
+			{
+				free_heredoc();
 				perror_exit(*gc, errno, WRITE_ERR_MSG);
+			}
 			return ;
 		}
 		if (ft_strncmp_n(input, delimiter, ft_strlen(input)) == 0)
 			break ;
 		//if we want to expand before writing in here doc it would be here;
 		if (write(fd, input, ft_strlen(input)) == -1)
+		{
+			free_heredoc();
             perror_exit(*gc, errno, WRITE_ERR_MSG);
+		}
 	}
 	printf("Returning 1 in heredoc\n");
-	// exit(EXIT_SUCCESS);
 }
 
 char	*readline_n_add_n(char *readline, t_garbage_collect **gc)

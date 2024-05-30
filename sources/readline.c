@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/28 14:11:47 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/30 02:47:36 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,48 +57,50 @@ int main(int argc, char const *argv[], char **envp)
 			break;
 		// Check for EOF (Ctrl+D)
 		//GROS caca pour tenter de faire passer le testeur, a ne pas keep;
-		if (strcmp(input, "echo $?") == 0)
-		{	
-			printf("%i\n", status);
-			break ;
-		}
+		// if (strcmp(input, "echo $?") == 0)
+		// {	
+		// 	printf("%i\n", status);
+		// 	break ;
+		// }
 		//J'ai rajoute un verify input sinon cat /dev/urandom/ fait crash le programme
 		if (verify_input(input) && basic_parsing(&gc, input, &token, &cmds) && token)
 		{
-			
-			parse_all_here_docs(cmds, &gc);
-			// printf("midpoint check cmds pipe : %s\n", cmds->str[0]);
-			// printf("cmd is %p\n", cmds);
-			// printf("cmd redir is %p and its type is %i\n", cmds->redirection_in, cmds->redirection_in->type);
-			// printf("POST FUNCTION cmd redir is %p\n", cmds->redirection_in);
-			//DEBUG//
-			// check_fd(cmds->redirection_in->here_doc_pipe);
-			// printf("midpoint check first token pipe : %s\n", token->str);
-			// check_fd(token->here_doc_pipe);
-			// printf("token address is %p and cmd redir address is %p\n", &cmds->redirection_in->here_doc_pipe, &token->here_doc_pipe);
-			//DEBUG
-			// printf("before expanding status has value %i\n", status);
-			expander(env_dup_root, &gc, cmds, ft_itoa(status)); //WORK IN PROGRESS
-			int number_of_pipes = count_pipes(token);
-			pipes = open_pipes(cmds, &gc, number_of_pipes);
-			if (number_of_pipes == 0 && is_builtin(cmds->str))
-			{	
-				
-				int backup_fds[2];
-				backup_fds[0] = dup(0);
-				backup_fds[1] = dup(1);
-				process_solo_behavior(cmds, &gc); //kinda weird, i shouldnt exit shell on a lot of cases where this exit the shell;
-				exit_status(theo_basic_parsing(&env_dup_root, &gc, cmds->str, backup_fds));
-				dup2(backup_fds[0], STDIN_FILENO);
-				dup2(backup_fds[1], STDOUT_FILENO);
-				close(backup_fds[0]);
-				close(backup_fds[1]);
-			}
-			else
-			{	
-				
-				// printf("Am i here or no\n");
-				exit_status(exec(env_dup_root, cmds, &gc, pipes, number_of_pipes));
+			signal(SIGINT, cancel_cmd);
+			if (exit_status(parse_all_here_docs(cmds, &gc)) == EXIT_SUCCESS)
+			{
+				// printf("midpoint check cmds pipe : %s\n", cmds->str[0]);
+				// printf("cmd is %p\n", cmds);
+				// printf("cmd redir is %p and its type is %i\n", cmds->redirection_in, cmds->redirection_in->type);
+				// printf("POST FUNCTION cmd redir is %p\n", cmds->redirection_in);
+				//DEBUG//
+				// check_fd(cmds->redirection_in->here_doc_pipe);
+				// printf("midpoint check first token pipe : %s\n", token->str);
+				// check_fd(token->here_doc_pipe);
+				// printf("token address is %p and cmd redir address is %p\n", &cmds->redirection_in->here_doc_pipe, &token->here_doc_pipe);
+				//DEBUG
+				// printf("before expanding status has value %i\n", status);
+				expander(env_dup_root, &gc, cmds, ft_itoa(status)); //WORK IN PROGRESS
+				int number_of_pipes = count_pipes(token);
+				pipes = open_pipes(cmds, &gc, number_of_pipes);
+				if (number_of_pipes == 0 && is_builtin(cmds->str))
+				{	
+					
+					int backup_fds[2];
+					backup_fds[0] = dup(0);
+					backup_fds[1] = dup(1);
+					process_solo_behavior(cmds, &gc); //kinda weird, i shouldnt exit shell on a lot of cases where this exit the shell;
+					exit_status(theo_basic_parsing(&env_dup_root, &gc, cmds->str, backup_fds));
+					dup2(backup_fds[0], STDIN_FILENO);
+					dup2(backup_fds[1], STDOUT_FILENO);
+					close(backup_fds[0]);
+					close(backup_fds[1]);
+				}
+				else
+				{	
+					
+					// printf("Am i here or no\n");
+					exit_status(exec(env_dup_root, cmds, &gc, pipes, number_of_pipes));
+				}
 			}
 		}
 		if (verify_input(input))

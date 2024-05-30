@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:15:09 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/23 17:53:49 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/30 01:13:25 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ t_token	*dup_token(t_token *token, t_garbage_collect **gc)
 	dup->str = setter_gc(ft_strdup(token->str), gc);
 	malloc_check(dup->str, *gc);
 	dup->type = token->type;
+	dup->here_doc_pipe = token->here_doc_pipe;
 	dup->next = NULL;
 	return (dup);
 }
@@ -77,6 +78,7 @@ static t_token	*create_token(char *str, t_garbage_collect **gc)
 	else
 		token->type = STR;
 	token->str = str;
+	token->here_doc_pipe = -1;
 	return (token);
 }
 

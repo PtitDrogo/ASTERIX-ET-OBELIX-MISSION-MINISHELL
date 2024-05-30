@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/26 16:05:37 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/28 18:16:36 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,12 @@ void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds, char *error_
 		// {
 		// 	printf("after expanding : %s\n", cmds->str[i]);
 		// }
+		/*int z = 0;
+		while (cmds->str[z])
+		{
+			ft_printf("cmd_chain %s\n", cmds->str[z]);
+			z++;
+		}*/
 		cmds = cmds->next;
 	}
 	return ;
@@ -123,6 +129,7 @@ char **expand(t_env_node *env, t_garbage_collect **gc, char **arrays, char *erro
 		// printf("i = %i\n", i);
 		}
 	// printf("I am returning arrays[0] : %s and expanded var arrays[1] : %s\n", arrays[0], arrays[1]);
+	//ft_printf("expanded : %s\n", expanded_var);
 	return (arrays);
 }
 //Returns the size of a string after quotes removal and $ expansion;
@@ -157,7 +164,7 @@ int	count_new_size_of_array(char *array, t_env_node *env, t_garbage_collect **gc
 			else if (array[i + 1] == '?') //We know previous char is $ and we know '?' stops expanding
 			{
 				size += ft_strlen(error_value); //Might as well give the string of error value already ?
-				i++;
+				i += 2;
 			}
 			else
 			{

@@ -3,21 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/24 18:31:17 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/30 02:47:30 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 void check_fd(int fd) {
-    if (fcntl(fd, F_GETFD) == -1) {
+    /*if (fcntl(fd, F_GETFD) == -1) {
         perror("fcntl - GETFD");
         printf("Error checking FD %d: %s\n", fd, strerror(errno));
     } else {
-        printf("FD %d is open\n", fd);
+        //printf("FD %d is open\n", fd);
         int flags = fcntl(fd, F_GETFL);
         if (flags == -1) {
             perror("fcntl - GETFL");
@@ -32,7 +32,7 @@ void check_fd(int fd) {
         } else {
             printf("FD %d close-on-exec flag is %s\n", fd, (cloexec & FD_CLOEXEC) ? "set" : "not set");
         }
-    }
+    }*/
 }
 
 // int		tmp_fd;
@@ -74,7 +74,7 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 	int	status;
 
 	envp = rebuild_env(root_env, gc);
-	signal(SIGINT, cancel_cmd);
+	//signal(SIGINT, cancel_cmd);
 	while (current)
 	{
 		child_process(root_env, envp, current, gc, pipes_fds, number_of_pipes); //giving current command !!
@@ -97,6 +97,28 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 	}
 	//status = get_status_code(gc, status);
 	return (status); //replace by exit status;
+}
+
+void    close_all_heredoc_pipes(t_cmd *cmds_root, t_garbage_collect *gc)
+{
+    t_token *current;
+
+    while (cmds_root)
+    {
+        current = cmds_root->redirection_in;
+        while (current)
+        {
+            if (current->type == D_LESS)
+			{
+				//ft_printf("pipe value : %i\n", current->here_doc_pipe);
+				if (current->here_doc_pipe != -1)
+                	close(current->here_doc_pipe); //should care about if this close can fail later;
+			}
+            current = current->next;
+        }
+        cmds_root = cmds_root->next;
+    }
+    return ;
 }
 
 void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes)

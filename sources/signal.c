@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 16:29:30 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/21 17:18:56 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/30 02:49:01 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 void	new_prompt(int none)
 {
 	(void)none;
-	ft_printf("Chien \n");
+	ft_printf("\n");
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
@@ -30,12 +30,8 @@ void	cancel_cmd(int none)
 
 void	cancel_heredoc(int none)
 {
-	t_garbage_collect	**gc;
-
-	gc = global_gc(NULL);
-	close(global_fd(0));
 	(void)none;
-	empty_trash_exit(*gc, 130);
+	exit_heredoc(130);
 }
 
 /*void	set_signal(int)

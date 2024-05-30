@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 05:29:02 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/30 06:17:29 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ int parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc, t_env_node *env, ch
 			{
 				int pipe_heredoc[2];
 				pipe(pipe_heredoc);
-				//need to do a remove quote on current_next_str
 				int before_expand_len = ft_strlen(current->next->str);
 				current->next->str = remove_quotes(gc, current->next->str);
 				if (before_expand_len != ft_strlen(current->next->str))
@@ -49,7 +48,6 @@ int parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc, t_env_node *env, ch
 				close(pipe_heredoc[1]);
 				if (status != EXIT_SUCCESS)
 					return (status);
-				// check_fd(current->here_doc_pipe);
 				current = current->next;
 			}
 			current = current->next;

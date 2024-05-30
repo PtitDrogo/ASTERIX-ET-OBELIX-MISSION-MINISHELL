@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 03:40:05 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/30 07:16:10 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,6 +138,7 @@ char		**rebuild_env(t_env_node *root, t_garbage_collect **gc);
 char		*ft_strjoin_and_add(char const *s1, char const *s2, char c);
 
 
+
 //errors && exit
 void    perror_exit(t_garbage_collect *gc, int exit_code, char *err_msg);
 void	empty_trash_exit(t_garbage_collect *gc, int exit_code);
@@ -145,6 +146,7 @@ void    ft_error(char *error, t_garbage_collect *gc);
 int		exit_status(int status);
 void	exit_heredoc(int status);
 void	free_heredoc(void);
+int		print_open_err_msg(int errnumber, char *file);
 
 
 ///------------------------Execution------------------------///
@@ -153,7 +155,7 @@ int		**open_pipes(t_cmd *cmds, t_garbage_collect **gc, int number_of_pipes);
 int 	exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes, t_cmd *cmds_root, t_token *token_root);
 int		count_pipes(t_token *token_list);
 int		theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char **cmd, int backup_fds[2]);
-int			process_behavior(t_cmd *cmds, t_garbage_collect **gc, t_token *token_root);
+int			process_behavior(t_cmd *cmds, t_garbage_collect **gc, t_token *token_current);
 
 void    close_all_heredoc_pipes(t_cmd *cmds_root, t_garbage_collect *gc);
 

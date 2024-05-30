@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 05:29:02 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/30 07:15:55 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ bool	is_ascii(unsigned char c);
 int		verify_input(char *input);
 char    **rebuild_env_no_gc(t_env_node *root);
 void	recycle_trash(t_garbage_collect	**gc, t_env_node	**env_dup_root);
-void	print_open_err_msg(int errnumber, char *file, t_garbage_collect *gc);
 void	secure_dup2_no_exit(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int number_of_pipes);
 
 int main(int argc, char const *argv[], char **envp)
@@ -217,20 +216,21 @@ char    **rebuild_env_no_gc(t_env_node *root)
 }
 
 //no exit here;
-void	print_open_err_msg(int errnumber, char *file, t_garbage_collect *gc)
+int		print_open_err_msg(int errnumber, char *file)
 {
 	if (errnumber == ENOENT)
 		if (ft_printf2("bash: %s: No such file or directory\n", file) == -1)
-			perror_exit(gc, errnumber, WRITE_ERR_MSG);
+			return (2);
 	if (errnumber == EACCES)
 		if (ft_printf2("bash: %s: Permission denied\n", file) == -1)
-			perror_exit(gc, errnumber, WRITE_ERR_MSG);
+			return (2);
 	if (errnumber == EISDIR)
 		if (ft_printf2("bash: %s: Is a directory\n", file) == -1)
-			perror_exit(gc, errnumber, WRITE_ERR_MSG);
+			return (2);
 	if (errnumber == EMFILE)
 		if (ft_printf2("bash: %s: Too many files opened", file) == -1)
-			perror_exit(gc, errnumber, WRITE_ERR_MSG);
+			return (2);
+	return (1);
 }
 //no exit
 void	secure_dup2_no_exit(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int number_of_pipes)

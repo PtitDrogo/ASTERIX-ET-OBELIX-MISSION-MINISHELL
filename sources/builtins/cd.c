@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:54:37 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 05:29:02 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/30 06:17:46 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static void	handle_error(char *dir_path, t_garbage_collect *gc);
 static char	*join_path_to_home(char *dir_path, char *home, t_garbage_collect **gc);
 static int	update_pwd(t_garbage_collect **gc, t_env_node *env, char *dir_path);
-char	*safe_get_var(t_env_node *env, t_garbage_collect *gc, char *variable);
+char		*safe_get_var(t_env_node *env, t_garbage_collect *gc, char *variable);
 
 // Should be all done, work with cd - and with ~/ at the start;
 int cd(char **cmd, t_garbage_collect **gc, t_env_node *env)

@@ -3,14 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 02:47:30 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/30 03:04:30 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	close_all_heredoc_pipes(t_cmd *cmds_root, t_garbage_collect *gc);
+t_token	*get_next_first_token(t_token *cmds_root);
 
 void check_fd(int fd) {
     /*if (fcntl(fd, F_GETFD) == -1) {
@@ -42,15 +45,16 @@ void		close_all_pipes(int **pipes_fds, t_garbage_collect *gc, int number_of_pipe
 char		*find_env_variable(char **envp, char *env_to_find);
 
 void		secure_dup2(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int number_of_pipes);
-void		print_open_err_msg_exit(int errnumber, char *file, t_garbage_collect *gc);
+int			print_open_err_msg_exit(int errnumber, char *file, t_garbage_collect *gc);
 
-void		process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes);
+int			process_behavior(t_cmd *cmds, t_garbage_collect **gc, t_token *token_root);
 char		*find_valid_path(t_cmd *cmds, char **envp, t_garbage_collect **gc);
-void		child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes);
+void		child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes, t_cmd *cmds_root, t_token *token_root);
 //ca fait beaucoup la non
 
 //execve a besoin de deux choses, le char ** de la commande, et envp avec un path valide;
 int			get_status_code(t_garbage_collect **gc, int status);
+int			get_correct_cmd(t_cmd *cmds);
 
 
 int		get_status_code(t_garbage_collect **gc, int status)
@@ -64,23 +68,26 @@ int		get_status_code(t_garbage_collect **gc, int status)
 }
 
 
-int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes)
+int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes, t_cmd *cmds_root, t_token *token_root) //need root to clean pipes;
 {
 
 	//BUILTIN ARE MAIN PROCESS ALONE
 	//CHILDREN PROCESS OTHERWISE
 	char	**envp;
 	t_cmd *current = cmds;
+	t_token *token_current;
 	int	status;
 
 	envp = rebuild_env(root_env, gc);
-	//signal(SIGINT, cancel_cmd);
+	token_current = token_root;
 	while (current)
 	{
-		child_process(root_env, envp, current, gc, pipes_fds, number_of_pipes); //giving current command !!
+		child_process(root_env, envp, current, gc, pipes_fds, number_of_pipes, cmds_root, token_current); //giving current command !!
+		token_current = get_next_first_token(token_current);
 		current = current->next;
 	}
 	close_all_pipes(pipes_fds, *gc, number_of_pipes);
+	close_all_heredoc_pipes(cmds_root, *gc);
     current = cmds;
 	while (current)
 	{
@@ -97,6 +104,22 @@ int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_
 	}
 	//status = get_status_code(gc, status);
 	return (status); //replace by exit status;
+}
+
+
+t_token *get_next_first_token(t_token *token_root)
+{
+	//We want to give the token right after the pipe;
+	t_token *current;
+
+	current = token_root;
+	while (current)
+	{
+		if (current->type == PIPE)
+			return (current);
+		current = current->next;
+	}
+	return (NULL);
 }
 
 void    close_all_heredoc_pipes(t_cmd *cmds_root, t_garbage_collect *gc)
@@ -121,9 +144,10 @@ void    close_all_heredoc_pipes(t_cmd *cmds_root, t_garbage_collect *gc)
     return ;
 }
 
-void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes)
+void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes, t_cmd *cmds_root, t_token *token_current)
 {
 	char	*valid_path;
+	int process_status; 
 	
 	cmds->cmd_id = fork();
 	if (cmds->cmd_id == -1)
@@ -131,14 +155,40 @@ void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect 
 	if (cmds->cmd_id == 0)
 	{
 		
-		process_behavior(cmds, gc, pipes, number_of_pipes);
+		process_status = process_behavior(cmds, gc, token_current); //I always exit since im in child;
 		//in close all pipes add function to close all Heredoc pipes (need to give the root of cmd to see function);
 		close_all_pipes(pipes, *gc, number_of_pipes);
+		close_all_heredoc_pipes(cmds_root, *gc);
+		if (process_status != 0)
+			empty_trash_exit(*gc, 1);
+		if (get_correct_cmd(cmds) == 0)
+			empty_trash_exit(*gc, 0); //Bash just exits with return 0 for $NOTEXIST;
 		valid_path = find_valid_path(cmds, envp, gc);
+		// printf("valid path is %s\n", valid_path);
 		if (valid_path == NULL && cmds && cmds->str && is_builtin(cmds->str) == false) //last condition is important !
 		{
-			ft_printf_err("%s: command not found\n", cmds->str[0]); //need to check real err msg
-			empty_trash_exit(*gc, 127);
+			// printf("sex\n");
+			if (errno == EISDIR )
+			{
+				ft_printf_err("%s: Is a directory\n", cmds->str[0]); //need to check real err msg
+				empty_trash_exit(*gc, 126);
+			}
+			else if (errno == EACCES)
+			{
+				ft_printf_err("%s: Permission denied\n", cmds->str[0]); //need to check real err msg
+				empty_trash_exit(*gc, 126);
+			}
+			// else if (errno == ENOENT)
+			// {
+			// 	ft_printf_err("%s: No such file or directory\n", cmds->str[0]); //need to check real err msg
+			// 	empty_trash_exit(*gc, 127);
+			// }
+			else
+			{
+				ft_printf_err("%s: command not found\n", cmds->str[0]); //need to check real err msg
+				empty_trash_exit(*gc, 127);
+			}
+			
 		}
 		else if (cmds && cmds->str)
 		{
@@ -157,8 +207,23 @@ void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect 
 			empty_trash_exit(*gc, 127); //All of this shit purely because of heredoc without a cmd
 	}
 }
-
-void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes)
+int	get_correct_cmd(t_cmd *cmds)
+{
+	int i;
+	
+	i = 0;
+	if (cmds && cmds->str)
+	{
+		while (cmds && cmds->str && cmds->str[i] && cmds->str[i][0] == '\0')
+			i++;
+		cmds->str = &cmds->str[i];
+		if (cmds->str[0] == NULL)
+			return (0);
+	}
+	return (1);
+}
+//This return 0 on success, 1 on regular error, 2 on CRITICAL error (write failing)
+int process_behavior(t_cmd *cmds, t_garbage_collect **gc, t_token *token_current)
 {
 	//je veux just dup les redirections;
 	t_token	*in;
@@ -169,51 +234,107 @@ void	process_behavior(t_cmd *cmds, t_garbage_collect **gc, int **pipes, int numb
 	in = cmds->redirection_in;
 	out = cmds->redirection_out;
 	status = 0;
-	while (in)
-	{	
-		if (in->type == LESS)
-		{	
-			tmp_fd = open(in->next->str, O_RDONLY);
-			if (tmp_fd == -1)
-				print_open_err_msg_exit(errno, in->next->str, *gc);
-		}
-		//TODO, Close the pipes of the HEREDOC somehow
-		//EITHER close all of them now or somehow close them before idk;
-		if (in->type == D_LESS)
-			tmp_fd = in->here_doc_pipe;
-		if (in->type == PIPE)
-			tmp_fd = in->pipe_fd;
-		if (in->next && in->next->next == NULL || in->type == PIPE)
-			secure_dup2(tmp_fd, STDIN_FILENO, pipes, *gc, number_of_pipes);
-		if (in->type == LESS || in->type == D_LESS)
-			if (close(tmp_fd) == -1)
-				perror_exit(*gc, errno, "Failed to close opened file");
-		in = in->next;
-	}
-	while (out)
+
+	//handling very first token (thats always a pipe)
+	//honestly this should always trigger so maybe i can raw dog it
+	//with tmp_fd = in->pipe_fd; everytime ? Im not sure how bad it would be, gotta try;
+	// printf("Dup token is %s\n", token_current->str);
+	if (token_current->type == PIPE)
 	{
-		if (out->type == GREAT)
-		{	
-			tmp_fd = open(out->next->str, O_WRONLY | O_TRUNC | O_CREAT, 0644);
-			if (tmp_fd == -1)
-				print_open_err_msg_exit(errno, out->next->str, *gc);
+		if (in)
+		{
+			if (in->type == PIPE)
+			{	
+				tmp_fd = in->pipe_fd;
+				// secure_dup2(tmp_fd, STDIN_FILENO, pipes, *gc, number_of_pipes);
+				if (dup2(tmp_fd, STDIN_FILENO) == -1)
+					return (1); //one for error DO NOT BOTHER ME ABOUT INCONSISTENCY
+			}
+			in = in->next;
 		}
-		if (out->type == D_GREAT)
-		{	
-			tmp_fd = open(out->next->str, O_WRONLY | O_APPEND | O_CREAT, 0644);
-			if (tmp_fd == -1)
-				print_open_err_msg_exit(errno, out->next->str, *gc);
-		}	
-		if (out->type == PIPE)
-			tmp_fd = out->pipe_fd;
-		if ((out->next && out->next->next == NULL) || out->type == PIPE)
-			secure_dup2(tmp_fd, STDOUT_FILENO, pipes, *gc, number_of_pipes);
-		if (out->type == GREAT || out->type == D_GREAT)
-			if (close(tmp_fd) == -1)
-				perror_exit(*gc, errno, "Failed to close opened file");
-		out = out->next;
+		token_current = token_current->next;
 	}
-	return ; // if theres no redirection we just go to exec as usual;
+	
+	while (token_current)
+	{
+		if (token_current->type == D_LESS || token_current->type == LESS)
+		{
+			if (in)
+			{	
+				if (in->type == LESS)
+				{	
+					tmp_fd = open(in->next->str, O_RDONLY);
+					if (tmp_fd == -1)
+						return (print_open_err_msg_exit(errno, in->next->str, *gc));
+					in = in->next;
+				}
+				if (in->type == D_LESS)
+				{	
+					tmp_fd = in->here_doc_pipe;
+					in = in->next;
+				}
+				if ((in->next == NULL) || in->type == PIPE)
+					if (dup2(tmp_fd, STDIN_FILENO) == -1)
+					{	
+						if (ft_printf_err("bash: Error Dupplicating file\n") == -1)
+							return (2);
+						return (1);
+					}
+				if (in->type == LESS || in->type == D_LESS)
+					if (close(tmp_fd) == -1)
+					{	
+						if (ft_printf_err("Failed to close opened file")== -1)
+							return (2);
+						return (1); //maybe 2 ?
+					}
+				in = in->next;
+			}	
+		}
+		else if (token_current->type == D_GREAT || token_current->type == GREAT || token_current->type == PIPE)
+		{
+			if (out)
+			{
+				// printf("out is %s\n", out->str);
+				if (out->type == GREAT)
+				{	
+					// printf("yo in great\n");
+					tmp_fd = open(out->next->str, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+					if (tmp_fd == -1)
+						return (print_open_err_msg_exit(errno, out->next->str, *gc));
+					out = out->next;
+				}
+				if (out->type == D_GREAT)
+				{	
+					// printf("yo in D great\n");
+					tmp_fd = open(out->next->str, O_WRONLY | O_APPEND | O_CREAT, 0644);
+					if (tmp_fd == -1)
+						return (print_open_err_msg_exit(errno, out->next->str, *gc));
+					out = out->next;
+				}	
+				if (out->type == PIPE)
+					tmp_fd = out->pipe_fd;
+				if ((out->next == NULL) || out->type == PIPE)
+					if (dup2(tmp_fd, STDOUT_FILENO) == -1)
+					{	
+						if (ft_printf_err("bash: Error Dupplicating file\n") == -1)
+							return (2);
+						return (1);
+					}
+				if (out->type == GREAT || out->type == D_GREAT)
+					if (close(tmp_fd) == -1) //not closing pipe because i am closing all pipes right outside this function
+					{	
+						if (ft_printf_err("Failed to close opened file")== -1)
+							return (2);
+						return (1); //maybe 2 ?
+					}
+				out = out->next;
+			}
+		}
+		if (token_current->type == PIPE)
+			break ;
+		token_current = token_current->next;
+	}
+	return (0); // if theres no redirection we just go to exec as usual;
 }
 
 char	*ft_strjoin_and_add(char const *s1, char const *s2, char c)
@@ -294,7 +415,6 @@ void	close_all_pipes(int **pipes_fds, t_garbage_collect *gc, int number_of_pipes
 	i = 0;
 	if (pipes_fds == NULL)
 		return ;
-	
 	while (i < number_of_pipes)
 	{
 		if (close(pipes_fds[i][0]) == -1)
@@ -314,10 +434,18 @@ char	*find_valid_path(t_cmd *cmds, char **envp, t_garbage_collect **gc)
 	char **possible_paths;
 	int i;
 	
-	if (envp == NULL || cmds == NULL || cmds->str == NULL) // maybe add an error message for some of these cases;
+	if (envp == NULL || cmds == NULL || cmds->str == NULL || cmds->str[0] == NULL) //yes we need all of these
 		return (NULL);
-	if (access(*(cmds->str), X_OK) == 0)
-		return (*(cmds->str));
+	if (is_char_in_str(*(cmds->str), '/') == true)
+	{
+		if (access(*(cmds->str), X_OK) == 0)
+		{	
+			// printf("nique ta mere\n");
+			return (*(cmds->str));
+		}
+		else
+			return (NULL);
+	}
 	path = find_env_variable(envp, "PATH");
 	if (path == NULL)
 		return (NULL);
@@ -333,6 +461,7 @@ char	*find_valid_path(t_cmd *cmds, char **envp, t_garbage_collect **gc)
 	}
 	return (NULL);
 }
+
 //tries to find env and return NULL if it doesnt find it;
 char	*find_env_variable(char **envp, char *env_to_find)
 {
@@ -363,20 +492,22 @@ void	secure_dup2(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int
 	}
 	return ;
 }
-
-void	print_open_err_msg_exit(int errnumber, char *file, t_garbage_collect *gc)
+//Prints error message and return 2 it if couldnt do it instead of perror_exit(gc, errnumber, WRITE_ERR_MSG);
+int	print_open_err_msg_exit(int errnumber, char *file, t_garbage_collect *gc)
 {
+	// printf("HIIIIII IM PRINTING ERROR\n");
 	if (errnumber == ENOENT)
 		if (ft_printf_err("bash: %s: No such file or directory\n", file) == -1)
-			perror_exit(gc, errnumber, WRITE_ERR_MSG);
+			return (2);
 	if (errnumber == EACCES)
 		if (ft_printf_err("bash: %s: Permission denied\n", file) == -1)
-			perror_exit(gc, errnumber, WRITE_ERR_MSG);
+			return (2);
 	if (errnumber == EISDIR)
 		if (ft_printf_err("bash: %s: Is a directory\n", file) == -1)
-			perror_exit(gc, errnumber, WRITE_ERR_MSG);
+			return (2);
 	if (errnumber == EMFILE)
 		if (ft_printf_err("bash: %s: Too many files opened", file) == -1)
-			perror_exit(gc, errnumber, WRITE_ERR_MSG);
-	empty_trash_exit(gc, errnumber);
+			return (2);
+	return (1);
+	// empty_trash_exit(gc, 1);
 }

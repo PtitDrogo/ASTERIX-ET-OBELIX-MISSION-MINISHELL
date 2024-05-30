@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 16:11:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/26 16:23:12 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/28 20:22:07 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,13 +42,13 @@ int	export(t_env_node **root, void *variable, t_garbage_collect **gc)
 	t_env_node	*same_name_node;
 	
 	if (is_valid_env_name(variable, *gc) == 0)
-		return (2); //different error that SHOULDNT terminate the shell
+		return (1);
 	same_name_node = check_if_variable_exist(*root, variable);
 	if (same_name_node)
 	{
 		same_name_node->variable_name = get_env_name(variable, gc);
 		same_name_node->variable = get_env_var(variable, gc);
-		return (1);
+		return (0);
 	}
 	new_node = malloc_trash(sizeof(t_env_node), gc);
 	if (!new_node)
@@ -59,13 +59,13 @@ int	export(t_env_node **root, void *variable, t_garbage_collect **gc)
 	if ((*root) == NULL)
 	{
 		*root = new_node;
-		return (1);
+		return (0);
 	}
 	current = *root;
 	while (current->next)
 		current = current->next;
 	current->next = new_node;
-	return (1);
+	return (0);
 }
 
 //this function checks if the env var name is valid;
@@ -166,7 +166,7 @@ int	generate_env_llist(t_env_node **env_dup_root, t_garbage_collect **gc, char *
 		return (0);
 	while (envp[++i])
 	{	
-		if (export(env_dup_root, (void *)envp[i], gc) == 0)
+		if (export(env_dup_root, (void *)envp[i], gc) == 1)
 			return (0);
 	}
 	return (1);

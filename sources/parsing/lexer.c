@@ -3,20 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:15:09 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/30 01:13:25 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/30 03:06:59 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-/*TODO 
-Lexer : 
-Get input : Readline / split on whitespaces
-Lexe : Tokenize every splitted input
-Parse : Reorganize said tokens into commands*/
-
-//#include "minishell_parsing.h"
 #include "minishell.h"
 
 void	set_to_last_redir(t_token **tokenpile)
@@ -25,7 +18,6 @@ void	set_to_last_redir(t_token **tokenpile)
 		*tokenpile = (*tokenpile)->next;
 }
 
-//why are we duping
 t_token	*dup_token(t_token *token, t_garbage_collect **gc)
 {
 	t_token	*dup;
@@ -96,11 +88,5 @@ t_token	*tokenize(char **input, t_garbage_collect **gc)
 		add_token(&tokenpile, token);
 		i++;
 	}
-	/*token = tokenpile;
-	while (token)
-	{
-		ft_printf("token : %s\n", token->str);
-		token = token->next;
-	}*/
 	return (tokenpile);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:40:04 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/29 18:45:49 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/30 02:59:58 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int echo(char **to_echo, t_garbage_collect **gc)
 	{
 		if (printf("\n") == -1)
 			perror_exit(*gc, errno, WRITE_ERR_MSG);
-		return (1);
+		return (0);
 	}
 	// printf("toecho [1] == %s, to echo 2 = %s\n\n\n", to_echo[1],to_echo[2]);
 	joined_string = join_echo(&to_echo[1], gc);
@@ -61,7 +61,7 @@ int echo(char **to_echo, t_garbage_collect **gc)
 		if (printf("\n") == -1)
 			perror_exit(*gc, errno, WRITE_ERR_MSG);
 	}
-	return (1);
+	return (0);
 }
 static	char	*join_echo(char **to_echo, t_garbage_collect **gc)
 {

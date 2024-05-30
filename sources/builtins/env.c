@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 14:54:23 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/25 14:40:16 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/28 19:55:02 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,5 +22,5 @@ int env(t_env_node *env_dup_root, t_garbage_collect *gc)
                 perror_exit(gc, errno, WRITE_ERR_MSG);
         env_dup_root = env_dup_root->next;
 	}
-    return (1);
+    return (0);
 }

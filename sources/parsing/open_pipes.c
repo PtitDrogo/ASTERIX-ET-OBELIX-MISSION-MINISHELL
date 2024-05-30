@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   open_pipes.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 13:59:06 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/13 14:37:16 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/29 12:51:30 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ int count_pipes(t_token *token_list)
 }
 
 //call the pipes function to fill the **int full of fds;
+//Technically if pipe fails we are not closing the pipes we managed to open;
 static void	init_pipes(int **pipes,int pipe_number, t_garbage_collect *gc)
 {
 	int	i;

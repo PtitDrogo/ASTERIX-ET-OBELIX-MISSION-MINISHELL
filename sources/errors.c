@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   errors.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 16:01:27 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 02:24:33 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/30 03:07:08 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ void	empty_trash_exit(t_garbage_collect *gc, int exit_code)
 {
 	empty_trash(gc);
 	rl_clear_history();
+	// printf("Exit code is %i\n", exit_code);
 	exit(exit_code);
 	return ;
 }

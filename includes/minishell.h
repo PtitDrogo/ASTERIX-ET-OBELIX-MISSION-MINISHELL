@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 02:24:28 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/30 03:40:05 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ typedef struct s_cmd
 #define	SYNTAX_ERROR_MSG "bash: syntax error near unexpected token"
 #define PERROR_ERR_MSG "Error : "
 #define HEREDOC_FILE ".ft_heredoc"
+#define WRITE_ERROR 666
 
 ///------------------------Functions------------------------///
 
@@ -98,19 +99,26 @@ void	**setter_double_p_gc(void **data_to_set, t_garbage_collect **gc);
 void    malloc_check(void *ptr, t_garbage_collect *gc);
 
 //Here_doc
-int				here_doc(char *delimiter, t_garbage_collect **gc, int fd);
-int	parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc);
-char 	**expand(t_env_node *env, t_garbage_collect **gc, char **arrays, char *error_value);
+int					here_doc(char *delimiter, t_garbage_collect **gc, int fd, bool do_expand, t_env_node *env, char *error_value);
 t_garbage_collect	**global_gc(t_garbage_collect **gc);
-t_cmd	*global_cmd(t_cmd *cmds);
-int		global_fd(int fd);
+int					global_fd(int fd);
+int					parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc, t_env_node *env, char *error_value);
+t_garbage_collect	**global_gc(t_garbage_collect **gc);
+t_cmd				*global_cmd(t_cmd *cmds);
+int					global_fd(int fd);
+
+//EXPANDER
+char *remove_quotes(t_garbage_collect **gc, char *array);
+char 	**expand(t_env_node *env, t_garbage_collect **gc, char **arrays, char *error_value);
+int	count_size_no_quotes(char *array, t_garbage_collect **gc);
+char *expand_here_doc_str(t_env_node *env, t_garbage_collect **gc, char *array, char *error_value);
 
 //BUILT INS
 int		unset(t_env_node *env_dup_root, char *env_to_find);
 int		export(t_env_node **root, void *variable, t_garbage_collect **gc);
 int 	env(t_env_node *env_dup_root, t_garbage_collect *gc);
 int 	ft_exit(char **args, t_garbage_collect *gc, int backup_fds[2]);
-void	sorted_env_print(t_env_node *env_dup_root, t_garbage_collect *gc);
+int		sorted_env_print(t_env_node *env_dup_root, t_garbage_collect *gc);
 int		pwd(t_garbage_collect **gc);
 int		echo(char **to_echo, t_garbage_collect **gc);
 int 	cd(char **cmd, t_garbage_collect **gc, t_env_node *env);
@@ -142,9 +150,11 @@ void	free_heredoc(void);
 ///------------------------Execution------------------------///
 void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds, char *error_value);
 int		**open_pipes(t_cmd *cmds, t_garbage_collect **gc, int number_of_pipes);
-int 	exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes);
+int 	exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes, t_cmd *cmds_root, t_token *token_root);
 int		count_pipes(t_token *token_list);
 int		theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char **cmd, int backup_fds[2]);
+int			process_behavior(t_cmd *cmds, t_garbage_collect **gc, t_token *token_root);
+
 void    close_all_heredoc_pipes(t_cmd *cmds_root, t_garbage_collect *gc);
 
 ///------------------------Parser/Lexer------------------------///

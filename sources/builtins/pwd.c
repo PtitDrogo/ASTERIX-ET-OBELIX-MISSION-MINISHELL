@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 19:05:05 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/25 14:41:34 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/28 20:00:05 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int pwd(t_garbage_collect **gc)
     
     pwd = getcwd(NULL, 0);
     if (pwd == NULL)
-        perror_exit(*gc, errno, "Failed to get current path");
+        perror_exit(*gc, errno, "Failed to get current path"); //big bag dumb dumb;
     setter_gc(pwd, gc);
     if (printf("%s\n", pwd) == -1)
         perror_exit(*gc, errno, WRITE_ERR_MSG);

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 02:19:47 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/30 03:40:05 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,8 +102,10 @@ void    malloc_check(void *ptr, t_garbage_collect *gc);
 int					here_doc(char *delimiter, t_garbage_collect **gc, int fd, bool do_expand, t_env_node *env, char *error_value);
 t_garbage_collect	**global_gc(t_garbage_collect **gc);
 int					global_fd(int fd);
-void	parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc, t_env_node *env, char *error_value);
-
+int					parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc, t_env_node *env, char *error_value);
+t_garbage_collect	**global_gc(t_garbage_collect **gc);
+t_cmd				*global_cmd(t_cmd *cmds);
+int					global_fd(int fd);
 
 //EXPANDER
 char *remove_quotes(t_garbage_collect **gc, char *array);
@@ -141,6 +143,8 @@ void    perror_exit(t_garbage_collect *gc, int exit_code, char *err_msg);
 void	empty_trash_exit(t_garbage_collect *gc, int exit_code);
 void    ft_error(char *error, t_garbage_collect *gc);
 int		exit_status(int status);
+void	exit_heredoc(int status);
+void	free_heredoc(void);
 
 
 ///------------------------Execution------------------------///
@@ -151,6 +155,7 @@ int		count_pipes(t_token *token_list);
 int		theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char **cmd, int backup_fds[2]);
 int			process_behavior(t_cmd *cmds, t_garbage_collect **gc, t_token *token_root);
 
+void    close_all_heredoc_pipes(t_cmd *cmds_root, t_garbage_collect *gc);
 
 ///------------------------Parser/Lexer------------------------///
 int		parse(char **input, t_garbage_collect **gc, t_token	**tokenpile, t_cmd	**cmd_chain);

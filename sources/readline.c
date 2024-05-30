@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 02:45:51 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/30 03:34:00 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,38 +56,41 @@ int main(int argc, char const *argv[], char **envp)
 			break;
 		if (verify_input(input) && basic_parsing(&gc, input, &token, &cmds) && token)
 		{
-			char *str_status = ft_itoa(status);
+			signal(SIGINT, cancel_cmd);
+			char *str_status = ft_itoa(exit_status(-1));
 			setter_gc(str_status, &gc);
 			malloc_check(str_status, gc);
-			parse_all_here_docs(cmds, &gc, env_dup_root, str_status);
-			expander(env_dup_root, &gc, cmds, str_status); //WORK IN PROGRESS
-			int number_of_pipes = count_pipes(token);
-			pipes = open_pipes(cmds, &gc, number_of_pipes);
-			if (number_of_pipes == 0 && is_builtin(cmds->str))
-			{	
-				
-				int backup_fds[2];
-				int process_status;
-				backup_fds[0] = dup(0);
-				backup_fds[1] = dup(1);
+			if (exit_status(parse_all_here_docs(cmds, &gc, env_dup_root, str_status)) == EXIT_SUCCESS)
+			{
+				expander(env_dup_root, &gc, cmds, str_status); //WORK IN PROGRESS
+				int number_of_pipes = count_pipes(token);
+				pipes = open_pipes(cmds, &gc, number_of_pipes);
+				if (number_of_pipes == 0 && is_builtin(cmds->str))
+				{	
+					
+					int backup_fds[2];
+					int process_status;
+					backup_fds[0] = dup(0);
+					backup_fds[1] = dup(1);
 
-				process_status = process_behavior(cmds, &gc, token);
-				if (process_status == 0)
-					exit_status(theo_basic_parsing(&env_dup_root, &gc, cmds->str, backup_fds));
-				
-				//PUT STD back to normal
-				dup2(backup_fds[0], STDIN_FILENO);
-				dup2(backup_fds[1], STDOUT_FILENO);
-				close(backup_fds[0]);
-				close(backup_fds[1]);
-				if (process_status == 1)
-					exit_status(1); //if regular fail exit status is 1;
-				else if (process_status == 2)
-					empty_trash_exit(gc, errno); //if a write failed we exit shell
-				//
+					process_status = process_behavior(cmds, &gc, token);
+					if (process_status == 0)
+						exit_status(theo_basic_parsing(&env_dup_root, &gc, cmds->str, backup_fds));
+					
+					//PUT STD back to normal
+					dup2(backup_fds[0], STDIN_FILENO);
+					dup2(backup_fds[1], STDOUT_FILENO);
+					close(backup_fds[0]);
+					close(backup_fds[1]);
+					if (process_status == 1)
+						exit_status(1); //if regular fail exit status is 1;
+					else if (process_status == 2)
+						empty_trash_exit(gc, errno); //if a write failed we exit shell
+					//
+				}
+				else
+					exit_status(exec(env_dup_root, cmds, &gc, pipes, number_of_pipes, cmds, token));
 			}
-			else
-				exit_status(exec(env_dup_root, cmds, &gc, pipes, number_of_pipes, cmds, token));
 		}
 		if (verify_input(input))
 			add_history(input);

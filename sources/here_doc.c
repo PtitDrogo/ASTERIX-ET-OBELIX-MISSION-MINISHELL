@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/29 18:18:28 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/30 03:16:22 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,16 @@ char 			*expand_here_doc_str(t_env_node *env, t_garbage_collect **gc, char *arra
 char 			*expand_here_doc_str(t_env_node *env, t_garbage_collect **gc, char *array, char *error_value);
 
 //I want this function to exit with only one open pipe end per USED heredoc;
-void parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc, t_env_node *env, char *error_value)
+int parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc, t_env_node *env, char *error_value)
 {
 	t_token *current;
+	int		status;
 	bool do_expand;
 	
 	do_expand = true;
+	status = EXIT_SUCCESS;
+	global_gc(gc);
+	global_cmd(cmds);
 	while (cmds)
 	{
 		current = cmds->redirection_in;
@@ -40,28 +44,44 @@ void parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc, t_env_node *env, c
 				current->next->str = remove_quotes(gc, current->next->str);
 				if (before_expand_len != ft_strlen(current->next->str))
 					do_expand = false; 
-				here_doc(current->next->str, gc, pipe_heredoc[1], do_expand, env, error_value);
+				status = here_doc(current->next->str, gc, pipe_heredoc[1], do_expand, env, error_value);
 				current->here_doc_pipe = pipe_heredoc[0];
 				close(pipe_heredoc[1]);
-				check_fd(current->here_doc_pipe);
+				if (status != EXIT_SUCCESS)
+					return (status);
+				// check_fd(current->here_doc_pipe);
 				current = current->next;
 			}
 			current = current->next;
 		}
 		cmds = cmds->next;
 	}
+	return (status);
 }
 
 int	here_doc(char *delimiter, t_garbage_collect **gc, int fd, bool do_expand, t_env_node *env, char *error_value)
 {
-	int	fork_id;
 	int	status;
+	int		pid;
 
-	global_gc(gc);
 	global_fd(fd);
-	signal(SIGINT, cancel_heredoc);
-	here_doc_process(delimiter, gc, fd, do_expand, env, error_value);
-	return (0);
+	pid = fork();
+	if (pid == -1)
+		exit_heredoc(EXIT_FAILURE);
+	else if (pid == 0)
+	{
+		signal(SIGINT, cancel_heredoc);
+		here_doc_process(delimiter, gc, fd, do_expand, env, error_value);
+		exit_heredoc(EXIT_SUCCESS);
+	}
+	waitpid(pid, &status, 0);
+	if (WIFEXITED(status))
+		status = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+		status = 128 + WTERMSIG(status);
+	if (status == 130)
+		ft_printf("\n");
+	return (status);
 }
 
 t_garbage_collect	**global_gc(t_garbage_collect **gc)
@@ -73,11 +93,20 @@ t_garbage_collect	**global_gc(t_garbage_collect **gc)
 	return (sgc);
 }
 
+t_cmd	*global_cmd(t_cmd *cmds)
+{
+	static t_cmd	*ccmds;
+
+	if (cmds)
+		ccmds = cmds;
+	return (ccmds);
+}
+
 int	global_fd(int fd)
 {
 	static int	ffd;
 
-	if (fd)
+	if (fd != -1)
 		ffd = fd;
 	return (ffd);
 }
@@ -93,8 +122,8 @@ static void	here_doc_process(char *delimiter, t_garbage_collect **gc, int fd, bo
 		if (input == NULL)
 		{	
 			if (ft_printf_err("bash: warning: here-document delimited by end-of-file (wanted `%s')\n", delimiter) == -1)
-			{	
-				close(fd); //we should close all fds we managed to make, wheres is my fd linked list
+			{
+				free_heredoc();
 				perror_exit(*gc, errno, WRITE_ERR_MSG);
 			}
 			return ;
@@ -107,13 +136,12 @@ static void	here_doc_process(char *delimiter, t_garbage_collect **gc, int fd, bo
 			input = expand_here_doc_str(env, gc, input, error_value);
 		
 		if (write(fd, input, ft_strlen(input)) == -1)
-        {    
-			close(fd); ///we should close all fds we managed to make, wheres is my fd linked list
-			perror_exit(*gc, errno, WRITE_ERR_MSG);
+		{
+			free_heredoc();
+            perror_exit(*gc, errno, WRITE_ERR_MSG);
 		}
 	}
 	printf("Returning 1 in heredoc\n");
-	// exit(EXIT_SUCCESS);
 }
 
 char	*readline_n_add_n(char *readline, t_garbage_collect **gc)

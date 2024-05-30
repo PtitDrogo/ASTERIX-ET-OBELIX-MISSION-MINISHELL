@@ -12,7 +12,8 @@ DEPS 	= 	$(OBJS:.o=.d)
 
 #---------------------------------Sources---------------------------------#
 SRCS =		$(SRCS_DIR)/builtins/export.c \
-			$(SRCS_DIR)/garbage_collector.c \
+			$(SRCS_DIR)/gc/garbage_collector.c \
+			$(SRCS_DIR)/gc/gc_utils.c \
 			$(SRCS_DIR)/builtins/unset.c \
 			$(SRCS_DIR)/utils/utils.c \
 			$(SRCS_DIR)/utils/utils2.c \

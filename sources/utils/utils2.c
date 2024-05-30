@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 05:47:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 05:49:22 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/30 05:51:17 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ char	*get_env_variable(t_env_node *root, char *variable_name)
 bool	is_builtin(char **cmd)
 {
 	static char	*builtins[] = {"unset", "export", "env", "exit",
-		"pwd", "cd", "echo", "$?", NULL};
+		"pwd", "cd", "echo", NULL};
 	int			i;
 
 	i = 0;

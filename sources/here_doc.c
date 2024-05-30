@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 03:16:22 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/30 05:29:02 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,7 @@ static void	here_doc_process(char *delimiter, t_garbage_collect **gc, int fd, bo
 		input = readline_n_add_n(readline("heredoc> "), gc);
 		if (input == NULL)
 		{	
-			if (ft_printf_err("bash: warning: here-document delimited by end-of-file (wanted `%s')\n", delimiter) == -1)
+			if (ft_printf2("bash: warning: here-document delimited by end-of-file (wanted `%s')\n", delimiter) == -1)
 			{
 				free_heredoc();
 				perror_exit(*gc, errno, WRITE_ERR_MSG);

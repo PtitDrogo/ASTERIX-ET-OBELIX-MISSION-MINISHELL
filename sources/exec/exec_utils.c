@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 03:04:30 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/30 05:29:02 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,22 +170,22 @@ void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect 
 			// printf("sex\n");
 			if (errno == EISDIR )
 			{
-				ft_printf_err("%s: Is a directory\n", cmds->str[0]); //need to check real err msg
+				ft_printf2("%s: Is a directory\n", cmds->str[0]); //need to check real err msg
 				empty_trash_exit(*gc, 126);
 			}
 			else if (errno == EACCES)
 			{
-				ft_printf_err("%s: Permission denied\n", cmds->str[0]); //need to check real err msg
+				ft_printf2("%s: Permission denied\n", cmds->str[0]); //need to check real err msg
 				empty_trash_exit(*gc, 126);
 			}
 			// else if (errno == ENOENT)
 			// {
-			// 	ft_printf_err("%s: No such file or directory\n", cmds->str[0]); //need to check real err msg
+			// 	ft_printf2("%s: No such file or directory\n", cmds->str[0]); //need to check real err msg
 			// 	empty_trash_exit(*gc, 127);
 			// }
 			else
 			{
-				ft_printf_err("%s: command not found\n", cmds->str[0]); //need to check real err msg
+				ft_printf2("%s: command not found\n", cmds->str[0]); //need to check real err msg
 				empty_trash_exit(*gc, 127);
 			}
 			
@@ -200,7 +200,7 @@ void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect 
 				empty_trash_exit(*gc, 0);  //Exit with success;
 			}
 			execve(valid_path, cmds->str, envp);
-			ft_printf_err("Execve failed\n");
+			ft_printf2("Execve failed\n");
 			empty_trash_exit(*gc, 127);
 		}
 		else
@@ -276,14 +276,14 @@ int process_behavior(t_cmd *cmds, t_garbage_collect **gc, t_token *token_current
 				if ((in->next == NULL) || in->type == PIPE)
 					if (dup2(tmp_fd, STDIN_FILENO) == -1)
 					{	
-						if (ft_printf_err("bash: Error Dupplicating file\n") == -1)
+						if (ft_printf2("bash: Error Dupplicating file\n") == -1)
 							return (2);
 						return (1);
 					}
 				if (in->type == LESS || in->type == D_LESS)
 					if (close(tmp_fd) == -1)
 					{	
-						if (ft_printf_err("Failed to close opened file")== -1)
+						if (ft_printf2("Failed to close opened file")== -1)
 							return (2);
 						return (1); //maybe 2 ?
 					}
@@ -316,14 +316,14 @@ int process_behavior(t_cmd *cmds, t_garbage_collect **gc, t_token *token_current
 				if ((out->next == NULL) || out->type == PIPE)
 					if (dup2(tmp_fd, STDOUT_FILENO) == -1)
 					{	
-						if (ft_printf_err("bash: Error Dupplicating file\n") == -1)
+						if (ft_printf2("bash: Error Dupplicating file\n") == -1)
 							return (2);
 						return (1);
 					}
 				if (out->type == GREAT || out->type == D_GREAT)
 					if (close(tmp_fd) == -1) //not closing pipe because i am closing all pipes right outside this function
 					{	
-						if (ft_printf_err("Failed to close opened file")== -1)
+						if (ft_printf2("Failed to close opened file")== -1)
 							return (2);
 						return (1); //maybe 2 ?
 					}
@@ -497,16 +497,16 @@ int	print_open_err_msg_exit(int errnumber, char *file, t_garbage_collect *gc)
 {
 	// printf("HIIIIII IM PRINTING ERROR\n");
 	if (errnumber == ENOENT)
-		if (ft_printf_err("bash: %s: No such file or directory\n", file) == -1)
+		if (ft_printf2("bash: %s: No such file or directory\n", file) == -1)
 			return (2);
 	if (errnumber == EACCES)
-		if (ft_printf_err("bash: %s: Permission denied\n", file) == -1)
+		if (ft_printf2("bash: %s: Permission denied\n", file) == -1)
 			return (2);
 	if (errnumber == EISDIR)
-		if (ft_printf_err("bash: %s: Is a directory\n", file) == -1)
+		if (ft_printf2("bash: %s: Is a directory\n", file) == -1)
 			return (2);
 	if (errnumber == EMFILE)
-		if (ft_printf_err("bash: %s: Too many files opened", file) == -1)
+		if (ft_printf2("bash: %s: Too many files opened", file) == -1)
 			return (2);
 	return (1);
 	// empty_trash_exit(gc, 1);

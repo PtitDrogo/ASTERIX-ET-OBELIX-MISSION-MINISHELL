@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 17:32:57 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/21 19:17:34 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/30 05:29:02 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,13 +44,13 @@ void    *malloc_trash(int size, t_garbage_collect **gc)
     to_return = malloc(size);
 	if (!to_return)
 	{	
-		if (ft_printf_err("Malloc failed\n") == -1)
+		if (ft_printf2("Malloc failed\n") == -1)
 			perror_exit(*gc, errno, WRITE_ERR_MSG);
 		empty_trash_exit(*gc, MALLOC_ERROR);
 	}
 	if (add_to_trash(gc, to_return) == 0)
 	{
-		if (ft_printf_err("GC Malloc failed\n") == -1)
+		if (ft_printf2("GC Malloc failed\n") == -1)
 		{
 			free(to_return);
 			perror_exit(*gc, errno, WRITE_ERR_MSG);
@@ -85,7 +85,7 @@ void	*setter_gc(void *data_to_set, t_garbage_collect **gc)
 		if (add_to_trash(gc, data_to_set) == 0)
 		{
 			free(data_to_set);
-			if (ft_printf_err(MALLOC_ERR_MSG) == -1)
+			if (ft_printf2(MALLOC_ERR_MSG) == -1)
 				perror_exit(*gc, errno, WRITE_ERR_MSG);
 			empty_trash_exit(*gc, MALLOC_ERROR);
 		}
@@ -125,7 +125,7 @@ void    malloc_check(void *ptr, t_garbage_collect *gc)
 {
     if (ptr == NULL)
     {
-        if (ft_printf_err(MALLOC_ERR_MSG) == -1)
+        if (ft_printf2(MALLOC_ERR_MSG) == -1)
             perror_exit(gc, errno, WRITE_ERR_MSG);
         empty_trash_exit(gc, MALLOC_ERROR);
     }

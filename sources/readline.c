@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 03:34:00 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/30 05:29:02 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,16 +220,16 @@ char    **rebuild_env_no_gc(t_env_node *root)
 void	print_open_err_msg(int errnumber, char *file, t_garbage_collect *gc)
 {
 	if (errnumber == ENOENT)
-		if (ft_printf_err("bash: %s: No such file or directory\n", file) == -1)
+		if (ft_printf2("bash: %s: No such file or directory\n", file) == -1)
 			perror_exit(gc, errnumber, WRITE_ERR_MSG);
 	if (errnumber == EACCES)
-		if (ft_printf_err("bash: %s: Permission denied\n", file) == -1)
+		if (ft_printf2("bash: %s: Permission denied\n", file) == -1)
 			perror_exit(gc, errnumber, WRITE_ERR_MSG);
 	if (errnumber == EISDIR)
-		if (ft_printf_err("bash: %s: Is a directory\n", file) == -1)
+		if (ft_printf2("bash: %s: Is a directory\n", file) == -1)
 			perror_exit(gc, errnumber, WRITE_ERR_MSG);
 	if (errnumber == EMFILE)
-		if (ft_printf_err("bash: %s: Too many files opened", file) == -1)
+		if (ft_printf2("bash: %s: Too many files opened", file) == -1)
 			perror_exit(gc, errnumber, WRITE_ERR_MSG);
 }
 //no exit

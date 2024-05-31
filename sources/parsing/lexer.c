@@ -28,7 +28,7 @@ t_token	*dup_token(t_token *token, t_garbage_collect **gc)
 	dup->str = setter_gc(ft_strdup(token->str), gc);
 	malloc_check(dup->str, *gc);
 	dup->type = token->type;
-	dup->here_doc_pipe = token->here_doc_pipe;
+	dup->token_fd = token->token_fd;
 	dup->next = NULL;
 	return (dup);
 }
@@ -70,7 +70,7 @@ static t_token	*create_token(char *str, t_garbage_collect **gc)
 	else
 		token->type = STR;
 	token->str = str;
-	token->here_doc_pipe = -1;
+	token->token_fd = -1;
 	return (token);
 }
 

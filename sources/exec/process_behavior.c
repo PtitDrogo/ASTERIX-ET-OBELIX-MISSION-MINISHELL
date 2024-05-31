@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 06:19:34 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 08:31:04 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/31 19:39:45 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int	handle_first_pipe(t_token **token_current, int *tmp_fd, t_token **in)
 		{
 			if ((*in)->type == PIPE)
 			{
-				*tmp_fd = (*in)->pipe_fd;
+				*tmp_fd = (*in)->token_fd;
 				if (dup2(*tmp_fd, STDIN_FILENO) == -1)
 				{
 					if (ft_printf2("bash: Error Dupplicating file\n") == -1)
@@ -81,7 +81,7 @@ int	handle_in_redin(t_token **token_current, int *tmp_fd, t_token **in)
 		}
 		else if ((*in)->type == D_LESS)
 		{
-			*tmp_fd = (*in)->here_doc_pipe;
+			*tmp_fd = (*in)->token_fd;
 			(*in) = (*in)->next;
 		}
 		status = handle_dup(token_current, tmp_fd, in, STDIN_FILENO);
@@ -104,15 +104,15 @@ int	handle_in_redout(t_token **token_current, int *fd, t_token **out)
 				return (print_open_err_msg(errno, (*out)->next->str));
 			(*out) = (*out)->next;
 		}
-		else if ((*out)->type == D_GREAT)
+		if ((*out)->type == D_GREAT)
 		{
 			*fd = open((*out)->next->str, O_WRONLY | O_APPEND | O_CREAT, 0644);
 			if (*fd == -1)
 				return (print_open_err_msg(errno, (*out)->next->str));
 			(*out) = (*out)->next;
 		}
-		else if ((*out)->type == PIPE)
-			*fd = (*out)->pipe_fd;
+		if ((*out)->type == PIPE)
+			*fd = (*out)->token_fd;
 		status = handle_dup(token_current, fd, out, STDOUT_FILENO);
 		(*out) = (*out)->next;
 	}
@@ -130,7 +130,8 @@ int	handle_dup(t_token **token_current, int *tmp_fd, t_token **in_out, int std)
 			return (1);
 		}
 	}
-	if ((*in_out)->type == LESS || (*in_out)->type == D_LESS)
+	if ((*token_current)->type == LESS || (*token_current)->type == D_LESS
+		|| (*token_current)->type == GREAT || (*token_current)->type == D_GREAT)
 	{
 		if (close(*tmp_fd) == -1)
 		{

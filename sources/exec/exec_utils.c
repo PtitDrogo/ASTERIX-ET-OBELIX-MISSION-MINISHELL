@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 07:07:40 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/31 19:39:45 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,9 +102,9 @@ void    close_all_heredoc_pipes(t_cmd *cmds_root, t_garbage_collect *gc)
         {
             if (current->type == D_LESS)
 			{
-				//ft_printf("pipe value : %i\n", current->here_doc_pipe);
-				if (current->here_doc_pipe != -1)
-                	close(current->here_doc_pipe); //should care about if this close can fail later;
+				//ft_printf("pipe value : %i\n", current->pipe_fd);
+				if (current->token_fd != -1)
+                	close(current->token_fd); //should care about if this close can fail later;
 			}
             current = current->next;
         }

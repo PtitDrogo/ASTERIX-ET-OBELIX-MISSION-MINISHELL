@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf_err.c                                    :+:      :+:    :+:   */
+/*   ft_printf2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -14,7 +14,7 @@
 
 static size_t	ft_strlen_printf_err(const char *s);
 
-int	ft_printf_err(const char *text, ...)
+int	ft_printf2(const char *text, ...)
 {
 	va_list	argptr;
 	size_t	i;

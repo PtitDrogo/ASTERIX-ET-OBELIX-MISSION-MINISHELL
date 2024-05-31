@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 14:57:56 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/28 14:12:39 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/30 05:29:02 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int ft_exit(char **args, t_garbage_collect *gc, int backup_fds[2])
 		close_backup_fds(backup_fds);
 		if (printf("exit\n") == -1)
 			perror_exit(gc, errno, WRITE_ERR_MSG);
-		if (ft_printf_err("bash: exit: %s: numeric argument required\n", args[0]) == -1)
+		if (ft_printf2("bash: exit: %s: numeric argument required\n", args[0]) == -1)
 			perror_exit(gc, errno, WRITE_ERR_MSG);
 		empty_trash_exit(gc, 2);
 	}
@@ -45,7 +45,7 @@ int ft_exit(char **args, t_garbage_collect *gc, int backup_fds[2])
 	{
 		if (printf("exit\n") == -1)
 			perror_exit(gc, errno, WRITE_ERR_MSG);
-		if (ft_printf_err("bash: exit: too many arguments\n") == -1)
+		if (ft_printf2("bash: exit: too many arguments\n") == -1)
 		{	
 			close_backup_fds(backup_fds);
 			perror_exit(gc, errno, WRITE_ERR_MSG);
@@ -56,7 +56,7 @@ int ft_exit(char **args, t_garbage_collect *gc, int backup_fds[2])
 	empty_trash_exit(gc, get_exit_return_value(*args));
 	return(0); // we should never get there
 }
-//error message should be written in 2 so the ft_printf_err will have to go;
+//error message should be written in 2 so the ft_printf2 will have to go;
 
 static int		get_exit_return_value(char *arg)
 {
@@ -69,7 +69,7 @@ static int		get_exit_return_value(char *arg)
 	}
 	else
 		result = result % 256;
-	// ft_printf_err("exit with code %i\n", result);
+	// ft_printf2("exit with code %i\n", result);
 	return (result);
 	
 }

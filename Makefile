@@ -12,9 +12,11 @@ DEPS 	= 	$(OBJS:.o=.d)
 
 #---------------------------------Sources---------------------------------#
 SRCS =		$(SRCS_DIR)/builtins/export.c \
-			$(SRCS_DIR)/garbage_collector.c \
+			$(SRCS_DIR)/gc/garbage_collector.c \
+			$(SRCS_DIR)/gc/gc_utils.c \
 			$(SRCS_DIR)/builtins/unset.c \
-			$(SRCS_DIR)/utils.c \
+			$(SRCS_DIR)/utils/utils.c \
+			$(SRCS_DIR)/utils/utils2.c \
 			$(SRCS_DIR)/builtins/env.c \
 			$(SRCS_DIR)/builtins/exit.c \
 			$(SRCS_DIR)/readline.c \
@@ -29,6 +31,7 @@ SRCS =		$(SRCS_DIR)/builtins/export.c \
 			$(SRCS_DIR)/here_doc.c \
 			$(SRCS_DIR)/parsing/open_pipes.c \
 			$(SRCS_DIR)/exec/exec_utils.c \
+			$(SRCS_DIR)/exec/process_behavior.c \
 			$(SRCS_DIR)/parsing/syntax_error.c \
 			$(SRCS_DIR)/signal.c	\
 			$(SRCS_DIR)/expander/expander.c 

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/09 13:11:39 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/26 20:30:33 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/30 05:29:02 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void	ft_putncount_char_err(char c, int *size);
 void	ft_print_ptr_err(unsigned long long ptr, int *size);
 void	ft_putuns_err(unsigned int nbr, char *base, int *size);
 void	ft_putncount_str_err(char *str, int *size);
-int		ft_printf_err(const char *text, ...);
+int		ft_printf2(const char *text, ...);
 
 //libft//
 int		ft_atoi(const char *nptr);

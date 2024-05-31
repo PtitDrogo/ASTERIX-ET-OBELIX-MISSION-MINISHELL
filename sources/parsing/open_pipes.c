@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 13:59:06 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/31 18:38:21 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/31 20:26:01 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ int	**open_pipes(t_cmd *cmds, t_garbage_collect **gc, int number_of_pipes)
 {
 	int	**pipes_fds;
 
+	//Technically if the malloc fails we need to close the pipes fds;
 	pipes_fds = malloc_pipes_fds(number_of_pipes, gc);
 	init_pipes(pipes_fds, number_of_pipes, *gc);
 	fill_pipes_in_token(cmds, pipes_fds);

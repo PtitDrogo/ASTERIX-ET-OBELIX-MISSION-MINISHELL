@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 14:47:08 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/31 18:58:44 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/31 20:31:46 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ int	ft_strcmp(const char *s1, const char *s2)
 	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
 
-t_env_node *get_env_node(t_env_node *root, char *variable_name)
+t_env_node	*get_env_node(t_env_node *root, char *variable_name)
 {
 	if (variable_name == NULL || root == NULL)
 		return (NULL);

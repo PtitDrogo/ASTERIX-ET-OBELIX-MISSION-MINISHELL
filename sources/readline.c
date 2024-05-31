@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/31 20:14:08 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/31 20:32:13 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,9 @@ bool	is_ascii(unsigned char c);
 int		verify_input(char *input);
 char    **rebuild_env_no_gc(t_env_node *root);
 void	recycle_trash(t_garbage_collect	**gc, t_env_node	**env_dup_root);
-void	print_open_err_msg(int errnumber, char *file, t_garbage_collect *gc);
 void	secure_dup2_no_exit(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int number_of_pipes);
+char	*prompt(t_garbage_collect **gc, t_env_node *env);
+char	*accurate_shell(t_garbage_collect **gc, t_env_node *env);
 
 int main(int argc, char const *argv[], char **envp)
 {
@@ -49,7 +50,7 @@ int main(int argc, char const *argv[], char **envp)
 		status = exit_status(-1);
 		signal(SIGINT, new_prompt);
 		signal(SIGQUIT, SIG_IGN);
-		input = readline("myshell> ");
+		input = readline(prompt(&gc, env_dup_root));
 		if (add_to_trash(&gc, input) == 0)
 			empty_trash_exit(gc, MALLOC_ERROR);
 		if (!input)
@@ -217,20 +218,21 @@ char    **rebuild_env_no_gc(t_env_node *root)
 }
 
 //no exit here;
-void	print_open_err_msg(int errnumber, char *file, t_garbage_collect *gc)
+int		print_open_err_msg(int errnumber, char *file)
 {
 	if (errnumber == ENOENT)
-		if (ft_printf_err("bash: %s: No such file or directory\n", file) == -1)
-			perror_exit(gc, errnumber, WRITE_ERR_MSG);
+		if (ft_printf2("bash: %s: No such file or directory\n", file) == -1)
+			return (2);
 	if (errnumber == EACCES)
-		if (ft_printf_err("bash: %s: Permission denied\n", file) == -1)
-			perror_exit(gc, errnumber, WRITE_ERR_MSG);
+		if (ft_printf2("bash: %s: Permission denied\n", file) == -1)
+			return (2);
 	if (errnumber == EISDIR)
-		if (ft_printf_err("bash: %s: Is a directory\n", file) == -1)
-			perror_exit(gc, errnumber, WRITE_ERR_MSG);
+		if (ft_printf2("bash: %s: Is a directory\n", file) == -1)
+			return (2);
 	if (errnumber == EMFILE)
-		if (ft_printf_err("bash: %s: Too many files opened", file) == -1)
-			perror_exit(gc, errnumber, WRITE_ERR_MSG);
+		if (ft_printf2("bash: %s: Too many files opened", file) == -1)
+			return (2);
+	return (1);
 }
 //no exit
 void	secure_dup2_no_exit(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int number_of_pipes)
@@ -240,34 +242,37 @@ void	secure_dup2_no_exit(int new_fd, int old_fd, int **pipes, t_garbage_collect 
 	return ;
 }
 
-//Ignore ca c'est une experience mais remplacer le home par ~ c'est chiant
-// char	*prompt(t_garbage_collect **gc, t_env_node *env)
-// {
-// 	char *pwd;
+// Ignore ca c'est une experience mais remplacer le home par ~ c'est chiant
+char	*prompt(t_garbage_collect **gc, t_env_node *env)
+{
+	char *pwd;
 
-// 	pwd = accurate_shell(gc, env);
+	pwd = accurate_shell(gc, env);
+	if (pwd)
+	{
+		pwd = setter_gc(ft_strjoin("Minishell:", pwd), gc);
+		pwd = setter_gc(ft_strjoin(pwd, "$ "), gc);
+	}
+	else
+		pwd = ("Minishell:$ ");
+	return (pwd);
+}
+
+char	*accurate_shell(t_garbage_collect **gc, t_env_node *env)
+{
+	t_env_node *pwd;
+	char		*backup_pwd;
 	
-
-// 	return (NULL);
-// }
-
-// char	*accurate_shell(t_garbage_collect **gc, t_env_node *env)
-// {
-// 	t_env_node *pwd;
-// 	char		*backup_pwd;
-	
-// 	pwd = get_env_node(env, "PWD");
-//  	if (pwd != NULL)
-// 		return (pwd->variable);
-// 	else
-// 	{
-// 		backup_pwd = getcwd(NULL, 0);
-// 		if (backup_pwd == NULL)
-// 			perror_exit(*gc, errno, "Failed to get current path");
-// 		setter_gc(backup_pwd, gc);
-// 		return (backup_pwd);
-// 	}
-// }
-///FIN EXPERIENCE
+	pwd = get_env_node(env, "PWD");
+ 	if (pwd != NULL)
+		return (pwd->variable);
+	else
+	{
+		backup_pwd = getcwd(NULL, 0);
+		setter_gc(backup_pwd, gc);
+		return (backup_pwd);
+	}
+}
+// /FIN EXPERIENCE
 
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   open_pipes.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 13:59:06 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/29 12:51:30 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/30 04:55:53 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ int **open_pipes(t_cmd *cmds, t_garbage_collect **gc, int number_of_pipes)
 {
 	int	**pipes_fds;
 
+	//Technically if the malloc fails we need to close the pipes fds;
 	pipes_fds = malloc_pipes_fds(number_of_pipes, gc);
 	init_pipes(pipes_fds, number_of_pipes, *gc);
 	fill_pipes_in_token(cmds, pipes_fds);
@@ -30,24 +31,19 @@ int **open_pipes(t_cmd *cmds, t_garbage_collect **gc, int number_of_pipes)
 
 static void fill_pipes_in_token(t_cmd *cmds, int **pipes_fds)
 {
-	//ASSUMING A PERFECT TOKEN FUNCTION (SPOILER, ITS NOT)
 	int i;
 	
-	i = -1; //je suis remplis de sournoiseries;
+	i = -1;
 	while (cmds)
 	{
 		if (cmds->redirection_in && cmds->redirection_in->type == PIPE)
 		{	
 			cmds->redirection_in->pipe_fd = pipes_fds[i][0];
-			// printf("I just gave cmd %s redirection to pipe %i\n", cmds->str[0], pipes_fds[i][0]);
-			// check_fd(pipes_fds[i][0]);
 		}
-		i++; // C'est de la triche mais en theorie ca passe;
+		i++;
 		if (cmds->redirection_out && cmds->redirection_out->type == PIPE)
 		{	
 			cmds->redirection_out->pipe_fd = pipes_fds[i][1];
-			// printf("I just gave cmd %s redirection to pipe %i\n", cmds->str[0], pipes_fds[i][1]);
-			// check_fd(pipes_fds[i][1]);
 		}
 		cmds = cmds->next;
 	}

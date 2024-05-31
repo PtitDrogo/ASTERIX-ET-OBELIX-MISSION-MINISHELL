@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:54:37 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/28 20:04:25 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/30 19:07:29 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static void	handle_error(char *dir_path, t_garbage_collect *gc);
 static char	*join_path_to_home(char *dir_path, char *home, t_garbage_collect **gc);
 static int	update_pwd(t_garbage_collect **gc, t_env_node *env, char *dir_path);
-char	*safe_get_var(t_env_node *env, t_garbage_collect *gc, char *variable);
+char		*safe_get_var(t_env_node *env, t_garbage_collect *gc, char *variable);
 
 // Should be all done, work with cd - and with ~/ at the start;
 int cd(char **cmd, t_garbage_collect **gc, t_env_node *env)
@@ -27,7 +27,7 @@ int cd(char **cmd, t_garbage_collect **gc, t_env_node *env)
 		return (0);
 	if (count_arrays_in_doubleptr((void **)cmd) > 2)
 	{
-		if (ft_printf_err("bash: cd: too many arguments\n") == -1)
+		if (ft_printf2("bash: cd: too many arguments\n") == -1)
 			perror_exit(*gc, errno, WRITE_ERR_MSG);
 		return (1); //value of echo $?
 	}
@@ -52,7 +52,7 @@ char	*safe_get_var(t_env_node *env, t_garbage_collect *gc, char *variable)
 	var_content = get_env_variable(env, variable);
 	if (var_content == NULL)
 	{
-		if (ft_printf_err("bash: cd: %s not set\n", variable) == -1)
+		if (ft_printf2("bash: cd: %s not set\n", variable) == -1)
 			perror_exit(gc, errno, WRITE_ERR_MSG);
 		return (NULL);
 	}
@@ -64,27 +64,27 @@ static void	handle_error(char *dir_path, t_garbage_collect *gc)
 	//TODO XD DO NOT EXIT SHELL
 	if (errno == EACCES)
 	{	
-		if (ft_printf_err("bash: cd: %s: Permission denied\n", dir_path) == -1)
+		if (ft_printf2("bash: cd: %s: Permission denied\n", dir_path) == -1)
 			perror_exit(gc, errno, WRITE_ERR_MSG);
 	}
 	else if (errno == ENOENT)
 	{	
-		if (ft_printf_err("bash: cd: %s: No such file or directory\n",  dir_path) == -1)
+		if (ft_printf2("bash: cd: %s: No such file or directory\n",  dir_path) == -1)
 			perror_exit(gc, errno, WRITE_ERR_MSG);
 	}
 	else if (errno == ENOTDIR)
 	{	
-		if (ft_printf_err("bash: cd: %s: Not a directory\n", dir_path) == -1)
+		if (ft_printf2("bash: cd: %s: Not a directory\n", dir_path) == -1)
 			perror_exit(gc, errno, WRITE_ERR_MSG);
 	}
 	else if (errno == EFAULT)
 	{
-		if (ft_printf_err("bash: cd: %s: Path outside of range of process\n", dir_path) == -1)
+		if (ft_printf2("bash: cd: %s: Path outside of range of process\n", dir_path) == -1)
 			perror_exit(gc, errno, WRITE_ERR_MSG);
 	}
 	else
 	{    
-		if (ft_printf_err("bash: cd: %s: Couldn't change directory\n", dir_path) == -1)
+		if (ft_printf2("bash: cd: %s: Couldn't change directory\n", dir_path) == -1)
 			perror_exit(gc, errno, WRITE_ERR_MSG);
 	}
 }
@@ -98,7 +98,7 @@ char	*join_path_to_home(char *dir_path, char *home, t_garbage_collect **gc)
 	to_return = ft_strjoin(home, &dir_path[1]); //skip past the ~
 	if (to_return == NULL)
 	{
-		if (ft_printf_err(MALLOC_ERR_MSG) == -1)
+		if (ft_printf2(MALLOC_ERR_MSG) == -1)
 			perror_exit(*gc, errno, PERROR_ERR_MSG);
 		empty_trash_exit(*gc, MALLOC_ERROR);
 	}
@@ -125,7 +125,7 @@ int	update_pwd(t_garbage_collect **gc, t_env_node *env, char *dir_path)
 	{
 		pwd_curr->variable = setter_gc(getcwd(NULL, 0), gc);
 		if (pwd_curr->variable == NULL)
-			perror_exit(*gc, errno, "Failed to get current path");
+			perror_exit(*gc, errno, "Failed to get current path"); //shouldnt exit;
 	}
 	if (pwd_old && pwd_curr == NULL)
 		pwd_old->variable = back_up_old_pwd;

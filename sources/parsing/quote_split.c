@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   quote_split.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/24 18:11:38 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/28 18:28:29 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/30 05:53:04 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static int	count_quoted_words(char *input, size_t *i,
 		while (input[++*i] && input[*i] != separator)
 			*i = *i;
 		if (!input[*i] || ++*i == -1)
-			ft_error("Unclosed quote", *gc);
+			printf("Unclosed quote");
 		*firstchar = 1;
 		if (*i != quote + 2)
 			return (1);

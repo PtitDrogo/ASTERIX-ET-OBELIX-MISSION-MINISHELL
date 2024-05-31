@@ -135,6 +135,7 @@ int			count_arrays_in_doubleptr(void **array);
 char		*get_env_variable(t_env_node *root, char *variable_name);
 char		**rebuild_env(t_env_node *root, t_garbage_collect **gc);
 char		*ft_strjoin_and_add(char const *s1, char const *s2, char c);
+char		*ft_strncat(char *src, char *dst, int len);
 
 
 

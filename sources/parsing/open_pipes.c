@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   open_pipes.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 13:59:06 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/31 19:39:45 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/31 20:43:26 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,10 @@ static void	fill_pipes_in_token(t_cmd *cmds, int **pipes_fds)
 	while (cmds)
 	{
 		if (cmds->redirection_in && cmds->redirection_in->type == PIPE)
-			cmds->redirection_in->pipe_fd = pipes_fds[i][0];
+			cmds->redirection_in->token_fd = pipes_fds[i][0];
 		i++;
 		if (cmds->redirection_out && cmds->redirection_out->type == PIPE)
-			cmds->redirection_out->pipe_fd = pipes_fds[i][1];
+			cmds->redirection_out->token_fd = pipes_fds[i][1];
 		cmds = cmds->next;
 	}
 }

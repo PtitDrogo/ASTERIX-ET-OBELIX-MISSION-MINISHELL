@@ -3,22 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   open_pipes.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 13:59:06 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 04:55:53 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/31 20:26:01 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	count_pipes(t_token *token_list);
-static void	init_pipes(int **pipes,int pipe_number, t_garbage_collect *gc);
+int			count_pipes(t_token *token_list);
+static void	init_pipes(int **pipes, int pipe_number, t_garbage_collect *gc);
 static int	**malloc_pipes_fds(int pipe_number, t_garbage_collect **gc);
 static void	fill_pipes_in_token(t_cmd *cmds, int **pipes_fds);
 
-//open all pipes, fill cmd with proper pipes and return the **ptr to close them easily later;
-int **open_pipes(t_cmd *cmds, t_garbage_collect **gc, int number_of_pipes)
+int	**open_pipes(t_cmd *cmds, t_garbage_collect **gc, int number_of_pipes)
 {
 	int	**pipes_fds;
 
@@ -29,30 +28,26 @@ int **open_pipes(t_cmd *cmds, t_garbage_collect **gc, int number_of_pipes)
 	return (pipes_fds);
 }
 
-static void fill_pipes_in_token(t_cmd *cmds, int **pipes_fds)
+static void	fill_pipes_in_token(t_cmd *cmds, int **pipes_fds)
 {
-	int i;
-	
+	int	i;
+
 	i = -1;
 	while (cmds)
 	{
 		if (cmds->redirection_in && cmds->redirection_in->type == PIPE)
-		{	
 			cmds->redirection_in->pipe_fd = pipes_fds[i][0];
-		}
 		i++;
 		if (cmds->redirection_out && cmds->redirection_out->type == PIPE)
-		{	
 			cmds->redirection_out->pipe_fd = pipes_fds[i][1];
-		}
 		cmds = cmds->next;
 	}
 }
 
-int count_pipes(t_token *token_list)
+int	count_pipes(t_token *token_list)
 {
-	int pipe_count;
-	
+	int	pipe_count;
+
 	pipe_count = 0;
 	while (token_list)
 	{
@@ -63,8 +58,6 @@ int count_pipes(t_token *token_list)
 	return (pipe_count);
 }
 
-//call the pipes function to fill the **int full of fds;
-//Technically if pipe fails we are not closing the pipes we managed to open;
 static void	init_pipes(int **pipes,int pipe_number, t_garbage_collect *gc)
 {
 	int	i;
@@ -78,11 +71,11 @@ static void	init_pipes(int **pipes,int pipe_number, t_garbage_collect *gc)
 	}
 	return ;
 }
-//malloc enough spaces for pipes fds;
+
 static int	**malloc_pipes_fds(int pipe_number, t_garbage_collect **gc)
 {
 	int	i;
-	int **pipe_fds;
+	int	**pipe_fds;
 
 	i = 0;
 	pipe_fds = (int **)malloc_trash(sizeof(int *) * pipe_number, gc);

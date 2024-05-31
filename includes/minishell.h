@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 23:47:17 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/31 20:25:17 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL.H
-# define  MINISHELL.H
+#ifndef MINISHELL_H
+# define  MINISHELL_H
 
 ///------------------------Includes------------------------///
 # include <stdio.h>
@@ -136,6 +136,7 @@ int			count_arrays_in_doubleptr(void **array);
 char		*get_env_variable(t_env_node *root, char *variable_name);
 char		**rebuild_env(t_env_node *root, t_garbage_collect **gc);
 char		*ft_strjoin_and_add(char const *s1, char const *s2, char c);
+char		*ft_strncat(char *src, char *dst, int len);
 
 
 

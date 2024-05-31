@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   here_doc.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 06:17:29 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/31 20:32:06 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,9 @@ int parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc, t_env_node *env, ch
 				int before_expand_len = ft_strlen(current->next->str);
 				current->next->str = remove_quotes(gc, current->next->str);
 				if (before_expand_len != ft_strlen(current->next->str))
-					do_expand = false; 
-				status = here_doc(current->next->str, gc, pipe_heredoc[1], do_expand, env, error_value);
+					do_expand = false;
 				current->here_doc_pipe = pipe_heredoc[0];
+				status = here_doc(current->next->str, gc, pipe_heredoc[1], do_expand, env, error_value);
 				close(pipe_heredoc[1]);
 				if (status != EXIT_SUCCESS)
 					return (status);

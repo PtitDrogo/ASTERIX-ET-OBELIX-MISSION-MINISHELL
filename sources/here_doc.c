@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 06:17:29 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/31 19:39:45 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc, t_env_node *env, ch
 				if (before_expand_len != ft_strlen(current->next->str))
 					do_expand = false; 
 				status = here_doc(current->next->str, gc, pipe_heredoc[1], do_expand, env, error_value);
-				current->here_doc_pipe = pipe_heredoc[0];
+				current->token_fd = pipe_heredoc[0];
 				close(pipe_heredoc[1]);
 				if (status != EXIT_SUCCESS)
 					return (status);

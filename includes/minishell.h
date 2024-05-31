@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/31 18:37:46 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/31 19:39:45 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,7 @@ typedef enum e_tok_val //
 typedef struct s_token
 {
 	char			*str;
-	int				here_doc_pipe;
-	int				pipe_fd; //maybe fuse this and str later idk;
+	int				token_fd; //maybe fuse this and str later idk;
 	t_tok_val		type;
 	struct s_token	*next;
 	struct s_token	*prev;

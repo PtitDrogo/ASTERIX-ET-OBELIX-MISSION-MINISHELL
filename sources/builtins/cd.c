@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:54:37 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 06:17:46 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/30 19:07:29 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ int	update_pwd(t_garbage_collect **gc, t_env_node *env, char *dir_path)
 	{
 		pwd_curr->variable = setter_gc(getcwd(NULL, 0), gc);
 		if (pwd_curr->variable == NULL)
-			perror_exit(*gc, errno, "Failed to get current path");
+			perror_exit(*gc, errno, "Failed to get current path"); //shouldnt exit;
 	}
 	if (pwd_old && pwd_curr == NULL)
 		pwd_old->variable = back_up_old_pwd;

@@ -1,9 +1,0 @@
-includes
-libft
-Makefile
-minishell
-minishell_tester
-README.md
-sources
-suppressions.supp
-texte1.txt

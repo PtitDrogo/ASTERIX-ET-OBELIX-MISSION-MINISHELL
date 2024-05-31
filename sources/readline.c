@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 07:15:55 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/30 15:33:10 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ int		verify_input(char *input);
 char    **rebuild_env_no_gc(t_env_node *root);
 void	recycle_trash(t_garbage_collect	**gc, t_env_node	**env_dup_root);
 void	secure_dup2_no_exit(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int number_of_pipes);
+char	*prompt(t_garbage_collect **gc, t_env_node *env);
+char	*accurate_shell(t_garbage_collect **gc, t_env_node *env);
 
 int main(int argc, char const *argv[], char **envp)
 {
@@ -48,7 +50,7 @@ int main(int argc, char const *argv[], char **envp)
 		status = exit_status(-1);
 		signal(SIGINT, new_prompt);
 		signal(SIGQUIT, SIG_IGN);
-		input = readline("myshell> ");
+		input = readline(prompt(&gc, env_dup_root));
 		if (add_to_trash(&gc, input) == 0)
 			empty_trash_exit(gc, MALLOC_ERROR);
 		if (!input)
@@ -240,34 +242,37 @@ void	secure_dup2_no_exit(int new_fd, int old_fd, int **pipes, t_garbage_collect 
 	return ;
 }
 
-//Ignore ca c'est une experience mais remplacer le home par ~ c'est chiant
-// char	*prompt(t_garbage_collect **gc, t_env_node *env)
-// {
-// 	char *pwd;
+// Ignore ca c'est une experience mais remplacer le home par ~ c'est chiant
+char	*prompt(t_garbage_collect **gc, t_env_node *env)
+{
+	char *pwd;
 
-// 	pwd = accurate_shell(gc, env);
+	pwd = accurate_shell(gc, env);
+	if (pwd)
+	{
+		pwd = setter_gc(ft_strjoin("Minishell:", pwd), gc);
+		pwd = setter_gc(ft_strjoin(pwd, "$ "), gc);
+	}
+	else
+		pwd = ("Minishell:$ ");
+	return (pwd);
+}
+
+char	*accurate_shell(t_garbage_collect **gc, t_env_node *env)
+{
+	t_env_node *pwd;
+	char		*backup_pwd;
 	
-
-// 	return (NULL);
-// }
-
-// char	*accurate_shell(t_garbage_collect **gc, t_env_node *env)
-// {
-// 	t_env_node *pwd;
-// 	char		*backup_pwd;
-	
-// 	pwd = get_env_node(env, "PWD");
-//  	if (pwd != NULL)
-// 		return (pwd->variable);
-// 	else
-// 	{
-// 		backup_pwd = getcwd(NULL, 0);
-// 		if (backup_pwd == NULL)
-// 			perror_exit(*gc, errno, "Failed to get current path");
-// 		setter_gc(backup_pwd, gc);
-// 		return (backup_pwd);
-// 	}
-// }
-///FIN EXPERIENCE
+	pwd = get_env_node(env, "PWD");
+ 	if (pwd != NULL)
+		return (pwd->variable);
+	else
+	{
+		backup_pwd = getcwd(NULL, 0);
+		setter_gc(backup_pwd, gc);
+		return (backup_pwd);
+	}
+}
+// /FIN EXPERIENCE
 
 

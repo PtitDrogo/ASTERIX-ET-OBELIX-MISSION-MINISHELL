@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 17:32:57 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 06:04:08 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/31 20:03:42 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,15 @@ int	add_to_trash(t_garbage_collect **root, void *to_free)
 void	*malloc_trash(int size, t_garbage_collect **gc)
 {
 	void	*to_return;
-
+	// static int i = 0;
+	
+	//DEBUG
+	// i++;
+	// if (i != 200)
 	to_return = malloc(size);
+	// else
+	// 	to_return = NULL;
+	//DEBUG
 	if (!to_return)
 	{
 		if (ft_printf2("Malloc failed\n") == -1)

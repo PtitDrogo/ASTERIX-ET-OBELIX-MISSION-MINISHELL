@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:15:09 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/30 03:06:59 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/05/31 18:38:42 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void	add_token(t_token **tokenpile, t_token *new_token)
 	while (current->next)
 		current = current->next;
 	current->next = new_token;
-	new_token->prev = current; 
+	new_token->prev = current;
 	return ;
 }
 

@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 16:29:30 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/30 06:09:41 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/31 18:59:11 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,14 +33,3 @@ void	cancel_heredoc(int none)
 	(void)none;
 	exit_heredoc(130);
 }
-
-/*void	set_signal(int)
-{
-	struct sigaction	s_act;
-
-	ft_bzero(&s_act, sizeof(s_act));
-	s_act.sa_sigaction = &signal_handler;
-	s_act.sa_flags = SA_SIGINFO;
-	sigaction(SIGINT, &s_act, NULL);
-	sigaction(SIGQUIT, &s_act, NULL);
-}*/

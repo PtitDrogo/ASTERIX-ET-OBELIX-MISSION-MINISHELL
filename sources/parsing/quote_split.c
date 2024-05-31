@@ -6,14 +6,14 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/24 18:11:38 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/28 18:28:29 by garivo           ###   ########.fr       */
+/*   Updated: 2024/05/31 17:56:53 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 static int	count_quoted_words(char *input, size_t *i,
-	int *firstchar, t_garbage_collect **gc)
+	int *firstchar)
 {
 	size_t	quote;
 	char	separator;
@@ -27,7 +27,7 @@ static int	count_quoted_words(char *input, size_t *i,
 		while (input[++*i] && input[*i] != separator)
 			*i = *i;
 		if (!input[*i] || ++*i == -1)
-			ft_error("Unclosed quote", *gc);
+			return (ft_printf("Unclosed quote\n"), -1);
 		*firstchar = 1;
 		if (*i != quote + 2)
 			return (1);
@@ -37,7 +37,36 @@ static int	count_quoted_words(char *input, size_t *i,
 	return (0);
 }
 
-static size_t	count_words(char *input, t_garbage_collect **gc)
+static size_t	count_unquoted_words(char *input, size_t *i,
+	int quoted_count, int *firstchar)
+{
+	size_t	wc;
+
+	wc = 0;
+	if (quoted_count == 1 && *firstchar && ++wc > 0 || quoted_count == 2)
+		*firstchar = 0;
+	else if (input[(*i)] == ' ')
+	{
+		while (input[(*i)] == ' ')
+			(*i)++;
+		*firstchar = 1;
+	}
+	else if ((input[(*i)] == '<' || input[(*i)] == '>'
+			|| input[(*i)] == '|') && ++wc > 0)
+	{
+		if (input[(*i) + 1] == input[(*i)])
+			(*i)++;
+		(*i)++;
+		*firstchar = 1;
+	}
+	else if (*firstchar && ++wc > 0 && ++(*i) > 0)
+		*firstchar = 0;
+	else
+		(*i)++;
+	return (wc);
+}
+
+static size_t	count_words(char *input)
 {
 	size_t	i;
 	size_t	wc;
@@ -49,31 +78,15 @@ static size_t	count_words(char *input, t_garbage_collect **gc)
 	i = 0;
 	while (input[i])
 	{
-		quoted_count = count_quoted_words(input, &i, &firstchar, gc);
-		if (quoted_count == 1 && firstchar && ++wc > 0 || quoted_count == 2)
-			firstchar = 0;
-		else if (input[i] == ' ')
-		{
-			while (input[i] == ' ')
-				i++;
-			firstchar = 1;
-		}
-		else if ((input[i] == '<' || input[i] == '>' || input[i] == '|') && ++wc > 0)
-		{
-			if (input[i + 1] == input[i])
-				i++;
-			i++;
-			firstchar = 1;
-		}
-		else if (firstchar && ++wc > 0 && ++i > 0)
-			firstchar = 0;
-		else
-			i++;
+		quoted_count = count_quoted_words(input, &i, &firstchar);
+		if (quoted_count == -1)
+			return (0);
+		wc += count_unquoted_words(input, &i, quoted_count, &firstchar);
 	}
 	return (wc);
 }
 
-static size_t	extract_len(char *input)
+static size_t	get_extract_len(char *input)
 {
 	char	separator;
 	size_t	i;
@@ -82,12 +95,6 @@ static size_t	extract_len(char *input)
 
 	i = 0;
 	len = 0;
-	if (input[i] == '<' || input[i] == '>' || input[i] == '|')
-	{
-		if (input[i + 1] == input[i])
-			return (2);
-		return (1);
-	}
 	while (input[i] && input[i] != ' ' && input[i] != '<' && input[i] != '>')
 	{
 		quote_start = i;
@@ -102,59 +109,53 @@ static size_t	extract_len(char *input)
 			else
 				len++;
 		}
-		else
-		{
-			i++;
-			len++;
-		}
+		else if (++i > 0 && ++len > 0)
+			len = len;
 	}
-
-	/*separator = ' ';
-	if (*input == '\'' || *input == '"')
-	{
-		separator = *input;
-		i++;
-	}
-	while (input[i] && input[i] != separator)
-		i++;
-	if (separator != ' ' && i == 1 && ++*index > 0)
-		return (0);
-	if (separator != ' ' && i > 0)
-		i++;*/
 	return (len);
 }
 
-char	*ft_strncat(char *src, char *dst, int len)
-{
-	int	i;
-	int	size;
-
-	i = 0;
-	//printf("cat : %s\n", dst);
-	size = ft_strlen(dst);
-	while (src[i] && i < len)
-	{
-		dst[size + i] = src[i];
-		i++;
-	}
-	dst[size + i] = '\0';
-	return (dst);
-}
-
-static char	*extract(char *input, char *res, size_t *index)
+static size_t	extract_len(char *input)
 {
 	char	separator;
 	size_t	i;
-	size_t	quote_start;
 
 	i = 0;
-	if ((input[i] == '<' || input[i] == '>' || input[i] == '|') && ++(*index) > 0)
+	if (input[i] == '<' || input[i] == '>' || input[i] == '|')
+	{
+		if (input[i + 1] == input[i])
+			return (2);
+		return (1);
+	}
+	return (get_extract_len(input));
+}
+
+static char	*extract_redirection(char *input, char *res, size_t *index)
+{
+	size_t	i;
+
+	i = 0;
+	if ((input[i] == '<' || input[i] == '>'
+			|| input[i] == '|') && ++(*index) > 0)
 	{
 		if (input[i + 1] == input[i] && ++(*index) > 0)
 			return (ft_strncat(&input[i], res, 2));
 		return (ft_strncat(&input[i], res, 1));
 	}
-	while (input[i] && input[i] != ' ' && input[i] != '<' && input[i] != '>' && input[i] != '|')
+	return (NULL);
+}
+
+static void	extract(char *input, char *res, size_t *index)
+{
+	size_t	i;
+	char	separator;
+	size_t	quote_start;
+
+	i = 0;
+	if (extract_redirection(input, res, index) != NULL)
+		return ;
+	while (input[i] && input[i] != ' ' && input[i] != '<'
+		&& input[i] != '>' && input[i] != '|')
 	{
 		quote_start = i;
 		separator = 0;
@@ -168,22 +169,18 @@ static char	*extract(char *input, char *res, size_t *index)
 		}
 		else
 			ft_strncat(&input[i], res, 1);
-		//printf("Word : %s\n", res);
 		i++;
 		(*index)++;
 	}
-	return (res);
 }
 
-char	**quote_split(char *input, t_garbage_collect **gc)
+static char	**quote_splitting(char *input, char **res, t_garbage_collect **gc)
 {
-	char	**res;
 	size_t	i;
 	size_t	j;
-	size_t	len;
 	size_t	start;
+	size_t	len;
 
-	res = malloc_trash((count_words(input, gc) + 1) * sizeof(char *), gc);
 	i = 0;
 	j = 0;
 	while (input[i])
@@ -195,7 +192,7 @@ char	**quote_split(char *input, t_garbage_collect **gc)
 			res[j] = malloc_trash(len + 1, gc);
 			*res[j] = '\0';
 		}
-		res[j] = extract(&input[i], res[j], &i);
+		extract(&input[i], res[j], &i);
 		if (len > 0)
 			j++;
 		else if (start == i)
@@ -203,4 +200,14 @@ char	**quote_split(char *input, t_garbage_collect **gc)
 	}
 	res[j] = NULL;
 	return (res);
+}
+
+char	**quote_split(char *input, t_garbage_collect **gc)
+{
+	char	**res;
+
+	if (count_words(input) == 0)
+		return (NULL);
+	res = malloc_trash((count_words(input) + 1) * sizeof(char *), gc);
+	return (quote_splitting(input, res, gc));
 }

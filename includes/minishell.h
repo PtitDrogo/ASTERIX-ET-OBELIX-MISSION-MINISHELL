@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 23:47:17 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/05/31 18:37:46 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL.H
-# define  MINISHELL.H
+#ifndef MINISHELL_H
+# define  MINISHELL_H
 
 ///------------------------Includes------------------------///
 # include <stdio.h>

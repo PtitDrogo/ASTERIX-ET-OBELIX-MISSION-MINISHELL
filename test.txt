@@ -1,0 +1,11 @@
+includes
+libft
+Makefile
+minishell
+minishell_test
+minishell_tester
+README.md
+sources
+suppressions.supp
+tester_horrible
+test.txt

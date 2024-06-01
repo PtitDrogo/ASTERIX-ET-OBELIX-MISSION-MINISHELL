@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/31 20:32:13 by garivo           ###   ########.fr       */
+/*   Updated: 2024/06/01 02:15:42 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,8 +95,7 @@ int main(int argc, char const *argv[], char **envp)
 		}
 		if (verify_input(input))
 			add_history(input);
-		recycle_trash(&gc, &env_dup_root);
-		// ft_printf("- Errno : %i -", exit_status(-1));
+		recycle_trash_new(&gc, env_dup_root);
 	}
 	rl_clear_history();
 	empty_trash(gc);
@@ -122,8 +121,6 @@ int	basic_parsing(t_garbage_collect **gc, char *input, t_token **token, t_cmd **
 	return (1);
 }
 
-//En vrai je peux garder cette fonction pour run les builtins;
-//TODO, add redirection for solo exec lol;
 int	theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char **cmd, int backup_fds[2])
 {
 	if (cmd == NULL || cmd[0] == NULL)
@@ -156,7 +153,7 @@ int		verify_input(char *input)
 	int i;
 	
 	i = 0;
-	if (input[0] == '\n')
+	if (input[0] == '\0')
 		return (0);
 	while (input[i])
 	{
@@ -170,51 +167,6 @@ int		verify_input(char *input)
 bool	is_ascii(unsigned char c)
 {
 	return (c <= 127);
-}
-
-//empties gc and reset the env;
-//Recycle attempt by not touching the initial env dup list;
-
-void	recycle_trash(t_garbage_collect	**gc, t_env_node	**env_dup_root)
-{
-	char **env_save;
-
-	env_save = rebuild_env_no_gc(*env_dup_root);
-	empty_trash(*gc);
-	*gc = NULL;
-	*env_dup_root = NULL;
-	generate_env_llist(env_dup_root, gc, env_save);
-	ft_free_array((void **)env_save);
-	return ;
-}
-char    **rebuild_env_no_gc(t_env_node *root)
-{
-    int		number_of_variables;
-	char	**envp;
-	int		i;	
-	
-	i = 0;
-	number_of_variables = count_nodes(root);
-    envp = malloc(sizeof(char *) * (number_of_variables + 1));
-	while (root)
-    {
-        if (root->variable)
-		{
-			envp[i] = ft_strjoin_and_add(root->variable_name, root->variable, '=');
-			if (envp[i] == NULL)
-				ft_free_array((void **)envp);
-		}
-		else
-		{
-			envp[i] = ft_strdup(root->variable_name);
-			if (envp[i] == NULL)
-				ft_free_array((void **)envp);
-		}
-        root = root->next;
-		i++;
-    }
-	envp[i] = NULL;
-	return (envp);
 }
 
 //no exit here;
@@ -273,6 +225,5 @@ char	*accurate_shell(t_garbage_collect **gc, t_env_node *env)
 		return (backup_pwd);
 	}
 }
-// /FIN EXPERIENCE
 
 

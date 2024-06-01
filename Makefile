@@ -29,6 +29,7 @@ SRCS =		$(SRCS_DIR)/builtins/export.c \
 			$(SRCS_DIR)/builtins/cd.c \
 			$(SRCS_DIR)/builtins/pwd.c \
 			$(SRCS_DIR)/here_doc.c \
+			$(SRCS_DIR)/utils/recycle_trash.c \
 			$(SRCS_DIR)/parsing/open_pipes.c \
 			$(SRCS_DIR)/exec/exec_utils.c \
 			$(SRCS_DIR)/exec/process_behavior.c \

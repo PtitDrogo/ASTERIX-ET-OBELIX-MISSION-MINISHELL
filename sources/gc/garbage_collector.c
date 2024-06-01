@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   garbage_collector.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 17:32:57 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/31 20:03:42 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/01 03:23:06 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,13 +41,14 @@ void	*malloc_trash(int size, t_garbage_collect **gc)
 	void	*to_return;
 	// static int i = 0;
 	
-	//DEBUG
+	// DEBUG
 	// i++;
 	// if (i != 200)
-	to_return = malloc(size);
+	// 	to_return = malloc(size);
 	// else
 	// 	to_return = NULL;
 	//DEBUG
+	to_return = malloc(size);
 	if (!to_return)
 	{
 		if (ft_printf2("Malloc failed\n") == -1)

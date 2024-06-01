@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/31 19:39:45 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/01 00:46:11 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,7 @@ int 	empty_trash(t_garbage_collect *gc);
 void	*setter_gc(void *data_to_set, t_garbage_collect **gc);
 void	**setter_double_p_gc(void **data_to_set, t_garbage_collect **gc);
 void    malloc_check(void *ptr, t_garbage_collect *gc);
+void	recycle_trash_new(t_garbage_collect **gc, t_env_node    *env_dup_root);
 
 //Here_doc
 int					here_doc(char *delimiter, t_garbage_collect **gc, int fd, bool do_expand, t_env_node *env, char *error_value);

@@ -3,29 +3,41 @@
 /*                                                        :::      ::::::::   */
 /*   gc_utils.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 05:54:56 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 06:07:44 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/01 16:27:42 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	free_array_from_index_to_end(void **array, int i);
 
 void	**setter_double_p_gc(void **data_to_set, t_garbage_collect **gc)
 {
 	int	i;
 
 	i = 0;
+	if (data_to_set == NULL)
+		return (data_to_set);
 	while (data_to_set[i])
 	{
-		setter_gc(data_to_set[i], gc);
+		if (no_dupplicate_check(data_to_set[i], *gc) == 1)
+		{
+			if ((add_to_trash(gc, data_to_set[i]) == 0))
+			{
+				free_array_from_index_to_end(data_to_set, i);
+				if (ft_printf2(MALLOC_ERR_MSG) == -1)
+					perror_exit(*gc, EXIT_FAILURE, WRITE_ERR_MSG);
+				empty_trash_exit(*gc, MALLOC_ERROR);
+			}
+		}
 		i++;
 	}
 	setter_gc(data_to_set, gc);
 	return (data_to_set);
 }
-
 void	malloc_check(void *ptr, t_garbage_collect *gc)
 {
 	if (ptr == NULL)
@@ -34,5 +46,19 @@ void	malloc_check(void *ptr, t_garbage_collect *gc)
 			perror_exit(gc, errno, WRITE_ERR_MSG);
 		empty_trash_exit(gc, MALLOC_ERROR);
 	}
+	return ;
+}
+
+void	free_array_from_index_to_end(void **array, int i)
+{
+	if (!array)
+		return ;
+	while (array[i])
+	{
+		if (array[i])
+			free(array[i]);
+		i++;
+	}
+	free(array);
 	return ;
 }

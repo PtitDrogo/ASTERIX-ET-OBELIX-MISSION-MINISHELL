@@ -6,13 +6,13 @@
 /*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 17:32:57 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/01 03:23:06 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/06/01 15:12:46 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int		no_dupplicate_check(void	*data, t_garbage_collect *gc);
+int		no_dupplicate_check(void	*data, t_garbage_collect *gc);
 
 int	add_to_trash(t_garbage_collect **root, void *to_free)
 {
@@ -82,7 +82,7 @@ int	empty_trash(t_garbage_collect *gc)
 	return (1);
 }
 
-static int	no_dupplicate_check(void	*data, t_garbage_collect *gc)
+int	no_dupplicate_check(void	*data, t_garbage_collect *gc)
 {
 	while (gc)
 	{
@@ -103,7 +103,7 @@ void	*setter_gc(void *data_to_set, t_garbage_collect **gc)
 		{
 			free(data_to_set);
 			if (ft_printf2(MALLOC_ERR_MSG) == -1)
-				perror_exit(*gc, errno, WRITE_ERR_MSG);
+				perror_exit(*gc, EXIT_FAILURE, WRITE_ERR_MSG);
 			empty_trash_exit(*gc, MALLOC_ERROR);
 		}
 	}

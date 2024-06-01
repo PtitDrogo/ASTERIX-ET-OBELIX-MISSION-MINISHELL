@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/31 19:39:45 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/01 15:12:17 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,71 +14,58 @@
 
 void		close_all_heredoc_pipes(t_cmd *cmds_root, t_garbage_collect *gc);
 t_token		*get_next_first_token(t_token *cmds_root);
-int			count_valid_nodes(t_env_node *root);
 void		close_all_pipes(int **pipes_fds, t_garbage_collect *gc, int number_of_pipes);
 char		*find_env_variable(char **envp, char *env_to_find);
-void		secure_dup2(int new_fd, int old_fd, int **pipes, t_garbage_collect *gc, int number_of_pipes);
-
 int			process_behavior(t_cmd *cmds, t_garbage_collect **gc, t_token *token_root);
 char		*find_valid_path(t_cmd *cmds, char **envp, t_garbage_collect **gc);
 void		child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect **gc, int **pipes, int number_of_pipes, t_cmd *cmds_root, t_token *token_root);
-int			get_status_code(t_garbage_collect **gc, int status);
 int			get_correct_cmd(t_cmd *cmds);
+int			handle_status(int *status);
 
 
-int		get_status_code(t_garbage_collect **gc, int status)
+int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes, t_token *token_root) //need root to clean pipes;
 {
-	//WIFEXITED(status) Check si le process a ete termine par un return ou exit (et non par un signal)
-	//si c'est le cas, je renvois status process par la bonne macro qui va avec
-	if (WIFEXITED(status))
-		return (WEXITSTATUS(status));
-	else
-		return (130); //Quand je teste c'est un 130 le return dun process ctrl C mais ca peut changer au besoin;
-}
-
-
-int exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes, t_cmd *cmds_root, t_token *token_root) //need root to clean pipes;
-{
-
-	//BUILTIN ARE MAIN PROCESS ALONE
-	//CHILDREN PROCESS OTHERWISE
 	char	**envp;
-	t_cmd *current = cmds;
-	t_token *token_current;
-	int	status;
+	t_cmd	*current;
+	t_token	*token_current;
+	int		status;
 
+	current = cmds;
 	envp = rebuild_env(root_env, gc);
 	token_current = token_root;
 	while (current)
 	{
-		child_process(root_env, envp, current, gc, pipes_fds, number_of_pipes, cmds_root, token_current); //giving current command !!
+		child_process(root_env, envp, current, gc, pipes_fds, number_of_pipes, cmds, token_current); //giving current command !!
 		token_current = get_next_first_token(token_current);
 		current = current->next;
 	}
 	close_all_pipes(pipes_fds, *gc, number_of_pipes);
-	close_all_heredoc_pipes(cmds_root, *gc);
+	close_all_heredoc_pipes(cmds, *gc);
     current = cmds;
 	while (current)
 	{
-		// printf("in parent, ID of child is %i\n", current->cmd_id);
 		waitpid(current->cmd_id, &status, 0);
-		if (WIFEXITED(status))
-			status = WEXITSTATUS(status);
-		else if (WIFSIGNALED(status))
-			status = 128 + WTERMSIG(status);
-		if (status == 130)
-			ft_printf("\n");
-		//perror_exit(*gc, errno, "Error waiting for process");
+		if (handle_status(&status) == -1)
+			empty_trash_exit(*gc, 1);
 		current = current->next;
 	}
-	//status = get_status_code(gc, status);
-	return (status); //replace by exit status;
+	return (status);
 }
 
+int		handle_status(int *status)
+{
+	if (WIFEXITED(*status))
+		*status = WEXITSTATUS(*status);
+	else if (WIFSIGNALED(*status))
+		*status = 128 + WTERMSIG(*status);
+	if (*status == 130)
+		if (ft_printf("\n") == -1)
+			return (2);
+	return (1);
+}
 
 t_token *get_next_first_token(t_token *token_root)
 {
-	//We want to give the token right after the pipe;
 	t_token *current;
 
 	current = token_root;
@@ -104,7 +91,8 @@ void    close_all_heredoc_pipes(t_cmd *cmds_root, t_garbage_collect *gc)
 			{
 				//ft_printf("pipe value : %i\n", current->pipe_fd);
 				if (current->token_fd != -1)
-                	close(current->token_fd); //should care about if this close can fail later;
+                	if (close(current->token_fd) == -1)
+						perror_exit(gc, EXIT_FAILURE, "Failed to close pipe");; //should care about if this close can fail later;
 			}
             current = current->next;
         }
@@ -124,19 +112,16 @@ void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_garbage_collect 
 	if (cmds->cmd_id == 0)
 	{
 		
-		process_status = process_behavior(cmds, gc, token_current); //I always exit since im in child;
-		//in close all pipes add function to close all Heredoc pipes (need to give the root of cmd to see function);
+		process_status = process_behavior(cmds, gc, token_current);
 		close_all_pipes(pipes, *gc, number_of_pipes);
 		close_all_heredoc_pipes(cmds_root, *gc);
 		if (process_status != 0)
 			empty_trash_exit(*gc, 1);
 		if (get_correct_cmd(cmds) == 0)
-			empty_trash_exit(*gc, 0); //Bash just exits with return 0 for $NOTEXIST;
+			empty_trash_exit(*gc, 0);
 		valid_path = find_valid_path(cmds, envp, gc);
-		// printf("valid path is %s\n", valid_path);
 		if (valid_path == NULL && cmds && cmds->str && is_builtin(cmds->str) == false) //last condition is important !
 		{
-			// printf("sex\n");
 			if (errno == EISDIR )
 			{
 				ft_printf2("%s: Is a directory\n", cmds->str[0]); //need to check real err msg
@@ -191,8 +176,6 @@ int	get_correct_cmd(t_cmd *cmds)
 	}
 	return (1);
 }
-
-
 
 char	*ft_strjoin_and_add(char const *s1, char const *s2, char c)
 {
@@ -260,9 +243,9 @@ void	close_all_pipes(int **pipes_fds, t_garbage_collect *gc, int number_of_pipes
 	while (i < number_of_pipes)
 	{
 		if (close(pipes_fds[i][0]) == -1)
-			perror_exit(gc, errno, "Failed to close pipe");
+			perror_exit(gc, EXIT_FAILURE, "Failed to close pipe");
 		if (close(pipes_fds[i][1]) == -1)
-			perror_exit(gc, errno, "Failed to close pipe");
+			perror_exit(gc, EXIT_FAILURE, "Failed to close pipe");
 		i++;
 	}
 	return ;
@@ -279,10 +262,7 @@ char	*find_valid_path(t_cmd *cmds, char **envp, t_garbage_collect **gc)
 	if (is_char_in_str(*(cmds->str), '/') == true)
 	{
 		if (access(*(cmds->str), X_OK) == 0)
-		{	
-			// printf("nique ta mere\n");
 			return (*(cmds->str));
-		}
 		else
 			return (NULL);
 	}

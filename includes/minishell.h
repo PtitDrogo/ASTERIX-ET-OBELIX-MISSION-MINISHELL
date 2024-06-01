@@ -6,7 +6,7 @@
 /*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/01 00:46:11 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/06/01 15:13:03 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,13 +75,13 @@ typedef struct s_cmd
 
 #define ATOI_ERROR 3000000000
 #define	SYNTAX_ERROR 2
-#define MALLOC_ERROR 42
+#define MALLOC_ERROR 1
 #define MALLOC_ERR_MSG "Error : Malloc failed\n"
 #define WRITE_ERR_MSG "Error : Writing failed"
 #define	SYNTAX_ERROR_MSG "bash: syntax error near unexpected token"
 #define PERROR_ERR_MSG "Error : "
 #define HEREDOC_FILE ".ft_heredoc"
-#define WRITE_ERROR 666
+#define WRITE_ERROR 1
 
 ///------------------------Functions------------------------///
 
@@ -97,6 +97,7 @@ void	*setter_gc(void *data_to_set, t_garbage_collect **gc);
 void	**setter_double_p_gc(void **data_to_set, t_garbage_collect **gc);
 void    malloc_check(void *ptr, t_garbage_collect *gc);
 void	recycle_trash_new(t_garbage_collect **gc, t_env_node    *env_dup_root);
+int		no_dupplicate_check(void	*data, t_garbage_collect *gc);
 
 //Here_doc
 int					here_doc(char *delimiter, t_garbage_collect **gc, int fd, bool do_expand, t_env_node *env, char *error_value);
@@ -153,7 +154,7 @@ int		print_open_err_msg(int errnumber, char *file);
 ///------------------------Execution------------------------///
 void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds, char *error_value);
 int		**open_pipes(t_cmd *cmds, t_garbage_collect **gc, int number_of_pipes);
-int 	exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes, t_cmd *cmds_root, t_token *token_root);
+int 	exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes, t_token *token_root);
 int		count_pipes(t_token *token_list);
 int		theo_basic_parsing(t_env_node **env_dup_root, t_garbage_collect **gc, char **cmd, int backup_fds[2]);
 int			process_behavior(t_cmd *cmds, t_garbage_collect **gc, t_token *token_current);

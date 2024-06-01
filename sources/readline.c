@@ -6,7 +6,7 @@
 /*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/01 02:15:42 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/06/01 13:37:55 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ int main(int argc, char const *argv[], char **envp)
 					//
 				}
 				else
-					exit_status(exec(env_dup_root, cmds, &gc, pipes, number_of_pipes, cmds, token));
+					exit_status(exec(env_dup_root, cmds, &gc, pipes, number_of_pipes, token));
 			}
 		}
 		if (verify_input(input))

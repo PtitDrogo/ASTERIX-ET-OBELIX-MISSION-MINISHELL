@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/31 20:43:02 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/02 21:49:17 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc, t_env_node *env, ch
 				int pipe_heredoc[2];
 				pipe(pipe_heredoc);
 				int before_expand_len = ft_strlen(current->next->str);
-				current->next->str = remove_quotes(gc, current->next->str);
+				current->next->str = expand_single_str(env ,gc, current->next->str, error_value, REMOVESQUOTES);
 				if (before_expand_len != ft_strlen(current->next->str))
 					do_expand = false;
 				current->token_fd = pipe_heredoc[0];
@@ -131,7 +131,8 @@ static void	here_doc_process(char *delimiter, t_garbage_collect **gc, int fd, bo
 		//IF delimiter isnt in quote we expand EVERYTHING
 		// input = expand_here_doc_str(input); //WILL NEED TO FEED A STRUCT WITH ALL the Variables needed;
 		if (do_expand == true)
-			input = expand_here_doc_str(env, gc, input, error_value);
+			input = expand_single_str(env, gc, input, error_value, ALWAYS_EXPAND);
+			// input = expand_here_doc_str(env, gc, input, error_value);
 		
 		if (write(fd, input, ft_strlen(input)) == -1)
 		{

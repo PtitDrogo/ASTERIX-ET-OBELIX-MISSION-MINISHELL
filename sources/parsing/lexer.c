@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:15:09 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/31 18:38:42 by garivo           ###   ########.fr       */
+/*   Updated: 2024/06/02 22:23:04 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,8 @@ t_token	*tokenize(char **input, t_garbage_collect **gc)
 
 	i = 0;
 	tokenpile = NULL;
+	// if (input == NULL);
+	// 	return (NULL); //This gets rid of the memory leak but also nothing works so not great
 	while (input[i])
 	{
 		token = create_token(input[i], gc);

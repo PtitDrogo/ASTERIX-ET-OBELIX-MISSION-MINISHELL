@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/01 13:37:55 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/06/02 19:41:43 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ int main(int argc, char const *argv[], char **envp)
 					backup_fds[1] = dup(1);
 
 					process_status = process_behavior(cmds, &gc, token);
+					close_all_heredoc_pipes(cmds, gc);
 					if (process_status == 0)
 						exit_status(theo_basic_parsing(&env_dup_root, &gc, cmds->str, backup_fds));
 					

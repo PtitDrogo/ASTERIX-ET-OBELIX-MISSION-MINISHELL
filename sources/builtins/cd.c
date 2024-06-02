@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:54:37 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 19:07:29 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/06/02 20:05:51 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int cd(char **cmd, t_garbage_collect **gc, t_env_node *env)
 	{
 		if (ft_printf2("bash: cd: too many arguments\n") == -1)
 			perror_exit(*gc, errno, WRITE_ERR_MSG);
-		return (1); //value of echo $?
+		return (1);
 	}
 	dir_path = cmd[1];
 	if (dir_path == NULL)

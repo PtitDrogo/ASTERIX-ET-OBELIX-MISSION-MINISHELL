@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/01 15:13:03 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/06/02 20:38:09 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,10 @@ typedef struct s_cmd
 #define HEREDOC_FILE ".ft_heredoc"
 #define WRITE_ERROR 1
 
+#define EXPAND_NORMAL 1
+#define REMOVESQUOTES 2
+#define ALWAYS_EXPAND 3
+
 ///------------------------Functions------------------------///
 
 //--------------------------------debug
@@ -110,9 +114,11 @@ int					global_fd(int fd);
 
 //EXPANDER
 char *remove_quotes(t_garbage_collect **gc, char *array);
-char 	**expand(t_env_node *env, t_garbage_collect **gc, char **arrays, char *error_value);
+char **expand(t_env_node *env, t_garbage_collect **gc, char **arrays, char *error_value, int mode);
 int	count_size_no_quotes(char *array, t_garbage_collect **gc);
 char *expand_here_doc_str(t_env_node *env, t_garbage_collect **gc, char *array, char *error_value);
+char 	*expand_single_str(t_env_node *env, t_garbage_collect **gc, char *array, char *error_value, int mode);
+void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds, char *error_value);
 
 //BUILT INS
 int		unset(t_env_node *env_dup_root, char *env_to_find);
@@ -152,7 +158,7 @@ int		print_open_err_msg(int errnumber, char *file);
 
 
 ///------------------------Execution------------------------///
-void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds, char *error_value);
+
 int		**open_pipes(t_cmd *cmds, t_garbage_collect **gc, int number_of_pipes);
 int 	exec(t_env_node *root_env, t_cmd *cmds, t_garbage_collect **gc, int **pipes_fds, int number_of_pipes, t_token *token_root);
 int		count_pipes(t_token *token_list);

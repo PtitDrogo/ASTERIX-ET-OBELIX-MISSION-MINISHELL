@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 14:57:56 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 05:29:02 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/02 19:57:57 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int ft_exit(char **args, t_garbage_collect *gc, int backup_fds[2])
     if (args == NULL || *args == NULL || *args[0] == '\0')
     {
 		close_backup_fds(backup_fds);
-		if (printf("exit\n") == -1)
+		if (ft_printf("exit\n") == -1)
 			perror_exit(gc, errno, WRITE_ERR_MSG);
 		empty_trash_exit(gc, 0); // normal execution
 	}
@@ -43,7 +43,7 @@ int ft_exit(char **args, t_garbage_collect *gc, int backup_fds[2])
 	}
     if (too_many_arguments(args) == true)
 	{
-		if (printf("exit\n") == -1)
+		if (ft_printf("exit\n") == -1)
 			perror_exit(gc, errno, WRITE_ERR_MSG);
 		if (ft_printf2("bash: exit: too many arguments\n") == -1)
 		{	

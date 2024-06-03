@@ -6,20 +6,18 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/02 21:49:17 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 01:36:17 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-//TODO, somehow get the initial call to heredoc to the history
 static char		*readline_n_add_n(char *readline, t_garbage_collect **gc);
 static int		ft_strncmp_n(char *input, char *delimiter, size_t n);
 static void		here_doc_process(char *delimiter, t_garbage_collect **gc, int fd, bool do_expand, t_env_node *env, char *error_value);
 char 			*expand_here_doc_str(t_env_node *env, t_garbage_collect **gc, char *array, char *error_value);
 char 			*expand_here_doc_str(t_env_node *env, t_garbage_collect **gc, char *array, char *error_value);
 
-//I want this function to exit with only one open pipe end per USED heredoc;
 int parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc, t_env_node *env, char *error_value)
 {
 	t_token *current;
@@ -128,19 +126,14 @@ static void	here_doc_process(char *delimiter, t_garbage_collect **gc, int fd, bo
 		}
 		if (ft_strncmp_n(input, delimiter, ft_strlen(input)) == 0)
 			break ;
-		//IF delimiter isnt in quote we expand EVERYTHING
-		// input = expand_here_doc_str(input); //WILL NEED TO FEED A STRUCT WITH ALL the Variables needed;
 		if (do_expand == true)
-			input = expand_single_str(env, gc, input, error_value, ALWAYS_EXPAND);
-			// input = expand_here_doc_str(env, gc, input, error_value);
-		
+			input = expand_single_str(env, gc, input, error_value, ALWAYS_EXPAND);	
 		if (write(fd, input, ft_strlen(input)) == -1)
 		{
 			free_heredoc();
             perror_exit(*gc, errno, WRITE_ERR_MSG);
 		}
 	}
-	printf("Returning 1 in heredoc\n");
 }
 
 char	*readline_n_add_n(char *readline, t_garbage_collect **gc)

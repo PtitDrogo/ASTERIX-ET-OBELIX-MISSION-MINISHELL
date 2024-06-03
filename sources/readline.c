@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/02 19:41:43 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 00:09:21 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,7 @@ int main(int argc, char const *argv[], char **envp)
 	gc = NULL;
 	env_dup_root = NULL;
 	status = 0;
-	if (envp == NULL)
-		return (1);
+
 	generate_env_llist(&env_dup_root, &gc, envp);
 	status = exit_status(0); // Initializing it, not sure if needed
 	while (1) 

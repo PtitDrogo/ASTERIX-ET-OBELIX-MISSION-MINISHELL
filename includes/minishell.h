@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/02 20:38:09 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 01:38:23 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@
 
 ///------------------------Structs------------------------///
 
-typedef struct s_env_node {
+typedef struct s_env_node 
+{
 
 	struct s_env_node	*next;
 	char				*variable_name;
@@ -70,6 +71,34 @@ typedef struct s_cmd
 	struct s_cmd			*next;
 	int						cmd_id;
 }	t_cmd;
+
+typedef struct s_data
+{
+	t_env_node			*env_dup_root;
+	t_garbage_collect	*gc;
+	t_token				*token;
+	t_cmd				*cmds;
+	char				*input;
+	char				*history;
+	int					**pipes;
+	int					status;
+	char				*str_status;
+
+
+} t_data;
+
+typedef struct s_expand
+{
+	char	*array;  
+	char	*expanded_var; 
+	char	*error_value; 
+	char	current_quotes;
+	int		total_size;
+	int		size; 
+	int		mode;
+	t_env_node *env;
+	
+} t_expand;
 
 ///------------------------Defines------------------------///
 

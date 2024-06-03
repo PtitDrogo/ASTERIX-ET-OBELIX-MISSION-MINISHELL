@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/01 15:12:17 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/06/03 02:04:51 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,10 +89,9 @@ void    close_all_heredoc_pipes(t_cmd *cmds_root, t_garbage_collect *gc)
         {
             if (current->type == D_LESS)
 			{
-				//ft_printf("pipe value : %i\n", current->pipe_fd);
 				if (current->token_fd != -1)
                 	if (close(current->token_fd) == -1)
-						perror_exit(gc, EXIT_FAILURE, "Failed to close pipe");; //should care about if this close can fail later;
+						perror_exit(gc, EXIT_FAILURE, "Failed to close pipe"); //should care about if this close can fail later;
 			}
             current = current->next;
         }

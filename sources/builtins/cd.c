@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:54:37 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 06:45:35 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@
 
 static void	handle_error(char *dir_path, t_gc *gc);
 static char	*join_path_to_home(char *dir_path, char *home, t_gc **gc);
-static int	update_pwd(t_gc **gc, t_env_node *env, char *dir_path);
-char		*safe_get_var(t_env_node *env, t_gc *gc, char *variable);
+static int	update_pwd(t_gc **gc, t_env *env, char *dir_path);
+char		*safe_get_var(t_env *env, t_gc *gc, char *variable);
 
 // Should be all done, work with cd - and with ~/ at the start;
-int cd(char **cmd, t_gc **gc, t_env_node *env)
+int cd(char **cmd, t_gc **gc, t_env *env)
 {   
 	char	*home;
 	char	*dir_path;
@@ -45,7 +45,7 @@ int cd(char **cmd, t_gc **gc, t_env_node *env)
 }
 
 //safely gets variable content, prints err msg itself and returns null otherwise
-char	*safe_get_var(t_env_node *env, t_gc *gc, char *variable)
+char	*safe_get_var(t_env *env, t_gc *gc, char *variable)
 {
 	char	*var_content;
 	
@@ -106,10 +106,10 @@ char	*join_path_to_home(char *dir_path, char *home, t_gc **gc)
 	return (to_return);
 }
 //CD AND PWD FAILURE DONT EXIT SHELL
-int	update_pwd(t_gc **gc, t_env_node *env, char *dir_path)
+int	update_pwd(t_gc **gc, t_env *env, char *dir_path)
 {
-	t_env_node *pwd_old;
-	t_env_node *pwd_curr;
+	t_env *pwd_old;
+	t_env *pwd_curr;
 	char *back_up_old_pwd;
 
 	back_up_old_pwd = setter_gc(getcwd(NULL, 0), gc);

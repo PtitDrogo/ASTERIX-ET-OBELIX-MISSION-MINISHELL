@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/03 06:31:52 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 07:03:56 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ typedef struct s_env_node
 	struct s_env_node	*next;
 	char				*variable_name;
 	char				*variable;
-}	t_env_node;
+}	t_env;
 
 typedef struct s_garbage_collect
 {
@@ -74,7 +74,7 @@ typedef struct s_cmd
 
 typedef struct s_data
 {
-	t_env_node			*env_dup_root;
+	t_env			*env_dup_root;
 	t_gc	*gc;
 	t_token				*token;
 	t_cmd				*cmds;
@@ -92,11 +92,11 @@ typedef struct s_expand
 	char	*array;  
 	char	*expanded_var; 
 	char	*error_value; 
-	char	current_quotes;
+	char	quote;
 	int		total_size;
 	int		size; 
 	int		mode;
-	t_env_node *env;
+	t_env *env;
 	
 } t_expand;
 
@@ -129,29 +129,29 @@ int 	empty_trash(t_gc *gc);
 void	*setter_gc(void *data_to_set, t_gc **gc);
 void	**setter_double_p_gc(void **data_to_set, t_gc **gc);
 void    malloc_check(void *ptr, t_gc *gc);
-void	recycle_trash_new(t_gc **gc, t_env_node    *env_dup_root);
+void	recycle_trash_new(t_gc **gc, t_env    *env_dup_root);
 int		no_dupplicate_check(void	*data, t_gc *gc);
 
 //Here_doc
-int					here_doc(char *delimiter, t_gc **gc, int fd, bool do_expand, t_env_node *env, char *error_value);
+int					here_doc(char *delimiter, t_gc **gc, int fd, bool do_expand, t_env *env, char *error_value);
 t_gc	**global_gc(t_gc **gc);
 int					global_fd(int fd);
-int					parse_all_here_docs(t_cmd *cmds, t_gc **gc, t_env_node *env, char *error_value);
+int					parse_all_here_docs(t_cmd *cmds, t_gc **gc, t_env *env, char *error_value);
 t_gc	**global_gc(t_gc **gc);
 t_cmd				*global_cmd(t_cmd *cmds);
 int					global_fd(int fd);
 
 //EXPANDER
 // char 	**expand(t_env_node *env, t_gc **gc, char **arrays, char *error_value, int mode);
-char 	*expand_single_str(t_env_node *env, t_gc **gc, char *array, char *error_value, int mode);
-void	expander(t_env_node *env, t_gc **gc, t_cmd *cmds, char *error_value);
+char 	*expand_single_str(t_env *env, t_gc **gc, char *array, char *error_value, int mode);
+void	expander(t_env *env, t_gc **gc, t_cmd *cmds, char *error_value);
 
 //expander utils
 void	var_up(int *var_1, int *var_2, int add_to_1, int add_to_2);
-int		up_quote(char c, char *current_quotes);
+int		up_quote(char c, char *quote);
 int		chars_to_expand(char *str);
-char	*create_string_to_expand(char *str, t_gc **gc);
-bool	can_expand(char *current_quotes);
+char	*get_expand_str(char *str, t_gc **gc);
+bool	can_expand(char *quote);
 void	fill_string(t_expand *expdr, char *tmp);
 int		check_quotes(t_expand *expdr, int *i);
 int		tmp_check(t_expand *expdr, int *i, char *tmp);
@@ -159,27 +159,27 @@ int		handle_question_mark(t_expand *expdr, int *i, char **tmp);
 void	init_expander_struct(t_expand *expdr, char *array, char *error_value, int mode);
 
 //BUILT INS
-int		unset(t_env_node *env_dup_root, char *env_to_find);
-int		export(t_env_node **root, void *variable, t_gc **gc);
-int 	env(t_env_node *env_dup_root, t_gc *gc);
+int		unset(t_env *env_dup_root, char *env_to_find);
+int		export(t_env **root, void *variable, t_gc **gc);
+int 	env(t_env *env_dup_root, t_gc *gc);
 int 	ft_exit(char **args, t_gc *gc, int backup_fds[2]);
-int		sorted_env_print(t_env_node *env_dup_root, t_gc *gc);
+int		sorted_env_print(t_env *env_dup_root, t_gc *gc);
 int		pwd(t_gc **gc);
 int		echo(char **to_echo, t_gc **gc);
-int 	cd(char **cmd, t_gc **gc, t_env_node *env);
+int 	cd(char **cmd, t_gc **gc, t_env *env);
 
 //UTILS
 size_t		len_to_char(char *str, char c);
 int			is_char_in_str(char *str, char c);
 int			ft_strcmp(const char *s1, const char *s2);
-int			pop(t_env_node *env_dup_root, t_env_node *node_to_pop);
-int			generate_env_llist(t_env_node **env_dup_root, t_gc **gc, char **envp);
-int			count_nodes(t_env_node *root);
-t_env_node *get_env_node(t_env_node *root, char *variable_name);
+int			pop(t_env *env_dup_root, t_env *node_to_pop);
+int			generate_env_llist(t_env **env_dup_root, t_gc **gc, char **envp);
+int			count_nodes(t_env *root);
+t_env *get_env_node(t_env *root, char *variable_name);
 bool		is_builtin(char **cmd);
 int			count_arrays_in_doubleptr(void **array);
-char		*env_var(t_env_node *root, char *variable_name);
-char		**rebuild_env(t_env_node *root, t_gc **gc);
+char		*env_var(t_env *root, char *variable_name);
+char		**rebuild_env(t_env *root, t_gc **gc);
 char		*ft_strjoin_and_add(char const *s1, char const *s2, char c);
 char		*ft_strncat(char *src, char *dst, int len);
 
@@ -198,9 +198,9 @@ int		print_open_err_msg(int errnumber, char *file);
 ///------------------------Execution------------------------///
 
 int		**open_pipes(t_cmd *cmds, t_gc **gc, int number_of_pipes);
-int 	exec(t_env_node *root_env, t_cmd *cmds, t_gc **gc, int **pipes_fds, int number_of_pipes, t_token *token_root);
+int 	exec(t_env *root_env, t_cmd *cmds, t_gc **gc, int **pipes_fds, int number_of_pipes, t_token *token_root);
 int		count_pipes(t_token *token_list);
-int		theo_basic_parsing(t_env_node **env_dup_root, t_gc **gc, char **cmd, int backup_fds[2]);
+int		theo_basic_parsing(t_env **env_dup_root, t_gc **gc, char **cmd, int backup_fds[2]);
 int			process_behavior(t_cmd *cmds, t_gc **gc, t_token *token_current);
 
 void    close_all_heredoc_pipes(t_cmd *cmds_root, t_gc *gc);

@@ -6,16 +6,16 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 22:03:05 by ptitdrogo         #+#    #+#             */
-/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 06:45:35 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-bool	is_node_env_node(t_gc *node_to_pop, t_env_node    *env_dup_root);
+bool	is_node_env_node(t_gc *node_to_pop, t_env    *env_dup_root);
 int		free_and_pop_gc(t_gc **gc, t_gc *node_to_pop);
 
-void	recycle_trash_new(t_gc **gc, t_env_node    *env_dup_root)
+void	recycle_trash_new(t_gc **gc, t_env    *env_dup_root)
 {
 	t_gc *current_gc_node;
 	t_gc *save_point;
@@ -32,7 +32,7 @@ void	recycle_trash_new(t_gc **gc, t_env_node    *env_dup_root)
 	}
 	return ;
 }
-bool	is_node_env_node(t_gc *node_to_pop, t_env_node    *env_dup_root)
+bool	is_node_env_node(t_gc *node_to_pop, t_env    *env_dup_root)
 {
 	while (env_dup_root)
 	{

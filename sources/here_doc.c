@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 06:45:35 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@
 
 static char		*readline_n_add_n(char *readline, t_gc **gc);
 static int		ft_strncmp_n(char *input, char *delimiter, size_t n);
-static void		here_doc_process(char *delimiter, t_gc **gc, int fd, bool do_expand, t_env_node *env, char *error_value);
-char 			*expand_here_doc_str(t_env_node *env, t_gc **gc, char *array, char *error_value);
-char 			*expand_here_doc_str(t_env_node *env, t_gc **gc, char *array, char *error_value);
+static void		here_doc_process(char *delimiter, t_gc **gc, int fd, bool do_expand, t_env *env, char *error_value);
+char 			*expand_here_doc_str(t_env *env, t_gc **gc, char *array, char *error_value);
+char 			*expand_here_doc_str(t_env *env, t_gc **gc, char *array, char *error_value);
 
-int parse_all_here_docs(t_cmd *cmds, t_gc **gc, t_env_node *env, char *error_value)
+int parse_all_here_docs(t_cmd *cmds, t_gc **gc, t_env *env, char *error_value)
 {
 	t_token *current;
 	int		status;
@@ -55,7 +55,7 @@ int parse_all_here_docs(t_cmd *cmds, t_gc **gc, t_env_node *env, char *error_val
 	return (status);
 }
 
-int	here_doc(char *delimiter, t_gc **gc, int fd, bool do_expand, t_env_node *env, char *error_value)
+int	here_doc(char *delimiter, t_gc **gc, int fd, bool do_expand, t_env *env, char *error_value)
 {
 	int	status;
 	int		pid;
@@ -108,7 +108,7 @@ int	global_fd(int fd)
 }
 
 //here_doc that will write into the fd we give it, it doesnt update history because life is hard.
-static void	here_doc_process(char *delimiter, t_gc **gc, int fd, bool do_expand, t_env_node *env, char *error_value)
+static void	here_doc_process(char *delimiter, t_gc **gc, int fd, bool do_expand, t_env *env, char *error_value)
 {
 	char	*input;
 

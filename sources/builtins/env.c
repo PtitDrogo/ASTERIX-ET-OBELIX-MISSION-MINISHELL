@@ -6,13 +6,13 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 14:54:23 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 06:45:35 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int env(t_env_node *env_dup_root, t_gc *gc)
+int env(t_env *env_dup_root, t_gc *gc)
 {
     while (env_dup_root)
 	{

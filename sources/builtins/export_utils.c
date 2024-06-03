@@ -6,21 +6,21 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:57:09 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 06:45:35 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static bool	ft_is_name_lower(t_env_node *new_str, t_env_node *low_str);
-static int	export_print(t_env_node *node_to_print,  t_gc *gc);
+static bool	ft_is_name_lower(t_env *new_str, t_env *low_str);
+static int	export_print(t_env *node_to_print,  t_gc *gc);
 
 //this prints sorted env for export with no arguments
-int		sorted_env_print(t_env_node *env_dup_root, t_gc *gc)
+int		sorted_env_print(t_env *env_dup_root, t_gc *gc)
 {
-	t_env_node	*lowest_name;
-	t_env_node	*current;
-	t_env_node	*last_node_printed;
+	t_env	*lowest_name;
+	t_env	*current;
+	t_env	*last_node_printed;
 	int			n_nodes;
 	
 	n_nodes = count_nodes(env_dup_root);
@@ -45,7 +45,7 @@ int		sorted_env_print(t_env_node *env_dup_root, t_gc *gc)
 	return (0);
 }
 
-static int  export_print(t_env_node *node_to_print, t_gc *gc)
+static int  export_print(t_env *node_to_print, t_gc *gc)
 {
 	if (node_to_print == NULL)
 		return (0);
@@ -64,7 +64,7 @@ static int  export_print(t_env_node *node_to_print, t_gc *gc)
 
 //this function checks if the new node name has lower ascii value
 //than new node
-static bool	ft_is_name_lower(t_env_node *new_node, t_env_node *low_node)
+static bool	ft_is_name_lower(t_env *new_node, t_env *low_node)
 {
 	int	i;
 	char	*low_str;

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 06:45:35 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,19 +15,19 @@
 int 	empty_trash(t_gc *gc);
 int		add_to_trash(t_gc **root, void *to_free);
 int		basic_parsing(t_gc **gc, char *input, t_token **token, t_cmd **cmds);
-int		theo_basic_parsing(t_env_node **env_dup_root, t_gc **gc, char **cmd, int backup_fds[2]);
-char	*accurate_shell(t_gc **gc, t_env_node *env);
+int		theo_basic_parsing(t_env **env_dup_root, t_gc **gc, char **cmd, int backup_fds[2]);
+char	*accurate_shell(t_gc **gc, t_env *env);
 bool	is_ascii(unsigned char c);
 int		verify_input(char *input);
-char    **rebuild_env_no_gc(t_env_node *root);
-void	recycle_trash(t_gc	**gc, t_env_node	**env_dup_root);
+char    **rebuild_env_no_gc(t_env *root);
+void	recycle_trash(t_gc	**gc, t_env	**env_dup_root);
 void	secure_dup2_no_exit(int new_fd, int old_fd, int **pipes, t_gc *gc, int number_of_pipes);
-char	*prompt(t_gc **gc, t_env_node *env);
-char	*accurate_shell(t_gc **gc, t_env_node *env);
+char	*prompt(t_gc **gc, t_env *env);
+char	*accurate_shell(t_gc **gc, t_env *env);
 
 int main(int argc, char const *argv[], char **envp)
 {
-	t_env_node			*env_dup_root;
+	t_env			*env_dup_root;
 	t_gc	*gc;
 	t_token				*token;
 	t_cmd				*cmds;
@@ -121,7 +121,7 @@ int	basic_parsing(t_gc **gc, char *input, t_token **token, t_cmd **cmds)
 	return (1);
 }
 
-int	theo_basic_parsing(t_env_node **env_dup_root, t_gc **gc, char **cmd, int backup_fds[2])
+int	theo_basic_parsing(t_env **env_dup_root, t_gc **gc, char **cmd, int backup_fds[2])
 {
 	if (cmd == NULL || cmd[0] == NULL)
 		return (1);
@@ -195,7 +195,7 @@ void	secure_dup2_no_exit(int new_fd, int old_fd, int **pipes, t_gc *gc, int numb
 }
 
 // Ignore ca c'est une experience mais remplacer le home par ~ c'est chiant
-char	*prompt(t_gc **gc, t_env_node *env)
+char	*prompt(t_gc **gc, t_env *env)
 {
 	char *pwd;
 
@@ -210,9 +210,9 @@ char	*prompt(t_gc **gc, t_env_node *env)
 	return (pwd);
 }
 
-char	*accurate_shell(t_gc **gc, t_env_node *env)
+char	*accurate_shell(t_gc **gc, t_env *env)
 {
-	t_env_node *pwd;
+	t_env *pwd;
 	char		*backup_pwd;
 	
 	pwd = get_env_node(env, "PWD");

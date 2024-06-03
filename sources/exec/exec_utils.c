@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 06:45:35 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,12 @@ void		close_all_pipes(int **pipes_fds, t_gc *gc, int number_of_pipes);
 char		*find_env_variable(char **envp, char *env_to_find);
 int			process_behavior(t_cmd *cmds, t_gc **gc, t_token *token_root);
 char		*find_valid_path(t_cmd *cmds, char **envp, t_gc **gc);
-void		child_process(t_env_node *env, char **envp, t_cmd *cmds, t_gc **gc, int **pipes, int number_of_pipes, t_cmd *cmds_root, t_token *token_root);
+void		child_process(t_env *env, char **envp, t_cmd *cmds, t_gc **gc, int **pipes, int number_of_pipes, t_cmd *cmds_root, t_token *token_root);
 int			get_correct_cmd(t_cmd *cmds);
 int			handle_status(int *status);
 
 
-int exec(t_env_node *root_env, t_cmd *cmds, t_gc **gc, int **pipes_fds, int number_of_pipes, t_token *token_root) //need root to clean pipes;
+int exec(t_env *root_env, t_cmd *cmds, t_gc **gc, int **pipes_fds, int number_of_pipes, t_token *token_root) //need root to clean pipes;
 {
 	char	**envp;
 	t_cmd	*current;
@@ -100,7 +100,7 @@ void    close_all_heredoc_pipes(t_cmd *cmds_root, t_gc *gc)
     return ;
 }
 
-void	child_process(t_env_node *env, char **envp, t_cmd *cmds, t_gc **gc, int **pipes, int number_of_pipes, t_cmd *cmds_root, t_token *token_current)
+void	child_process(t_env *env, char **envp, t_cmd *cmds, t_gc **gc, int **pipes, int number_of_pipes, t_cmd *cmds_root, t_token *token_current)
 {
 	char	*valid_path;
 	int process_status; 
@@ -204,7 +204,7 @@ char	*ft_strjoin_and_add(char const *s1, char const *s2, char c)
 	return (joined);
 }
 //Rebuild env from the list, adding correctly the var if its set;
-char    **rebuild_env(t_env_node *root, t_gc **gc)
+char    **rebuild_env(t_env *root, t_gc **gc)
 {
     int		number_of_variables;
 	char	**envp;

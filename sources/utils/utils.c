@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 14:47:08 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/03 06:23:45 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 06:45:35 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ char	*ft_strncat(char *src, char *dst, int len)
 }
 
 //count what nth node the node is
-int	count_nodes(t_env_node *root)
+int	count_nodes(t_env *root)
 {
 	int	i;
 
@@ -82,7 +82,7 @@ int	ft_strcmp(const char *s1, const char *s2)
 	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
 
-t_env_node	*get_env_node(t_env_node *root, char *variable_name)
+t_env	*get_env_node(t_env *root, char *variable_name)
 {
 	if (variable_name == NULL || root == NULL)
 		return (NULL);

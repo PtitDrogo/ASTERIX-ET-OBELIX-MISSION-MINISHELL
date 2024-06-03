@@ -6,33 +6,33 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 03:14:56 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 06:57:19 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int		up_quote(char c, char *current_quotes)
+int	up_quote(char c, char *quote)
 {
-	if (c == *current_quotes)
-	{	
-		*current_quotes = '\0';
+	if (c == *quote)
+	{
+		*quote = '\0';
 		return (0);
 	}
 	else if (c == '\'')
 	{
-		if (*current_quotes == '\0')
-		{	
-			*current_quotes = '\'';
+		if (*quote == '\0')
+		{
+			*quote = '\'';
 			return (0);
 		}
 		return (1);
 	}
 	else if (c == '\"')
 	{
-		if (*current_quotes == '\0')
-		{	
-			*current_quotes = '\"';
+		if (*quote == '\0')
+		{
+			*quote = '\"';
 			return (0);
 		}
 		return (1);
@@ -43,7 +43,7 @@ int		up_quote(char c, char *current_quotes)
 int	chars_to_expand(char *str)
 {
 	int	i;
-	
+
 	if (str[0] == '?')
 		return (1);
 	if (ft_isalpha(str[0]) == 0 && str[0] != '_')
@@ -58,24 +58,24 @@ int	chars_to_expand(char *str)
 	return (i);
 }
 
-char	*create_string_to_expand(char *str, t_gc **gc)
+char	*get_expand_str(char *str, t_gc **gc)
 {
 	int		i;
 	int		size;
 	char	*new_str;
-	
+
 	size = chars_to_expand(str);
 	new_str = malloc_trash(size + 1, gc);
 	new_str[size] = '\0';
 	i = -1;
-	while(++i < size)
+	while (++i < size)
 		new_str[i] = str[i];
-	return(new_str);
+	return (new_str);
 }
 
-bool	can_expand(char *current_quotes)
+bool	can_expand(char *quote)
 {
-	if (*current_quotes == '\'')
+	if (*quote == '\'')
 		return (false);
 	else
 		return (true);

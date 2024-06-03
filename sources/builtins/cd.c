@@ -6,19 +6,19 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:54:37 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/02 20:05:51 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	handle_error(char *dir_path, t_garbage_collect *gc);
-static char	*join_path_to_home(char *dir_path, char *home, t_garbage_collect **gc);
-static int	update_pwd(t_garbage_collect **gc, t_env_node *env, char *dir_path);
-char		*safe_get_var(t_env_node *env, t_garbage_collect *gc, char *variable);
+static void	handle_error(char *dir_path, t_gc *gc);
+static char	*join_path_to_home(char *dir_path, char *home, t_gc **gc);
+static int	update_pwd(t_gc **gc, t_env_node *env, char *dir_path);
+char		*safe_get_var(t_env_node *env, t_gc *gc, char *variable);
 
 // Should be all done, work with cd - and with ~/ at the start;
-int cd(char **cmd, t_garbage_collect **gc, t_env_node *env)
+int cd(char **cmd, t_gc **gc, t_env_node *env)
 {   
 	char	*home;
 	char	*dir_path;
@@ -45,11 +45,11 @@ int cd(char **cmd, t_garbage_collect **gc, t_env_node *env)
 }
 
 //safely gets variable content, prints err msg itself and returns null otherwise
-char	*safe_get_var(t_env_node *env, t_garbage_collect *gc, char *variable)
+char	*safe_get_var(t_env_node *env, t_gc *gc, char *variable)
 {
 	char	*var_content;
 	
-	var_content = get_env_variable(env, variable);
+	var_content = env_var(env, variable);
 	if (var_content == NULL)
 	{
 		if (ft_printf2("bash: cd: %s not set\n", variable) == -1)
@@ -59,7 +59,7 @@ char	*safe_get_var(t_env_node *env, t_garbage_collect *gc, char *variable)
 	return (var_content);
 }
 
-static void	handle_error(char *dir_path, t_garbage_collect *gc)
+static void	handle_error(char *dir_path, t_gc *gc)
 {
 	//TODO XD DO NOT EXIT SHELL
 	if (errno == EACCES)
@@ -89,7 +89,7 @@ static void	handle_error(char *dir_path, t_garbage_collect *gc)
 	}
 }
 
-char	*join_path_to_home(char *dir_path, char *home, t_garbage_collect **gc)
+char	*join_path_to_home(char *dir_path, char *home, t_gc **gc)
 {
 	char *to_return;
 
@@ -106,7 +106,7 @@ char	*join_path_to_home(char *dir_path, char *home, t_garbage_collect **gc)
 	return (to_return);
 }
 //CD AND PWD FAILURE DONT EXIT SHELL
-int	update_pwd(t_garbage_collect **gc, t_env_node *env, char *dir_path)
+int	update_pwd(t_gc **gc, t_env_node *env, char *dir_path)
 {
 	t_env_node *pwd_old;
 	t_env_node *pwd_curr;

@@ -6,19 +6,19 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 16:11:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 05:29:02 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 int			unset(t_env_node *env_dup_root, char *env_to_find);
-int			export(t_env_node **root, void *variable, t_garbage_collect **gc);
+int			export(t_env_node **root, void *variable, t_gc **gc);
 int			pop(t_env_node *env_dup_root, t_env_node *node_to_pop);
 t_env_node *check_if_variable_exist(t_env_node *root, void *variable);
-char		*get_env_name(const char *src, t_garbage_collect **gc);
-char		*get_env_var(const char *src, t_garbage_collect **gc);
-int			is_valid_env_name(char *name, t_garbage_collect *gc);
+char		*get_env_name(const char *src, t_gc **gc);
+char		*get_env_var(const char *src, t_gc **gc);
+int			is_valid_env_name(char *name, t_gc *gc);
 static char *remove_white_spaces(char *str);
 
 //TODO make this universal later
@@ -35,7 +35,7 @@ int	pop(t_env_node *env_dup_root, t_env_node *node_to_pop)
 	return (1);
 }
 
-int	export(t_env_node **root, void *variable, t_garbage_collect **gc)
+int	export(t_env_node **root, void *variable, t_gc **gc)
 {
 	t_env_node	*new_node;
 	t_env_node	*current;
@@ -69,7 +69,7 @@ int	export(t_env_node **root, void *variable, t_garbage_collect **gc)
 }
 
 //this function checks if the env var name is valid;
-int	is_valid_env_name(char *name, t_garbage_collect *gc)
+int	is_valid_env_name(char *name, t_gc *gc)
 {
 	int	i;
 	
@@ -116,7 +116,7 @@ t_env_node *check_if_variable_exist(t_env_node *root, void *variable)
 	return (NULL);
 }
 
-char	*get_env_name(const char *src, t_garbage_collect **gc)
+char	*get_env_name(const char *src, t_gc **gc)
 {
 	int		i;
 	int		j;
@@ -139,7 +139,7 @@ char	*get_env_name(const char *src, t_garbage_collect **gc)
 	return (dest);
 }
 
-char	*get_env_var(const char *src, t_garbage_collect **gc)
+char	*get_env_var(const char *src, t_gc **gc)
 {
 	int i;
 	char	*to_return;
@@ -157,7 +157,7 @@ char	*get_env_var(const char *src, t_garbage_collect **gc)
 }
 
 //returns 0 is envp is NULL, but no env doesnt exit shell so we dont do anything
-int	generate_env_llist(t_env_node **env_dup_root, t_garbage_collect **gc, char **envp)
+int	generate_env_llist(t_env_node **env_dup_root, t_gc **gc, char **envp)
 {
 	int i;
 

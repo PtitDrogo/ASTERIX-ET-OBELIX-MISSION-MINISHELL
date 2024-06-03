@@ -6,18 +6,18 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 19:40:15 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/31 20:45:58 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 bool	is_classic_redir(t_token *token);
-bool	is_classic_redir_valid(t_token *token, t_garbage_collect *gc);
-bool	is_first_token_pipe(t_token *token, t_garbage_collect *gc);
-bool	is_pipe_valid(t_token *token, t_garbage_collect *gc);
+bool	is_classic_redir_valid(t_token *token, t_gc *gc);
+bool	is_first_token_pipe(t_token *token, t_gc *gc);
+bool	is_pipe_valid(t_token *token, t_gc *gc);
 
-int	syntax_error(t_token *token, t_garbage_collect *gc)
+int	syntax_error(t_token *token, t_gc *gc)
 {
 	if (is_first_token_pipe(token, gc) == true)
 		return (0);
@@ -38,7 +38,7 @@ int	syntax_error(t_token *token, t_garbage_collect *gc)
 	return (1);
 }
 
-static void	redir_next_not_str(t_token *token, t_garbage_collect *gc)
+static void	redir_next_not_str(t_token *token, t_gc *gc)
 {
 	if (token->next->type == PIPE)
 	{
@@ -54,7 +54,7 @@ static void	redir_next_not_str(t_token *token, t_garbage_collect *gc)
 	}
 }
 
-bool	is_classic_redir_valid(t_token *token, t_garbage_collect *gc)
+bool	is_classic_redir_valid(t_token *token, t_gc *gc)
 {
 	if (token->next == NULL)
 	{
@@ -77,7 +77,7 @@ bool	is_classic_redir_valid(t_token *token, t_garbage_collect *gc)
 	return (true);
 }
 
-bool	is_pipe_valid(t_token *token, t_garbage_collect *gc)
+bool	is_pipe_valid(t_token *token, t_gc *gc)
 {
 	if (token->next == NULL)
 	{
@@ -109,7 +109,7 @@ bool	is_classic_redir(t_token *token)
 	return (type == GREAT || type == D_GREAT || type == LESS || type == D_LESS);
 }
 
-bool	is_first_token_pipe(t_token *token, t_garbage_collect *gc)
+bool	is_first_token_pipe(t_token *token, t_gc *gc)
 {
 	if (token && token->type == PIPE)
 	{

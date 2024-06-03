@@ -6,17 +6,17 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:57:09 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/28 20:11:08 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 static bool	ft_is_name_lower(t_env_node *new_str, t_env_node *low_str);
-static int	export_print(t_env_node *node_to_print,  t_garbage_collect *gc);
+static int	export_print(t_env_node *node_to_print,  t_gc *gc);
 
 //this prints sorted env for export with no arguments
-int		sorted_env_print(t_env_node *env_dup_root, t_garbage_collect *gc)
+int		sorted_env_print(t_env_node *env_dup_root, t_gc *gc)
 {
 	t_env_node	*lowest_name;
 	t_env_node	*current;
@@ -45,7 +45,7 @@ int		sorted_env_print(t_env_node *env_dup_root, t_garbage_collect *gc)
 	return (0);
 }
 
-static int  export_print(t_env_node *node_to_print, t_garbage_collect *gc)
+static int  export_print(t_env_node *node_to_print, t_gc *gc)
 {
 	if (node_to_print == NULL)
 		return (0);

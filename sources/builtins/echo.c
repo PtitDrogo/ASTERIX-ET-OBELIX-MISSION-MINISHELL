@@ -6,14 +6,14 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:40:04 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 02:59:58 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 static	char    *n_flag_logic(char *str, bool *n_flag);
-static	char	*join_echo(char **to_echo, t_garbage_collect **gc);
+static	char	*join_echo(char **to_echo, t_gc **gc);
 static char *remove_white_spaces(char *str);
 //I want a function i can just dump all the word content to the
 //right of echo and be happy with my life
@@ -23,7 +23,7 @@ static char *remove_white_spaces(char *str);
 //that means flag and words to print all in one pointer, i can change that if need be
 
 //TODO, add case for echo -n -n -n -nnnn -n hello world
-int echo(char **to_echo, t_garbage_collect **gc)
+int echo(char **to_echo, t_gc **gc)
 {
 	bool    n_flag;
 	bool	n_n_flag;
@@ -63,7 +63,7 @@ int echo(char **to_echo, t_garbage_collect **gc)
 	}
 	return (0);
 }
-static	char	*join_echo(char **to_echo, t_garbage_collect **gc)
+static	char	*join_echo(char **to_echo, t_gc **gc)
 {
 	int		letters;
 	int		i;
@@ -82,7 +82,7 @@ static	char	*join_echo(char **to_echo, t_garbage_collect **gc)
 		// {
 		// 	printf("char is : %c\n", to_echo[i][j]);
 		// }
-		letters += ft_strlen(to_echo[i++]);
+		letters += ft_len(to_echo[i++]);
 	}
 	letters += count_arrays_in_doubleptr((void **)to_echo) - 1; // this is for the space between words
 	str_to_return = malloc_trash(letters + 1, gc);
@@ -110,7 +110,7 @@ static	char    *n_flag_logic(char *str, bool *n_flag)
 {
 	int i;
 
-	if (ft_strlen(str) < 2)
+	if (ft_len(str) < 2)
 	{	
 		*n_flag = false;
 		return (str);

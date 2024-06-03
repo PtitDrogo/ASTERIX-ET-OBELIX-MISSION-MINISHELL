@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/24 18:11:38 by garivo            #+#    #+#             */
-/*   Updated: 2024/06/02 22:19:29 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,7 +174,7 @@ static void	extract(char *input, char *res, size_t *index)
 	}
 }
 
-static char	**quote_splitting(char *input, char **res, t_garbage_collect **gc)
+static char	**quote_splitting(char *input, char **res, t_gc **gc)
 {
 	size_t	i;
 	size_t	j;
@@ -202,7 +202,7 @@ static char	**quote_splitting(char *input, char **res, t_garbage_collect **gc)
 	return (res);
 }
 
-char	**quote_split(char *input, t_garbage_collect **gc)
+char	**quote_split(char *input, t_gc **gc)
 {
 	char	**res;
 

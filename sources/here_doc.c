@@ -6,19 +6,19 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/03 01:36:17 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static char		*readline_n_add_n(char *readline, t_garbage_collect **gc);
+static char		*readline_n_add_n(char *readline, t_gc **gc);
 static int		ft_strncmp_n(char *input, char *delimiter, size_t n);
-static void		here_doc_process(char *delimiter, t_garbage_collect **gc, int fd, bool do_expand, t_env_node *env, char *error_value);
-char 			*expand_here_doc_str(t_env_node *env, t_garbage_collect **gc, char *array, char *error_value);
-char 			*expand_here_doc_str(t_env_node *env, t_garbage_collect **gc, char *array, char *error_value);
+static void		here_doc_process(char *delimiter, t_gc **gc, int fd, bool do_expand, t_env_node *env, char *error_value);
+char 			*expand_here_doc_str(t_env_node *env, t_gc **gc, char *array, char *error_value);
+char 			*expand_here_doc_str(t_env_node *env, t_gc **gc, char *array, char *error_value);
 
-int parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc, t_env_node *env, char *error_value)
+int parse_all_here_docs(t_cmd *cmds, t_gc **gc, t_env_node *env, char *error_value)
 {
 	t_token *current;
 	int		status;
@@ -37,9 +37,9 @@ int parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc, t_env_node *env, ch
 			{
 				int pipe_heredoc[2];
 				pipe(pipe_heredoc);
-				int before_expand_len = ft_strlen(current->next->str);
+				int before_expand_len = ft_len(current->next->str);
 				current->next->str = expand_single_str(env ,gc, current->next->str, error_value, REMOVESQUOTES);
-				if (before_expand_len != ft_strlen(current->next->str))
+				if (before_expand_len != ft_len(current->next->str))
 					do_expand = false;
 				current->token_fd = pipe_heredoc[0];
 				status = here_doc(current->next->str, gc, pipe_heredoc[1], do_expand, env, error_value);
@@ -55,7 +55,7 @@ int parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc, t_env_node *env, ch
 	return (status);
 }
 
-int	here_doc(char *delimiter, t_garbage_collect **gc, int fd, bool do_expand, t_env_node *env, char *error_value)
+int	here_doc(char *delimiter, t_gc **gc, int fd, bool do_expand, t_env_node *env, char *error_value)
 {
 	int	status;
 	int		pid;
@@ -80,9 +80,9 @@ int	here_doc(char *delimiter, t_garbage_collect **gc, int fd, bool do_expand, t_
 	return (status);
 }
 
-t_garbage_collect	**global_gc(t_garbage_collect **gc)
+t_gc	**global_gc(t_gc **gc)
 {
-	static t_garbage_collect	**sgc;
+	static t_gc	**sgc;
 
 	if (gc)
 		sgc = gc;
@@ -108,7 +108,7 @@ int	global_fd(int fd)
 }
 
 //here_doc that will write into the fd we give it, it doesnt update history because life is hard.
-static void	here_doc_process(char *delimiter, t_garbage_collect **gc, int fd, bool do_expand, t_env_node *env, char *error_value)
+static void	here_doc_process(char *delimiter, t_gc **gc, int fd, bool do_expand, t_env_node *env, char *error_value)
 {
 	char	*input;
 
@@ -124,11 +124,11 @@ static void	here_doc_process(char *delimiter, t_garbage_collect **gc, int fd, bo
 			}
 			return ;
 		}
-		if (ft_strncmp_n(input, delimiter, ft_strlen(input)) == 0)
+		if (ft_strncmp_n(input, delimiter, ft_len(input)) == 0)
 			break ;
 		if (do_expand == true)
-			input = expand_single_str(env, gc, input, error_value, ALWAYS_EXPAND);	
-		if (write(fd, input, ft_strlen(input)) == -1)
+			input = expand_single_str(env, gc, input, error_value, EXPAND);	
+		if (write(fd, input, ft_len(input)) == -1)
 		{
 			free_heredoc();
             perror_exit(*gc, errno, WRITE_ERR_MSG);
@@ -136,7 +136,7 @@ static void	here_doc_process(char *delimiter, t_garbage_collect **gc, int fd, bo
 	}
 }
 
-char	*readline_n_add_n(char *readline, t_garbage_collect **gc)
+char	*readline_n_add_n(char *readline, t_gc **gc)
 {
 	if (readline == NULL)
 		return (NULL);

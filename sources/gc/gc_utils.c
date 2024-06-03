@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   gc_utils.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 05:54:56 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/01 16:27:42 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	free_array_from_index_to_end(void **array, int i);
 
-void	**setter_double_p_gc(void **data_to_set, t_garbage_collect **gc)
+void	**setter_double_p_gc(void **data_to_set, t_gc **gc)
 {
 	int	i;
 
@@ -38,7 +38,7 @@ void	**setter_double_p_gc(void **data_to_set, t_garbage_collect **gc)
 	setter_gc(data_to_set, gc);
 	return (data_to_set);
 }
-void	malloc_check(void *ptr, t_garbage_collect *gc)
+void	malloc_check(void *ptr, t_gc *gc)
 {
 	if (ptr == NULL)
 	{

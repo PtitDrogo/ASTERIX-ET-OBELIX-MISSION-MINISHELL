@@ -35,7 +35,9 @@ SRCS =		$(SRCS_DIR)/builtins/export.c \
 			$(SRCS_DIR)/exec/process_behavior.c \
 			$(SRCS_DIR)/parsing/syntax_error.c \
 			$(SRCS_DIR)/signal.c	\
-			$(SRCS_DIR)/expander/expander.c 
+			$(SRCS_DIR)/expander/expander.c \
+			$(SRCS_DIR)/expander/expander_utils.c \
+			$(SRCS_DIR)/expander/expander_utils2.c 
 #------------------------------------------------------------------------#
 
 #---------------------------------Compilation & Linking---------------------------------#

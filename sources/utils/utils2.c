@@ -6,13 +6,13 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 05:47:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 05:51:17 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 06:21:19 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	*get_env_variable(t_env_node *root, char *variable_name)
+char	*env_var(t_env_node *root, char *variable_name)
 {
 	t_env_node	*home_node;
 

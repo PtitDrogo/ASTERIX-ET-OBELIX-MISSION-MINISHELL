@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:15:09 by garivo            #+#    #+#             */
-/*   Updated: 2024/06/02 22:36:46 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	set_to_last_redir(t_token **tokenpile)
 		*tokenpile = (*tokenpile)->next;
 }
 
-t_token	*dup_token(t_token *token, t_garbage_collect **gc)
+t_token	*dup_token(t_token *token, t_gc **gc)
 {
 	t_token	*dup;
 
@@ -52,7 +52,7 @@ void	add_token(t_token **tokenpile, t_token *new_token)
 	return ;
 }
 
-static t_token	*create_token(char *str, t_garbage_collect **gc)
+static t_token	*create_token(char *str, t_gc **gc)
 {
 	t_token	*token;
 
@@ -74,7 +74,7 @@ static t_token	*create_token(char *str, t_garbage_collect **gc)
 	return (token);
 }
 
-t_token	*tokenize(char **input, t_garbage_collect **gc)
+t_token	*tokenize(char **input, t_gc **gc)
 {
 	t_token	*tokenpile;
 	t_token	*token;

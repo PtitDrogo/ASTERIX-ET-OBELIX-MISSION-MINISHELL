@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/09 11:56:36 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/25 17:30:48 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 06:23:45 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ char	*ft_strjoin(char const *s1, char const *s2)
 
 	if (!s1 || !s2)
 		return (NULL);
-    s1_len = ft_strlen(s1);
-    s2_len = ft_strlen(s2);
+    s1_len = ft_len(s1);
+    s2_len = ft_len(s2);
 	i = -1;
 	j = 0;
 	joined = malloc(sizeof(char) * (s1_len + s2_len + 1));

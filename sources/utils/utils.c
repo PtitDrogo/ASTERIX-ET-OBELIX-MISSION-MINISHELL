@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 14:47:08 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/31 20:47:59 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 06:23:45 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ char	*ft_strncat(char *src, char *dst, int len)
 	int	size;
 
 	i = 0;
-	size = ft_strlen(dst);
+	size = ft_len(dst);
 	while (src[i] && i < len)
 	{
 		dst[size + i] = src[i];

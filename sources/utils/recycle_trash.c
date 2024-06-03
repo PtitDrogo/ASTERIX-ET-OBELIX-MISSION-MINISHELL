@@ -3,22 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   recycle_trash.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 22:03:05 by ptitdrogo         #+#    #+#             */
-/*   Updated: 2024/06/01 01:11:16 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-bool	is_node_env_node(t_garbage_collect *node_to_pop, t_env_node    *env_dup_root);
-int		free_and_pop_gc(t_garbage_collect **gc, t_garbage_collect *node_to_pop);
+bool	is_node_env_node(t_gc *node_to_pop, t_env_node    *env_dup_root);
+int		free_and_pop_gc(t_gc **gc, t_gc *node_to_pop);
 
-void	recycle_trash_new(t_garbage_collect **gc, t_env_node    *env_dup_root)
+void	recycle_trash_new(t_gc **gc, t_env_node    *env_dup_root)
 {
-	t_garbage_collect *current_gc_node;
-	t_garbage_collect *save_point;
+	t_gc *current_gc_node;
+	t_gc *save_point;
 	
 	current_gc_node = *gc;
 	while (current_gc_node)
@@ -32,7 +32,7 @@ void	recycle_trash_new(t_garbage_collect **gc, t_env_node    *env_dup_root)
 	}
 	return ;
 }
-bool	is_node_env_node(t_garbage_collect *node_to_pop, t_env_node    *env_dup_root)
+bool	is_node_env_node(t_gc *node_to_pop, t_env_node    *env_dup_root)
 {
 	while (env_dup_root)
 	{
@@ -43,9 +43,9 @@ bool	is_node_env_node(t_garbage_collect *node_to_pop, t_env_node    *env_dup_roo
 	return (false);
 }
 
-int	free_and_pop_gc(t_garbage_collect **gc, t_garbage_collect *node_to_pop)
+int	free_and_pop_gc(t_gc **gc, t_gc *node_to_pop)
 {	
-	t_garbage_collect *tmp;
+	t_gc *tmp;
 
 	tmp = *gc;
 	if (!gc || !node_to_pop || *gc)

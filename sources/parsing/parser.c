@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:48:23 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/31 18:35:05 by garivo           ###   ########.fr       */
+/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static void	add_command(t_cmd **cmd_chain, t_cmd *new_cmd)
 	return ;
 }
 
-static char	**add_str(char ***list, char *str, t_garbage_collect **gc)
+static char	**add_str(char ***list, char *str, t_gc **gc)
 {
 	char	**new_list;
 	int		i;
@@ -51,7 +51,7 @@ static char	**add_str(char ***list, char *str, t_garbage_collect **gc)
 	return (new_list);
 }
 
-static void	fill_cmd(t_token **token, t_cmd *cmd, t_garbage_collect **gc)
+static void	fill_cmd(t_token **token, t_cmd *cmd, t_gc **gc)
 {
 	t_token	**redir;
 
@@ -75,7 +75,7 @@ static void	fill_cmd(t_token **token, t_cmd *cmd, t_garbage_collect **gc)
 	}
 }
 
-static t_cmd	*create_command(t_token *tokenpile, t_garbage_collect **gc)
+static t_cmd	*create_command(t_token *tokenpile, t_gc **gc)
 {
 	t_cmd	*cmd;
 	t_token	*token;
@@ -93,7 +93,7 @@ static t_cmd	*create_command(t_token *tokenpile, t_garbage_collect **gc)
 	return (cmd);
 }
 
-int	parse(char **input, t_garbage_collect **gc,
+int	parse(char **input, t_gc **gc,
 	t_token	**tokenpile, t_cmd	**cmd_chain)
 {
 	t_token	*token;

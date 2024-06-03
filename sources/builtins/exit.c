@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 14:57:56 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/02 19:57:57 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static bool	is_letter_in_first_arg(char *str);
 static int	get_exit_return_value(char *arg);
 void	close_backup_fds(int backup_fds[2]);
 
-int ft_exit(char **args, t_garbage_collect *gc, int backup_fds[2])
+int ft_exit(char **args, t_gc *gc, int backup_fds[2])
 {
     int exit_value;
     int i;

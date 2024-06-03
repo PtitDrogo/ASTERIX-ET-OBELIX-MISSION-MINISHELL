@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   errors.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 16:01:27 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/31 20:31:59 by garivo           ###   ########.fr       */
+/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	empty_trash_exit(t_garbage_collect *gc, int exit_code)
+void	empty_trash_exit(t_gc *gc, int exit_code)
 {
 	empty_trash(gc);
 	rl_clear_history();
@@ -20,7 +20,7 @@ void	empty_trash_exit(t_garbage_collect *gc, int exit_code)
 	return ;
 }
 
-void	perror_exit(t_garbage_collect *gc, int exit_code, char *err_msg)
+void	perror_exit(t_gc *gc, int exit_code, char *err_msg)
 {
 	perror(err_msg);
 	empty_trash_exit(gc, exit_code);
@@ -38,7 +38,7 @@ int	exit_status(int status)
 
 void	exit_heredoc(int status)
 {
-	t_garbage_collect	**gc;
+	t_gc	**gc;
 
 	gc = global_gc(NULL);
 	close_all_heredoc_pipes(global_cmd(NULL), *gc);
@@ -48,7 +48,7 @@ void	exit_heredoc(int status)
 
 void	free_heredoc(void)
 {
-	t_garbage_collect	**gc;
+	t_gc	**gc;
 
 	gc = global_gc(NULL);
 	close_all_heredoc_pipes(global_cmd(NULL), *gc);

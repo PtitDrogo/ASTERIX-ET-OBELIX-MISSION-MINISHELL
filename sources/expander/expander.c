@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 17:03:28 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 17:28:02 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,17 @@
 
 static void	update_new_array_size(t_expand *expdr, t_env *env, t_gc **gc);
 static void	fill_str(t_expand *expdr, t_gc **gc, t_env *env, int i);
-static char	**expand(t_env *env, t_gc **gc, char **arrays, char *err, int mode);
+static char	**expand(t_data *data, char **arrays, int mode);
 
 void	expander(t_data *data)
 {
 	t_token	*current;
 	t_cmd	*current_cmd;
-	
+
 	current_cmd = data->cmds;
 	while (current_cmd)
 	{
-		current_cmd->str = expand(data->env, &data->gc, current_cmd->str, data->str_status, STD_EX);
+		current_cmd->str = expand(data, current_cmd->str, STD_EX);
 		current = current_cmd->redirection_in;
 		while (current)
 		{
@@ -61,7 +61,7 @@ char	*expand_single_str(t_data *data, char *array, int mode)
 	return (expdr.expanded_var);
 }
 
-static char	**expand(t_env *env, t_gc **gc, char **arrays, char *error_value, int mode)
+static char	**expand(t_data *data, char **arrays, int mode)
 {
 	int			i;
 	int			j;
@@ -71,17 +71,17 @@ static char	**expand(t_env *env, t_gc **gc, char **arrays, char *error_value, in
 	if (arrays == NULL)
 		return (NULL);
 	ft_memset(&expdr, 0, sizeof(expdr));
-	init_expander_struct(&expdr, arrays[i], error_value, mode);
+	init_expander_struct(&expdr, arrays[i], data->str_status, mode);
 	while (arrays[i])
 	{
 		j = 0;
 		expdr.array = arrays[i];
 		expdr.size = 0;
 		expdr.total_size = 0;
-		update_new_array_size(&expdr, env, gc);
-		expdr.expanded_var = malloc_trash(expdr.total_size + 1, gc);
+		update_new_array_size(&expdr, data->env, &data->gc);
+		expdr.expanded_var = malloc_trash(expdr.total_size + 1, &data->gc);
 		expdr.expanded_var[expdr.total_size] = '\0';
-		fill_str(&expdr, gc, env, j);
+		fill_str(&expdr, &data->gc, data->env, j);
 		arrays[i] = expdr.expanded_var;
 		i++;
 	}

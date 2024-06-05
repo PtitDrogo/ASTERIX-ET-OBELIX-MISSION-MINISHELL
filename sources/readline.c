@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 16:45:33 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 19:10:09 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,10 @@ int		verify_input(char *input);
 void	secure_dup2_no_exit(int new_fd, int old_fd, int **pipes, t_gc *gc, int number_of_pipes);
 char	*prompt(t_gc **gc, t_env *env);
 char	*accurate_shell(t_gc **gc, t_env *env);
+void	handle_solo_builtin(t_data *data);
+void	open_pipe_n_exec(t_data *data);
+void	execute_valid_input(t_data *data);
+void	minishell_graceful_exit(t_gc *gc);
 
 int main(int argc, char const *argv[], char **envp)
 {
@@ -39,57 +43,62 @@ int main(int argc, char const *argv[], char **envp)
 		if (add_to_trash(&data.gc, data.input) == 0)
 			empty_trash_exit(data.gc, MALLOC_ERROR);
 		if (!data.input)
-		{	
-			ft_printf("exit\n");
 			break ;
-		}
 		if (verify_input(data.input) && basic_parsing(&data.gc, data.input, &data.token, &data.cmds) && data.token)
-		{
-			signal(SIGINT, cancel_cmd);
-			signal(SIGQUIT, cancel_cmd);
-			data.str_status = ft_itoa(exit_status(-1));
-			setter_gc(data.str_status, &data.gc);
-			malloc_check(data.str_status, data.gc);
-			if (exit_status(parse_all_here_docs(&data)) == EXIT_SUCCESS)
-			{
-				expander(&data);
-				int number_of_pipes = count_pipes(data.token);
-				data.pipes = open_pipes(data.cmds, &data.gc, number_of_pipes);
-				if (number_of_pipes == 0 && is_builtin(data.cmds->str))
-				{	
-					
-					int backup_fds[2];
-					int process_status;
-					backup_fds[0] = dup(0);
-					backup_fds[1] = dup(1);
-
-					process_status = process_behavior(data.cmds, &data.gc, data.token);
-					close_all_heredoc_pipes(data.cmds, data.gc);
-					if (process_status == 0)
-						exit_status(builtin_parse(&data.env, &data.gc, data.cmds->str, backup_fds));
-					
-					//PUT STD back to normal
-					dup2(backup_fds[0], STDIN_FILENO);
-					dup2(backup_fds[1], STDOUT_FILENO);
-					close(backup_fds[0]);
-					close(backup_fds[1]);
-					if (process_status == 1)
-						exit_status(1);
-					else if (process_status == 2)
-						empty_trash_exit(data.gc, errno);
-					//
-				}
-				else
-					exit_status(exec(&data, data.pipes, number_of_pipes));
-			}
-		}
+			execute_valid_input(&data);
 		if (verify_input(data.input))
 			add_history(data.input);
 		recycle_trash_new(&data.gc, data.env);
 	}
-	rl_clear_history();
-	empty_trash(data.gc);
+	minishell_graceful_exit(data.gc);
 	return (0);
+}
+
+void	execute_valid_input(t_data *data)
+{
+	before_expand_innit(data);
+	if (exit_status(parse_all_here_docs(data)) == EXIT_SUCCESS)
+	{
+		expander(data);
+		open_pipe_n_exec(data);
+	}
+	return ;
+}
+void	open_pipe_n_exec(t_data *data)
+{
+	int number_of_pipes;
+	
+	number_of_pipes = count_pipes(data->token);
+	data->pipes = open_pipes(data->cmds, &data->gc, number_of_pipes);
+	if (number_of_pipes == 0 && is_builtin(data->cmds->str))
+		handle_solo_builtin(data);
+	else
+		exit_status(exec(data, data->pipes, number_of_pipes));
+}
+
+
+void	handle_solo_builtin(t_data *data)
+{
+	int backup_fds[2];
+	int process_status;
+	
+	backup_fds[0] = dup(0);
+	backup_fds[1] = dup(1);
+
+	process_status = process_behavior(data->cmds, &data->gc, data->token);
+	close_all_heredoc_pipes(data->cmds, data->gc);
+	if (process_status == 0)
+		exit_status(builtin_parse(&data->env, &data->gc, data->cmds->str, backup_fds));
+	
+	dup2(backup_fds[0], STDIN_FILENO);
+	dup2(backup_fds[1], STDOUT_FILENO);
+	close(backup_fds[0]);
+	close(backup_fds[1]);
+	if (process_status == 1)
+		exit_status(1);
+	else if (process_status == 2)
+		empty_trash_exit(data->gc, errno);
+	
 }
 
 int	basic_parsing(t_gc **gc, char *input, t_token **token, t_cmd **cmds)

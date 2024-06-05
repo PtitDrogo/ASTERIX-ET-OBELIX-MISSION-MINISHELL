@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 05:47:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 15:19:24 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 17:44:54 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,4 +62,15 @@ size_t	len_to_char(char *str, char c)
 	while (str[i] != c && str[i])
 		i++;
 	return (i);
+}
+
+char	*readline_n_add_n(char *readline, t_gc **gc)
+{
+	if (readline == NULL)
+		return (NULL);
+	setter_gc(readline, gc);
+	readline = ft_strjoin(readline, "\n");
+	malloc_check(readline, *gc);
+	setter_gc(readline, gc);
+	return (readline);
 }

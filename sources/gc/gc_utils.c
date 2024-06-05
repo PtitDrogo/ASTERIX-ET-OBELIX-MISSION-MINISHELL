@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 05:54:56 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 17:28:47 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ void	**setter_double_p_gc(void **data_to_set, t_gc **gc)
 	setter_gc(data_to_set, gc);
 	return (data_to_set);
 }
+
 void	malloc_check(void *ptr, t_gc *gc)
 {
 	if (ptr == NULL)

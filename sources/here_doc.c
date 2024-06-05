@@ -6,28 +6,26 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 17:01:16 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 18:38:27 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static char		*readline_n_add_n(char *readline, t_gc **gc);
-static int		ft_strncmp_n(char *input, char *delimiter, size_t n);
-static void		here_doc_process(t_data *data, char *delimiter, int fd, bool do_expand);
+static int		ft_strncmp_n(char *input, char *delim, size_t n);
+static void		hd_process(t_data *data, char *delim, int fd, bool do_expand);
+bool			update_expand_bool(t_data *data, t_token *current);
+int				execute_heredoc(t_data *data, t_token *current, bool do_expand);
+
 
 int parse_all_here_docs(t_data *data)
 {
 	t_token *current;
 	t_cmd	*current_cmd;
-	
 	int		status;
 	bool	do_expand;
-	
-	do_expand = true;
-	status = EXIT_SUCCESS;
-	global_gc(&data->gc);
-	global_cmd(data->cmds);
+
+	innit_here_doc(&data->gc, data->cmds, &status);
 	current_cmd = data->cmds;
 	while (current_cmd)
 	{
@@ -36,15 +34,8 @@ int parse_all_here_docs(t_data *data)
 		{
 			if (current->type == D_LESS)
 			{
-				int pipe_heredoc[2];
-				pipe(pipe_heredoc);
-				int before_expand_len = ft_len(current->next->str);
-				current->next->str = expand_single_str(data, current->next->str, REMOVESQUOTES);
-				if (before_expand_len != ft_len(current->next->str))
-					do_expand = false;
-				current->token_fd = pipe_heredoc[0];
-				status = here_doc(data, current->next->str, pipe_heredoc[1], do_expand);
-				close(pipe_heredoc[1]);
+				do_expand = update_expand_bool(data, current);
+				status = execute_heredoc(data, current, do_expand);
 				if (status != EXIT_SUCCESS)
 					return (status);
 				current = current->next;
@@ -56,7 +47,28 @@ int parse_all_here_docs(t_data *data)
 	return (status);
 }
 
-int	here_doc(t_data *data, char *delimiter, int fd, bool do_expand)
+int		execute_heredoc(t_data *data, t_token *current, bool do_expand)
+{
+	int pipe_heredoc[2];
+	int status;
+	
+	pipe(pipe_heredoc);
+	current->token_fd = pipe_heredoc[0];
+	status = here_doc(data, current->next->str, pipe_heredoc[1], do_expand);
+	close(pipe_heredoc[1]);
+	return (status);
+}
+
+bool	update_expand_bool(t_data *data, t_token *current)
+{
+	int before_expand_len = ft_len(current->next->str);
+	current->next->str = expand_single_str(data, current->next->str, REMOVESQUOTES);
+	if (before_expand_len != ft_len(current->next->str))
+		return (false);
+	return (true);
+}
+
+int	here_doc(t_data *data, char *delim, int fd, bool do_expand)
 {
 	int	status;
 	int		pid;
@@ -68,7 +80,7 @@ int	here_doc(t_data *data, char *delimiter, int fd, bool do_expand)
 	else if (pid == 0)
 	{
 		signal(SIGINT, cancel_heredoc);
-		here_doc_process(data, delimiter, fd, do_expand);
+		hd_process(data, delim, fd, do_expand);
 		exit_heredoc(EXIT_SUCCESS);
 	}
 	waitpid(pid, &status, 0);
@@ -81,87 +93,45 @@ int	here_doc(t_data *data, char *delimiter, int fd, bool do_expand)
 	return (status);
 }
 
-t_gc	**global_gc(t_gc **gc)
-{
-	static t_gc	**sgc;
-
-	if (gc)
-		sgc = gc;
-	return (sgc);
-}
-
-t_cmd	*global_cmd(t_cmd *cmds)
-{
-	static t_cmd	*ccmds;
-
-	if (cmds)
-		ccmds = cmds;
-	return (ccmds);
-}
-
-int	global_fd(int fd)
-{
-	static int	ffd;
-
-	if (fd != -1)
-		ffd = fd;
-	return (ffd);
-}
-
-//here_doc that will write into the fd we give it, it doesnt update history because life is hard.
-static void	here_doc_process(t_data *data, char *delimiter, int fd, bool do_expand)
+static void	hd_process(t_data *data, char *delim, int fd, bool do_expand)
 {
 	char	*input;
 
-    while (1)
+	while (1)
 	{
 		input = readline_n_add_n(readline("heredoc> "), &data->gc);
 		if (input == NULL)
 		{	
-			if (ft_printf2("bash: warning: here-document delimited by end-of-file (wanted `%s')\n", delimiter) == -1)
+			if (ft_printf2("bash: warning: here-document delimited by end-of-file (wanted `%s')\n", delim) == -1)
 			{
 				free_heredoc();
 				perror_exit(data->gc, errno, WRITE_ERR_MSG);
 			}
 			return ;
 		}
-		if (ft_strncmp_n(input, delimiter, ft_len(input)) == 0)
+		if (ft_strncmp_n(input, delim, ft_len(input)) == 0)
 			break ;
 		if (do_expand == true)
 			input = expand_single_str(data, input, EXPAND);
 		if (write(fd, input, ft_len(input)) == -1)
 		{
 			free_heredoc();
-            perror_exit(data->gc, errno, WRITE_ERR_MSG);
+			perror_exit(data->gc, errno, WRITE_ERR_MSG);
 		}
 	}
 }
 
-char	*readline_n_add_n(char *readline, t_gc **gc)
+static int    ft_strncmp_n(char *input, char *delim, size_t n)
 {
-	if (readline == NULL)
-		return (NULL);
-	setter_gc(readline, gc);
-	readline = ft_strjoin(readline, "\n");
-	malloc_check(readline, *gc);
-	setter_gc(readline, gc);
-	return (readline);
+	size_t    i;
+
+	i = 0;
+	while (input[i] == delim[i] && input[i] && i < n)
+	{
+		i++;
+	}
+	if (input[i] == '\n' && delim[i] == '\0')
+		return (0);
+	return ((unsigned char)input[i] - (unsigned char)delim[i]);
 }
-
-static int    ft_strncmp_n(char *input, char *delimiter, size_t n)
-{
-    size_t    i;
-
-    i = 0;
-    while (input[i] == delimiter[i] && input[i] && i < n)
-    {
-        i++;
-    }
-    if (input[i] == '\n' && delimiter[i] == '\0')
-        return (0);
-	// printf("cmp is about to return %i\n",(unsigned char)input[i] - (unsigned char)delimiter[i] );
-    return ((unsigned char)input[i] - (unsigned char)delimiter[i]);
-}
-
-
 

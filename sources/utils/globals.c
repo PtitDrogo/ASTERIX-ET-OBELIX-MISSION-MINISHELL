@@ -1,34 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   syntax_error.c                                     :+:      :+:    :+:   */
+/*   globals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/05 17:38:47 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 17:38:59 by tfreydie         ###   ########.fr       */
+/*   Created: 2024/06/05 17:42:49 by tfreydie          #+#    #+#             */
+/*   Updated: 2024/06/05 17:43:50 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	syntax_error(t_token *token, t_gc *gc)
+t_gc	**global_gc(t_gc **gc)
 {
-	if (is_first_token_pipe(token, gc) == true)
-		return (0);
-	while (token)
-	{
-		if (is_classic_redir(token))
-		{
-			if (is_classic_redir_valid(token, gc) == false)
-				return (0);
-		}
-		if (token->type == PIPE)
-		{
-			if (is_pipe_valid(token, gc) == false)
-				return (0);
-		}
-		token = token->next;
-	}
-	return (1);
+	static t_gc	**sgc;
+
+	if (gc)
+		sgc = gc;
+	return (sgc);
+}
+
+t_cmd	*global_cmd(t_cmd *cmds)
+{
+	static t_cmd	*ccmds;
+
+	if (cmds)
+		ccmds = cmds;
+	return (ccmds);
+}
+
+int	global_fd(int fd)
+{
+	static int	ffd;
+
+	if (fd != -1)
+		ffd = fd;
+	return (ffd);
 }

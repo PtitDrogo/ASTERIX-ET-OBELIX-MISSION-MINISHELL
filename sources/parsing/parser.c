@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:48:23 by garivo            #+#    #+#             */
-/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 17:37:18 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ int	parse(char **input, t_gc **gc,
 	*tokenpile = tokenize(input, gc);
 	token = *tokenpile;
 	start = 1;
-	if (syntax_error(token, *gc) == 0) 
+	if (syntax_error(token, *gc) == 0)
 		return (0);
 	while (token)
 	{

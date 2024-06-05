@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 13:59:06 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 17:29:47 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ int	**open_pipes(t_cmd *cmds, t_gc **gc, int number_of_pipes)
 {
 	int	**pipes_fds;
 
-	//Technically if the malloc fails we need to close the pipes fds;
 	pipes_fds = malloc_pipes_fds(number_of_pipes, gc);
 	init_pipes(pipes_fds, number_of_pipes, *gc);
 	fill_pipes_in_token(cmds, pipes_fds);
@@ -58,7 +57,7 @@ int	count_pipes(t_token *token_list)
 	return (pipe_count);
 }
 
-static void	init_pipes(int **pipes,int pipe_number, t_gc *gc)
+static void	init_pipes(int **pipes, int pipe_number, t_gc *gc)
 {
 	int	i;
 

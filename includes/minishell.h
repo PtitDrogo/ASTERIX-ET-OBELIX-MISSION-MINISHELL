@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 17:00:17 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 19:05:11 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,12 +145,11 @@ int		no_dupplicate_check(void	*data, t_gc *gc);
 
 //Here_doc
 int					here_doc(t_data *data, char *delimiter, int fd, bool do_expand);
-t_gc				**global_gc(t_gc **gc);
-int					global_fd(int fd);
 int					parse_all_here_docs(t_data *data);
 t_gc				**global_gc(t_gc **gc);
-t_cmd				*global_cmd(t_cmd *cmds);
 int					global_fd(int fd);
+t_cmd				*global_cmd(t_cmd *cmds);
+void				innit_here_doc(t_gc **gc, t_cmd *cmd, int *status);;
 
 //EXPANDER
 // char 	**expand(t_env_node *env, t_gc **gc, char **arrays, char *error_value, int mode);
@@ -193,8 +192,10 @@ char		*env_var(t_env *root, char *variable_name);
 char		**rebuild_env(t_env *root, t_gc **gc);
 char		*ft_strjoin_and_add(char const *s1, char const *s2, char c);
 char		*ft_strncat(char *src, char *dst, int len);
-
-
+char	*readline_n_add_n(char *readline, t_gc **gc);
+void	before_expand_innit(t_data *data);
+//innits
+void	minishell_innit(t_data *data, char **envp);
 
 //errors && exit
 void    perror_exit(t_gc *gc, int exit_code, char *err_msg);
@@ -233,8 +234,26 @@ t_token	*tokenize(char **input, t_gc **gc);
 void	add_token(t_token **tokenpile, t_token *new_token);
 t_token	*dup_token(t_token *token, t_gc **gc);
 void	set_to_last_redir(t_token **tokenpile);
-char	**quote_split(char *input, t_gc **gc);
 int    syntax_error(t_token *token, t_gc *gc);
+//quote_split
+char	**quote_split(char *input, t_gc **gc);
+size_t	count_words(char *input);
+size_t	extract_len(char *input);
+char	*extract_redirection(char *input, char *res, size_t *index);
+void	extract(char *input, char *res, size_t *index);
+size_t	count_unquoted_words(char *input, size_t *i,
+	int quoted_count, int *firstchar);
+int	count_quoted_words(char *input, size_t *i,
+	int *firstchar);
+size_t	get_extract_len(char *input);
+//Syntax_error
+void	redir_next_not_str(t_token *token, t_gc *gc);
+bool	is_classic_redir(t_token *token);
+bool	is_classic_redir_valid(t_token *token, t_gc *gc);
+bool	is_first_token_pipe(t_token *token, t_gc *gc);
+bool	is_pipe_valid(t_token *token, t_gc *gc);
+
+
 
 ///------------------------Signal handling------------------------///
 void	new_prompt(int none);

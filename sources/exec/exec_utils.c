@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 12:41:39 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 13:57:34 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,38 +18,43 @@ void		close_all_pipes(int **pipes_fds, t_gc *gc, int number_of_pipes);
 char		*find_env_variable(char **envp, char *env_to_find);
 int			process_behavior(t_cmd *cmds, t_gc **gc, t_token *token_root);
 char		*find_valid_path(t_cmd *cmds, char **envp, t_gc **gc);
-void		child_process(t_env *env, char **envp, t_cmd *cmds, t_gc **gc, int **pipes, int number_of_pipes, t_cmd *cmds_root, t_token *token_root);
+void		child_process(t_data *data, t_exec *exec);
 int			get_correct_cmd(t_cmd *cmds);
 int			handle_status(int *status);
 
 
-int exec(t_data *data, int **pipes_fds, int number_of_pipes) //need root to clean pipes;
+void	init_exec(t_exec *exec, t_data *data, int **pipes_fds, int number_of_pipes)
 {
-	char	**envp;
-	t_cmd	*current;
-	t_token	*token_current;
-	int		status;
+	exec->current_cmd = data->cmds;
+	exec->envp = rebuild_env(data->env_dup_root, &data->gc); //this need to close fd if ail
+	exec->token_current = data->token;
+	exec->pipes_fds = pipes_fds;
+	exec->number_of_pipes = number_of_pipes;
+}
 
-	current = data->cmds;
-	envp = rebuild_env(data->env_dup_root, &data->gc);
-	token_current = data->token;
-	while (current)
+int exec(t_data *data, int **pipes_fds, int number_of_pipes)
+{
+	t_exec	exec;
+	
+	ft_memset(&exec, 0, sizeof(exec));
+	init_exec(&exec, data, pipes_fds, number_of_pipes);
+	while (exec.current_cmd)
 	{
-		child_process(data->env_dup_root, envp, current, &data->gc, pipes_fds, number_of_pipes, data->cmds, token_current); //giving current command !!
-		token_current = get_next_first_token(token_current);
-		current = current->next;
+		child_process(data, &exec); //giving current command !!
+		exec.token_current = get_next_first_token(exec.token_current);
+		exec.current_cmd = exec.current_cmd->next;
 	}
 	close_all_pipes(pipes_fds, data->gc, number_of_pipes);
 	close_all_heredoc_pipes(data->cmds, data->gc);
-    current = data->cmds;
-	while (current)
+    exec.current_cmd = data->cmds;
+	while (exec.current_cmd)
 	{
-		waitpid(current->cmd_id, &status, 0);
-		if (handle_status(&status) == -1)
+		waitpid(exec.current_cmd->cmd_id, &exec.status, 0);
+		if (handle_status(&exec.status) == -1)
 			empty_trash_exit(data->gc, 1);
-		current = current->next;
+		exec.current_cmd = exec.current_cmd->next;
 	}
-	return (status);
+	return (exec.status);
 }
 
 int		handle_status(int *status)
@@ -100,64 +105,64 @@ void    close_all_heredoc_pipes(t_cmd *cmds_root, t_gc *gc)
     return ;
 }
 
-void	child_process(t_env *env, char **envp, t_cmd *cmds, t_gc **gc, int **pipes, int number_of_pipes, t_cmd *cmds_root, t_token *token_current)
+void	child_process(t_data *data, t_exec *exec)
 {
 	char	*valid_path;
-	int process_status; 
+	int 	process_status; 
 	
-	cmds->cmd_id = fork();
-	if (cmds->cmd_id == -1)
-		perror_exit(*gc, errno, "Error creating subshell");
-	if (cmds->cmd_id == 0)
+	exec->current_cmd->cmd_id = fork();
+	if (exec->current_cmd->cmd_id == -1)
+		perror_exit(data->gc, errno, "Error creating subshell");
+	if (exec->current_cmd->cmd_id == 0)
 	{
 		
-		process_status = process_behavior(cmds, gc, token_current);
-		close_all_pipes(pipes, *gc, number_of_pipes);
-		close_all_heredoc_pipes(cmds_root, *gc);
+		process_status = process_behavior(exec->current_cmd, &data->gc, exec->token_current);
+		close_all_pipes(exec->pipes_fds, data->gc, exec->number_of_pipes);
+		close_all_heredoc_pipes(data->cmds, data->gc);
 		if (process_status != 0)
-			empty_trash_exit(*gc, 1);
-		if (get_correct_cmd(cmds) == 0)
-			empty_trash_exit(*gc, 0);
-		valid_path = find_valid_path(cmds, envp, gc);
-		if (valid_path == NULL && cmds && cmds->str && is_builtin(cmds->str) == false) //last condition is important !
+			empty_trash_exit(data->gc, 1);
+		if (get_correct_cmd(exec->current_cmd) == 0)
+			empty_trash_exit(data->gc, 0);
+		valid_path = find_valid_path(exec->current_cmd, exec->envp, &data->gc);
+		if (valid_path == NULL && exec->current_cmd && exec->current_cmd->str && is_builtin(exec->current_cmd->str) == false) //last condition is important !
 		{
 			if (errno == EISDIR )
 			{
-				ft_printf2("%s: Is a directory\n", cmds->str[0]); //need to check real err msg
-				empty_trash_exit(*gc, 126);
+				ft_printf2("%s: Is a directory\n", exec->current_cmd->str[0]); //need to check real err msg
+				empty_trash_exit(data->gc, 126);
 			}
 			else if (errno == EACCES)
 			{
-				ft_printf2("%s: Permission denied\n", cmds->str[0]); //need to check real err msg
-				empty_trash_exit(*gc, 126);
+				ft_printf2("%s: Permission denied\n", exec->current_cmd->str[0]); //need to check real err msg
+				empty_trash_exit(data->gc, 126);
 			}
 			// else if (errno == ENOENT)
 			// {
-			// 	ft_printf2("%s: No such file or directory\n", cmds->str[0]); //need to check real err msg
-			// 	empty_trash_exit(*gc, 127);
+			// 	ft_printf2("%s: No such file or directory\n", exec->current_cmd->str[0]); //need to check real err msg
+			// 	empty_trash_exit(data->gc, 127);
 			// }
 			else
 			{
-				ft_printf2("%s: command not found\n", cmds->str[0]); //need to check real err msg
-				empty_trash_exit(*gc, 127);
+				ft_printf2("%s: command not found\n", exec->current_cmd->str[0]); //need to check real err msg
+				empty_trash_exit(data->gc, 127);
 			}
 			
 		}
-		else if (cmds && cmds->str)
+		else if (exec->current_cmd && exec->current_cmd->str)
 		{
-			// printf("hi, cmd is %s\n", cmds->str[0]);
-			if (is_builtin(cmds->str))
+			// printf("hi, cmd is %s\n", exec->current_cmd->str[0]);
+			if (is_builtin(exec->current_cmd->str))
 			{	
-				// printf("hi, cmd is %s\n", cmds->str[0]);
-				theo_basic_parsing(&env, gc, cmds->str, NULL);
-				empty_trash_exit(*gc, 0);  //Exit with success;
+				// printf("hi, cmd is %s\n", exec->current_cmd->str[0]);
+				theo_basic_parsing(&data->env_dup_root, &data->gc, exec->current_cmd->str, NULL);
+				empty_trash_exit(data->gc, 0);  //Exit with success;
 			}
-			execve(valid_path, cmds->str, envp);
+			execve(valid_path, exec->current_cmd->str, exec->envp);
 			ft_printf2("Execve failed\n");
-			empty_trash_exit(*gc, 127);
+			empty_trash_exit(data->gc, 127);
 		}
 		else
-			empty_trash_exit(*gc, 127); //All of this shit purely because of heredoc without a cmd
+			empty_trash_exit(data->gc, 127); //All of this shit purely because of heredoc without a cmd
 	}
 }
 int	get_correct_cmd(t_cmd *cmds)

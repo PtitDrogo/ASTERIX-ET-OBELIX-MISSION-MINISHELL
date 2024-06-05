@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 12:34:26 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 13:22:08 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,17 @@ typedef struct s_expand
 	
 } t_expand;
 
+typedef struct s_exec
+{
+	char	**envp;
+	t_cmd	*current_cmd;
+	t_token	*token_current;
+	int		status;
+	int 	**pipes_fds;
+	int 	number_of_pipes;
+
+} t_exec;
+
 ///------------------------Defines------------------------///
 
 #define ATOI_ERROR 3000000000
@@ -134,10 +145,10 @@ int		no_dupplicate_check(void	*data, t_gc *gc);
 
 //Here_doc
 int					here_doc(char *delimiter, t_gc **gc, int fd, bool do_expand, t_env *env, char *error_value);
-t_gc	**global_gc(t_gc **gc);
+t_gc				**global_gc(t_gc **gc);
 int					global_fd(int fd);
 int					parse_all_here_docs(t_cmd *cmds, t_gc **gc, t_env *env, char *error_value);
-t_gc	**global_gc(t_gc **gc);
+t_gc				**global_gc(t_gc **gc);
 t_cmd				*global_cmd(t_cmd *cmds);
 int					global_fd(int fd);
 
@@ -218,6 +229,6 @@ int    syntax_error(t_token *token, t_gc *gc);
 void	new_prompt(int none);
 void	cancel_cmd(int none);
 void	cancel_heredoc(int none);
-void	cancel_cmd_coredumped(int none);
+// void	cancel_cmd_coredumped(int none);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 15:48:27 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 16:21:11 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ typedef struct s_cmd
 
 typedef struct s_data
 {
-	t_env				*env_dup_root;
+	t_env				*env;
 	t_gc				*gc;
 	t_token				*token;
 	t_cmd				*cmds;
@@ -140,7 +140,7 @@ int 	empty_trash(t_gc *gc);
 void	*setter_gc(void *data_to_set, t_gc **gc);
 void	**setter_double_p_gc(void **data_to_set, t_gc **gc);
 void    malloc_check(void *ptr, t_gc *gc);
-void	recycle_trash_new(t_gc **gc, t_env    *env_dup_root);
+void	recycle_trash_new(t_gc **gc, t_env    *env);
 int		no_dupplicate_check(void	*data, t_gc *gc);
 
 //Here_doc
@@ -170,11 +170,11 @@ int		handle_question_mark(t_expand *expdr, int *i, char **tmp);
 void	init_expander_struct(t_expand *expdr, char *array, char *error_value, int mode);
 
 //BUILT INS
-int		unset(t_env *env_dup_root, char *env_to_find);
+int		unset(t_env *env, char *env_to_find);
 int		export(t_env **root, void *variable, t_gc **gc);
-int 	env(t_env *env_dup_root, t_gc *gc);
+int 	env_builtin(t_env *env, t_gc *gc);
 int 	ft_exit(char **args, t_gc *gc, int backup_fds[2]);
-int		sorted_env_print(t_env *env_dup_root, t_gc *gc);
+int		sorted_env_print(t_env *env, t_gc *gc);
 int		pwd(t_gc **gc);
 int		echo(char **to_echo, t_gc **gc);
 int 	cd(char **cmd, t_gc **gc, t_env *env);
@@ -183,8 +183,8 @@ int 	cd(char **cmd, t_gc **gc, t_env *env);
 size_t		len_to_char(char *str, char c);
 int			is_char_in_str(char *str, char c);
 int			ft_strcmp(const char *s1, const char *s2);
-int			pop(t_env *env_dup_root, t_env *node_to_pop);
-int			generate_env_llist(t_env **env_dup_root, t_gc **gc, char **envp);
+int			pop(t_env *env, t_env *node_to_pop);
+int			generate_env_llist(t_env **env, t_gc **gc, char **envp);
 int			count_nodes(t_env *root);
 t_env *get_env_node(t_env *root, char *variable_name);
 bool		is_builtin(char **cmd);
@@ -211,7 +211,7 @@ int		print_open_err_msg(int errnumber, char *file);
 int		**open_pipes(t_cmd *cmds, t_gc **gc, int number_of_pipes);
 int 	exec(t_data *data, int **pipes_fds, int number_of_pipes);
 int		count_pipes(t_token *token_list);
-int		builtin_parse(t_env **env_dup_root, t_gc **gc, char **cmd, int backup_fds[2]);
+int		builtin_parse(t_env **env, t_gc **gc, char **cmd, int backup_fds[2]);
 int		process_behavior(t_cmd *cmds, t_gc **gc, t_token *token_cur);
 t_token *get_next_first_token(t_token *token_root);
 char	*ft_strjoin_and_add(char const *s1, char const *s2, char c);

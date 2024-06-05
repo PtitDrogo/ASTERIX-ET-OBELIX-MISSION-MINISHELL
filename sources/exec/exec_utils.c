@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 14:07:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 14:46:34 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 16:19:59 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 void	init_exec(t_exec *exec, t_data *data, int **pipes_fds, int number_pipes)
 {
 	exec->cmd_cur = data->cmds;
-	exec->envp = rebuild_env(data->env_dup_root, &data->gc);
+	exec->envp = rebuild_env(data->env, &data->gc);
 	exec->token_cur = data->token;
 	exec->pipes_fds = pipes_fds;
 	exec->number_of_pipes = number_pipes;
@@ -37,7 +37,7 @@ void	handle_command(t_data *data, t_exec *exec, char *valid_path)
 {
 	if (is_builtin(exec->cmd_cur->str))
 	{
-		builtin_parse(&data->env_dup_root, &data->gc, exec->cmd_cur->str, NULL);
+		builtin_parse(&data->env, &data->gc, exec->cmd_cur->str, NULL);
 		empty_trash_exit(data->gc, 0);
 	}
 	execve(valid_path, exec->cmd_cur->str, exec->envp);

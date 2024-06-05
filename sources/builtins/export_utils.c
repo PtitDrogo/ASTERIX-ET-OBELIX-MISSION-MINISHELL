@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 18:57:09 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/03 06:45:35 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 16:19:59 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,18 +16,18 @@ static bool	ft_is_name_lower(t_env *new_str, t_env *low_str);
 static int	export_print(t_env *node_to_print,  t_gc *gc);
 
 //this prints sorted env for export with no arguments
-int		sorted_env_print(t_env *env_dup_root, t_gc *gc)
+int		sorted_env_print(t_env *env, t_gc *gc)
 {
 	t_env	*lowest_name;
 	t_env	*current;
 	t_env	*last_node_printed;
 	int			n_nodes;
 	
-	n_nodes = count_nodes(env_dup_root);
+	n_nodes = count_nodes(env);
 	last_node_printed = NULL;
 	while (n_nodes)
 	{
-		current = env_dup_root;
+		current = env;
 		lowest_name = NULL;
 		while (current)
 		{

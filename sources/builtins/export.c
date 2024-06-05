@@ -6,15 +6,15 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 16:11:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/03 06:45:35 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 16:19:59 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int			unset(t_env *env_dup_root, char *env_to_find);
+int			unset(t_env *env, char *env_to_find);
 int			export(t_env **root, void *variable, t_gc **gc);
-int			pop(t_env *env_dup_root, t_env *node_to_pop);
+int			pop(t_env *env, t_env *node_to_pop);
 t_env *check_if_variable_exist(t_env *root, void *variable);
 char		*get_env_name(const char *src, t_gc **gc);
 char		*get_env_var(const char *src, t_gc **gc);
@@ -22,15 +22,15 @@ int			is_valid_env_name(char *name, t_gc *gc);
 static char *remove_white_spaces(char *str);
 
 //TODO make this universal later
-int	pop(t_env *env_dup_root, t_env *node_to_pop)
+int	pop(t_env *env, t_env *node_to_pop)
 {	
-	if (!env_dup_root || !node_to_pop)
+	if (!env || !node_to_pop)
 		return (0); //gotta check later;
-	while (env_dup_root->next && env_dup_root->next != node_to_pop)	
-		env_dup_root = env_dup_root->next;
-	if (env_dup_root->next == NULL)
+	while (env->next && env->next != node_to_pop)	
+		env = env->next;
+	if (env->next == NULL)
 		return (0); // we couldnt find the node to pop
-	env_dup_root->next = env_dup_root->next->next;
+	env->next = env->next->next;
 	node_to_pop->variable = NULL;
 	return (1);
 }
@@ -157,7 +157,7 @@ char	*get_env_var(const char *src, t_gc **gc)
 }
 
 //returns 0 is envp is NULL, but no env doesnt exit shell so we dont do anything
-int	generate_env_llist(t_env **env_dup_root, t_gc **gc, char **envp)
+int	generate_env_llist(t_env **env, t_gc **gc, char **envp)
 {
 	int i;
 
@@ -166,7 +166,7 @@ int	generate_env_llist(t_env **env_dup_root, t_gc **gc, char **envp)
 		return (0);
 	while (envp[++i])
 	{	
-		if (export(env_dup_root, (void *)envp[i], gc) == 1)
+		if (export(env, (void *)envp[i], gc) == 1)
 			return (0);
 	}
 	return (1);

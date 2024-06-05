@@ -6,16 +6,16 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 22:03:05 by ptitdrogo         #+#    #+#             */
-/*   Updated: 2024/06/05 15:19:47 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 16:19:59 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-bool	is_node_env_node(t_gc	*node_to_pop, t_env	*env_dup_root);
+bool	is_node_env_node(t_gc	*node_to_pop, t_env	*env);
 int		free_and_pop_gc(t_gc	**gc, t_gc	*node_to_pop);
 
-void	recycle_trash_new(t_gc	**gc, t_env	*env_dup_root)
+void	recycle_trash_new(t_gc	**gc, t_env	*env)
 {
 	t_gc	*current_gc_node;
 	t_gc	*save_point;
@@ -24,7 +24,7 @@ void	recycle_trash_new(t_gc	**gc, t_env	*env_dup_root)
 	while (current_gc_node)
 	{
 		save_point = current_gc_node->next;
-		if (is_node_env_node(current_gc_node, env_dup_root) == false)
+		if (is_node_env_node(current_gc_node, env) == false)
 		{
 			free_and_pop_gc(gc, current_gc_node);
 		}
@@ -33,13 +33,13 @@ void	recycle_trash_new(t_gc	**gc, t_env	*env_dup_root)
 	return ;
 }
 
-bool	is_node_env_node(t_gc	*node_to_pop, t_env	*env_dup_root)
+bool	is_node_env_node(t_gc	*node_to_pop, t_env	*env)
 {
-	while (env_dup_root)
+	while (env)
 	{
-		if (node_to_pop->to_free == env_dup_root)
+		if (node_to_pop->to_free == env)
 			return (true);
-		env_dup_root = env_dup_root->next;
+		env = env->next;
 	}
 	return (false);
 }

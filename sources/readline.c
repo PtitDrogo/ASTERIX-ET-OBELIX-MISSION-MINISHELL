@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 15:48:32 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 16:21:40 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,12 @@
 int 	empty_trash(t_gc *gc);
 int		add_to_trash(t_gc **root, void *to_free);
 int		basic_parsing(t_gc **gc, char *input, t_token **token, t_cmd **cmds);
-int		builtin_parse(t_env **env_dup_root, t_gc **gc, char **cmd, int backup_fds[2]);
+int		builtin_parse(t_env **env, t_gc **gc, char **cmd, int backup_fds[2]);
 char	*accurate_shell(t_gc **gc, t_env *env);
 bool	is_ascii(unsigned char c);
 int		verify_input(char *input);
 char    **rebuild_env_no_gc(t_env *root);
-void	recycle_trash(t_gc	**gc, t_env	**env_dup_root);
+void	recycle_trash(t_gc	**gc, t_env	**env);
 void	secure_dup2_no_exit(int new_fd, int old_fd, int **pipes, t_gc *gc, int number_of_pipes);
 char	*prompt(t_gc **gc, t_env *env);
 char	*accurate_shell(t_gc **gc, t_env *env);
@@ -30,14 +30,14 @@ int main(int argc, char const *argv[], char **envp)
 	t_data				data;
 
 	ft_memset(&data, 0, sizeof(data));
-	generate_env_llist(&(data.env_dup_root), &data.gc, envp);
+	generate_env_llist(&(data.env), &data.gc, envp);
 	data.status = exit_status(0);
 	while (1) 
 	{
 		data.status = exit_status(-1);
 		signal(SIGINT, new_prompt);
 		signal(SIGQUIT, SIG_IGN);
-		data.input = readline(prompt(&data.gc, data.env_dup_root));
+		data.input = readline(prompt(&data.gc, data.env));
 		if (add_to_trash(&data.gc, data.input) == 0)
 			empty_trash_exit(data.gc, MALLOC_ERROR);
 		if (!data.input)
@@ -52,9 +52,9 @@ int main(int argc, char const *argv[], char **envp)
 			data.str_status = ft_itoa(exit_status(-1));
 			setter_gc(data.str_status, &data.gc);
 			malloc_check(data.str_status, data.gc);
-			if (exit_status(parse_all_here_docs(data.cmds, &data.gc, data.env_dup_root, data.str_status)) == EXIT_SUCCESS)
+			if (exit_status(parse_all_here_docs(data.cmds, &data.gc, data.env, data.str_status)) == EXIT_SUCCESS)
 			{
-				expander(data.env_dup_root, &data.gc, data.cmds, data.str_status);
+				expander(data.env, &data.gc, data.cmds, data.str_status);
 				int number_of_pipes = count_pipes(data.token);
 				data.pipes = open_pipes(data.cmds, &data.gc, number_of_pipes);
 				if (number_of_pipes == 0 && is_builtin(data.cmds->str))
@@ -68,7 +68,7 @@ int main(int argc, char const *argv[], char **envp)
 					process_status = process_behavior(data.cmds, &data.gc, data.token);
 					close_all_heredoc_pipes(data.cmds, data.gc);
 					if (process_status == 0)
-						exit_status(builtin_parse(&data.env_dup_root, &data.gc, data.cmds->str, backup_fds));
+						exit_status(builtin_parse(&data.env, &data.gc, data.cmds->str, backup_fds));
 					
 					//PUT STD back to normal
 					dup2(backup_fds[0], STDIN_FILENO);
@@ -87,7 +87,7 @@ int main(int argc, char const *argv[], char **envp)
 		}
 		if (verify_input(data.input))
 			add_history(data.input);
-		recycle_trash_new(&data.gc, data.env_dup_root);
+		recycle_trash_new(&data.gc, data.env);
 	}
 	rl_clear_history();
 	empty_trash(data.gc);
@@ -113,27 +113,27 @@ int	basic_parsing(t_gc **gc, char *input, t_token **token, t_cmd **cmds)
 	return (1);
 }
 
-int	builtin_parse(t_env **env_dup_root, t_gc **gc, char **cmd, int backup_fds[2])
+int	builtin_parse(t_env **env, t_gc **gc, char **cmd, int backup_fds[2])
 {
 	if (cmd == NULL || cmd[0] == NULL)
 		return (1);
 	if (ft_strcmp(cmd[0], "unset") == 0)
-		return (unset(*env_dup_root, cmd[1]));
+		return (unset(*env, cmd[1]));
 	if (ft_strcmp(cmd[0], "export") == 0)
 	{	
 		if (cmd[1] == NULL)
-			return(sorted_env_print(*env_dup_root, *gc));
+			return(sorted_env_print(*env, *gc));
 		else
-			return(export(env_dup_root, (void *)cmd[1], gc));
+			return(export(env, (void *)cmd[1], gc));
 	}
 	if (ft_strcmp(cmd[0], "env") == 0)
-		return (env(*env_dup_root, *gc));
+		return (env_builtin(*env, *gc));
 	if (ft_strcmp(cmd[0], "exit") == 0)
 		return (ft_exit(&cmd[1], *gc, backup_fds));
 	if (ft_strcmp(cmd[0], "pwd") == 0)
 		pwd(gc);
 	if (ft_strcmp(cmd[0], "cd") == 0)
-		return (cd(cmd, gc, *env_dup_root));
+		return (cd(cmd, gc, *env));
 	if (ft_strcmp(cmd[0], "echo") == 0)
 		return(echo(cmd, gc));
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/03 06:45:35 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 12:41:39 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,30 +23,30 @@ int			get_correct_cmd(t_cmd *cmds);
 int			handle_status(int *status);
 
 
-int exec(t_env *root_env, t_cmd *cmds, t_gc **gc, int **pipes_fds, int number_of_pipes, t_token *token_root) //need root to clean pipes;
+int exec(t_data *data, int **pipes_fds, int number_of_pipes) //need root to clean pipes;
 {
 	char	**envp;
 	t_cmd	*current;
 	t_token	*token_current;
 	int		status;
 
-	current = cmds;
-	envp = rebuild_env(root_env, gc);
-	token_current = token_root;
+	current = data->cmds;
+	envp = rebuild_env(data->env_dup_root, &data->gc);
+	token_current = data->token;
 	while (current)
 	{
-		child_process(root_env, envp, current, gc, pipes_fds, number_of_pipes, cmds, token_current); //giving current command !!
+		child_process(data->env_dup_root, envp, current, &data->gc, pipes_fds, number_of_pipes, data->cmds, token_current); //giving current command !!
 		token_current = get_next_first_token(token_current);
 		current = current->next;
 	}
-	close_all_pipes(pipes_fds, *gc, number_of_pipes);
-	close_all_heredoc_pipes(cmds, *gc);
-    current = cmds;
+	close_all_pipes(pipes_fds, data->gc, number_of_pipes);
+	close_all_heredoc_pipes(data->cmds, data->gc);
+    current = data->cmds;
 	while (current)
 	{
 		waitpid(current->cmd_id, &status, 0);
 		if (handle_status(&status) == -1)
-			empty_trash_exit(*gc, 1);
+			empty_trash_exit(data->gc, 1);
 		current = current->next;
 	}
 	return (status);

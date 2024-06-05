@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 16:29:30 by garivo            #+#    #+#             */
-/*   Updated: 2024/06/03 00:33:27 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 11:58:22 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,3 +33,9 @@ void	cancel_heredoc(int none)
 	(void)none;
 	exit_heredoc(130);
 }
+
+// void	cancel_cmd_coredumped(int none)
+// {
+// 	(void)none;
+// 	ft_printf("Quit (core dumped)\n");
+// }

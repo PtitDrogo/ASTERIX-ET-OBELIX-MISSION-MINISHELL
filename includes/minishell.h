@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/03 07:03:56 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 12:34:26 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,8 @@ typedef struct s_cmd
 
 typedef struct s_data
 {
-	t_env			*env_dup_root;
-	t_gc	*gc;
+	t_env				*env_dup_root;
+	t_gc				*gc;
 	t_token				*token;
 	t_cmd				*cmds;
 	char				*input;
@@ -198,7 +198,7 @@ int		print_open_err_msg(int errnumber, char *file);
 ///------------------------Execution------------------------///
 
 int		**open_pipes(t_cmd *cmds, t_gc **gc, int number_of_pipes);
-int 	exec(t_env *root_env, t_cmd *cmds, t_gc **gc, int **pipes_fds, int number_of_pipes, t_token *token_root);
+int 	exec(t_data *data, int **pipes_fds, int number_of_pipes);
 int		count_pipes(t_token *token_list);
 int		theo_basic_parsing(t_env **env_dup_root, t_gc **gc, char **cmd, int backup_fds[2]);
 int			process_behavior(t_cmd *cmds, t_gc **gc, t_token *token_current);
@@ -218,5 +218,6 @@ int    syntax_error(t_token *token, t_gc *gc);
 void	new_prompt(int none);
 void	cancel_cmd(int none);
 void	cancel_heredoc(int none);
+void	cancel_cmd_coredumped(int none);
 
 #endif

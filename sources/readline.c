@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/03 06:45:35 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 12:35:12 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,45 +27,51 @@ char	*accurate_shell(t_gc **gc, t_env *env);
 
 int main(int argc, char const *argv[], char **envp)
 {
-	t_env			*env_dup_root;
-	t_gc	*gc;
-	t_token				*token;
-	t_cmd				*cmds;
-	char				*input;
-	char				*history;
-	int					**pipes;
-	int					status;
+	// t_env				*env_dup_root;
+	// t_gc				*gc;
+	// t_token				*token;
+	// t_cmd				*cmds;
+	// char				*input;
+	// char				*history;
+	// int					**pipes;
+	// int					status;
+	t_data				data;
 
-	token = NULL;
-	cmds = NULL;
-	gc = NULL;
-	env_dup_root = NULL;
-	status = 0;
+	// token = NULL;
+	// cmds = NULL;
+	// gc = NULL;
+	// env_dup_root = NULL;
+	// status = 0;
 
-	generate_env_llist(&env_dup_root, &gc, envp);
-	status = exit_status(0); // Initializing it, not sure if needed
+	ft_memset(&data, 0, sizeof(data));
+	generate_env_llist(&(data.env_dup_root), &data.gc, envp);
+	data.status = exit_status(0); // Initializing it, not sure if needed
 	while (1) 
 	{
-		status = exit_status(-1);
+		data.status = exit_status(-1);
 		signal(SIGINT, new_prompt);
 		signal(SIGQUIT, SIG_IGN);
-		input = readline(prompt(&gc, env_dup_root));
-		if (add_to_trash(&gc, input) == 0)
-			empty_trash_exit(gc, MALLOC_ERROR);
-		if (!input)
-			break;
-		if (verify_input(input) && basic_parsing(&gc, input, &token, &cmds) && token)
+		data.input = readline(prompt(&data.gc, data.env_dup_root));
+		if (add_to_trash(&data.gc, data.input) == 0)
+			empty_trash_exit(data.gc, MALLOC_ERROR);
+		if (!data.input)
+		{	
+			ft_printf("exit\n");
+			break ;
+		}
+		if (verify_input(data.input) && basic_parsing(&data.gc, data.input, &data.token, &data.cmds) && data.token)
 		{
 			signal(SIGINT, cancel_cmd);
+			signal(SIGQUIT, cancel_cmd);
 			char *str_status = ft_itoa(exit_status(-1));
-			setter_gc(str_status, &gc);
-			malloc_check(str_status, gc);
-			if (exit_status(parse_all_here_docs(cmds, &gc, env_dup_root, str_status)) == EXIT_SUCCESS)
+			setter_gc(str_status, &data.gc);
+			malloc_check(str_status, data.gc);
+			if (exit_status(parse_all_here_docs(data.cmds, &data.gc, data.env_dup_root, str_status)) == EXIT_SUCCESS)
 			{
-				expander(env_dup_root, &gc, cmds, str_status); //WORK IN PROGRESS
-				int number_of_pipes = count_pipes(token);
-				pipes = open_pipes(cmds, &gc, number_of_pipes);
-				if (number_of_pipes == 0 && is_builtin(cmds->str))
+				expander(data.env_dup_root, &data.gc, data.cmds, str_status); //WORK IN PROGRESS
+				int number_of_pipes = count_pipes(data.token);
+				data.pipes = open_pipes(data.cmds, &data.gc, number_of_pipes);
+				if (number_of_pipes == 0 && is_builtin(data.cmds->str))
 				{	
 					
 					int backup_fds[2];
@@ -73,10 +79,10 @@ int main(int argc, char const *argv[], char **envp)
 					backup_fds[0] = dup(0);
 					backup_fds[1] = dup(1);
 
-					process_status = process_behavior(cmds, &gc, token);
-					close_all_heredoc_pipes(cmds, gc);
+					process_status = process_behavior(data.cmds, &data.gc, data.token);
+					close_all_heredoc_pipes(data.cmds, data.gc);
 					if (process_status == 0)
-						exit_status(theo_basic_parsing(&env_dup_root, &gc, cmds->str, backup_fds));
+						exit_status(theo_basic_parsing(&data.env_dup_root, &data.gc, data.cmds->str, backup_fds));
 					
 					//PUT STD back to normal
 					dup2(backup_fds[0], STDIN_FILENO);
@@ -86,19 +92,19 @@ int main(int argc, char const *argv[], char **envp)
 					if (process_status == 1)
 						exit_status(1); //if regular fail exit status is 1;
 					else if (process_status == 2)
-						empty_trash_exit(gc, errno); //if a write failed we exit shell
+						empty_trash_exit(data.gc, errno); //if a write failed we exit shell
 					//
 				}
 				else
-					exit_status(exec(env_dup_root, cmds, &gc, pipes, number_of_pipes, token));
+					exit_status(exec(&data, data.pipes, number_of_pipes));
 			}
 		}
-		if (verify_input(input))
-			add_history(input);
-		recycle_trash_new(&gc, env_dup_root);
+		if (verify_input(data.input))
+			add_history(data.input);
+		recycle_trash_new(&data.gc, data.env_dup_root);
 	}
 	rl_clear_history();
-	empty_trash(gc);
+	empty_trash(data.gc);
 	return (0);
 }
 

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 15:48:20 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 17:03:28 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,33 +16,35 @@ static void	update_new_array_size(t_expand *expdr, t_env *env, t_gc **gc);
 static void	fill_str(t_expand *expdr, t_gc **gc, t_env *env, int i);
 static char	**expand(t_env *env, t_gc **gc, char **arrays, char *err, int mode);
 
-void	expander(t_env *env, t_gc **gc, t_cmd *cmds, char *error_value)
+void	expander(t_data *data)
 {
 	t_token	*current;
-
-	while (cmds)
+	t_cmd	*current_cmd;
+	
+	current_cmd = data->cmds;
+	while (current_cmd)
 	{
-		cmds->str = expand(env, gc, cmds->str, error_value, STD_EX);
-		current = cmds->redirection_in;
+		current_cmd->str = expand(data->env, &data->gc, current_cmd->str, data->str_status, STD_EX);
+		current = current_cmd->redirection_in;
 		while (current)
 		{
-			current->str = expand_single_str(env, gc,
-					current->str, error_value, STD_EX);
+			current->str = expand_single_str(data,
+					current->str, STD_EX);
 			current = current->next;
 		}
-		current = cmds->redirection_out;
+		current = current_cmd->redirection_out;
 		while (current)
 		{
-			current->str = expand_single_str(env, gc,
-					current->str, error_value, STD_EX);
+			current->str = expand_single_str(data,
+					current->str, STD_EX);
 			current = current->next;
 		}
-		cmds = cmds->next;
+		current_cmd = current_cmd->next;
 	}
 	return ;
 }
 
-char	*expand_single_str(t_env *env, t_gc **gc, char *array, char *error_value, int mode)
+char	*expand_single_str(t_data *data, char *array, int mode)
 {
 	t_expand	expdr;
 	int			i;
@@ -51,11 +53,11 @@ char	*expand_single_str(t_env *env, t_gc **gc, char *array, char *error_value, i
 	if (array == NULL)
 		return (NULL);
 	ft_memset(&expdr, 0, sizeof(expdr));
-	init_expander_struct(&expdr, array, error_value, mode);
-	update_new_array_size(&expdr, env, gc);
-	expdr.expanded_var = malloc_trash(expdr.total_size + 1, gc);
+	init_expander_struct(&expdr, array, data->str_status, mode);
+	update_new_array_size(&expdr, data->env, &data->gc);
+	expdr.expanded_var = malloc_trash(expdr.total_size + 1, &data->gc);
 	expdr.expanded_var[expdr.total_size] = '\0';
-	fill_str(&expdr, gc, env, i);
+	fill_str(&expdr, &data->gc, data->env, i);
 	return (expdr.expanded_var);
 }
 

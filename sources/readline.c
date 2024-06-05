@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 16:41:00 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 16:45:33 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ int main(int argc, char const *argv[], char **envp)
 			malloc_check(data.str_status, data.gc);
 			if (exit_status(parse_all_here_docs(&data)) == EXIT_SUCCESS)
 			{
-				expander(data.env, &data.gc, data.cmds, data.str_status);
+				expander(&data);
 				int number_of_pipes = count_pipes(data.token);
 				data.pipes = open_pipes(data.cmds, &data.gc, number_of_pipes);
 				if (number_of_pipes == 0 && is_builtin(data.cmds->str))

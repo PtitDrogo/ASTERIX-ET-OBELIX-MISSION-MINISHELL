@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 16:41:59 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 17:00:17 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,7 +144,7 @@ void	recycle_trash_new(t_gc **gc, t_env    *env);
 int		no_dupplicate_check(void	*data, t_gc *gc);
 
 //Here_doc
-int					here_doc(char *delimiter, t_gc **gc, int fd, bool do_expand, t_env *env, char *error_value);
+int					here_doc(t_data *data, char *delimiter, int fd, bool do_expand);
 t_gc				**global_gc(t_gc **gc);
 int					global_fd(int fd);
 int					parse_all_here_docs(t_data *data);
@@ -154,8 +154,8 @@ int					global_fd(int fd);
 
 //EXPANDER
 // char 	**expand(t_env_node *env, t_gc **gc, char **arrays, char *error_value, int mode);
-char 	*expand_single_str(t_env *env, t_gc **gc, char *array, char *error_value, int mode);
-void	expander(t_env *env, t_gc **gc, t_cmd *cmds, char *error_value);
+char 	*expand_single_str(t_data *data, char *array, int mode);
+void	expander(t_data *data);
 
 //expander utils
 void	var_up(int *var_1, int *var_2, int add_to_1, int add_to_2);

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 15:22:10 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 15:48:32 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,25 +27,11 @@ char	*accurate_shell(t_gc **gc, t_env *env);
 
 int main(int argc, char const *argv[], char **envp)
 {
-	// t_env				*env_dup_root;
-	// t_gc				*gc;
-	// t_token				*token;
-	// t_cmd				*cmds;
-	// char				*input;
-	// char				*history;
-	// int					**pipes;
-	// int					status;
 	t_data				data;
-
-	// token = NULL;
-	// cmds = NULL;
-	// gc = NULL;
-	// env_dup_root = NULL;
-	// status = 0;
 
 	ft_memset(&data, 0, sizeof(data));
 	generate_env_llist(&(data.env_dup_root), &data.gc, envp);
-	data.status = exit_status(0); // Initializing it, not sure if needed
+	data.status = exit_status(0);
 	while (1) 
 	{
 		data.status = exit_status(-1);
@@ -63,12 +49,12 @@ int main(int argc, char const *argv[], char **envp)
 		{
 			signal(SIGINT, cancel_cmd);
 			signal(SIGQUIT, cancel_cmd);
-			char *str_status = ft_itoa(exit_status(-1));
-			setter_gc(str_status, &data.gc);
-			malloc_check(str_status, data.gc);
-			if (exit_status(parse_all_here_docs(data.cmds, &data.gc, data.env_dup_root, str_status)) == EXIT_SUCCESS)
+			data.str_status = ft_itoa(exit_status(-1));
+			setter_gc(data.str_status, &data.gc);
+			malloc_check(data.str_status, data.gc);
+			if (exit_status(parse_all_here_docs(data.cmds, &data.gc, data.env_dup_root, data.str_status)) == EXIT_SUCCESS)
 			{
-				expander(data.env_dup_root, &data.gc, data.cmds, str_status); //WORK IN PROGRESS
+				expander(data.env_dup_root, &data.gc, data.cmds, data.str_status);
 				int number_of_pipes = count_pipes(data.token);
 				data.pipes = open_pipes(data.cmds, &data.gc, number_of_pipes);
 				if (number_of_pipes == 0 && is_builtin(data.cmds->str))
@@ -90,9 +76,9 @@ int main(int argc, char const *argv[], char **envp)
 					close(backup_fds[0]);
 					close(backup_fds[1]);
 					if (process_status == 1)
-						exit_status(1); //if regular fail exit status is 1;
+						exit_status(1);
 					else if (process_status == 2)
-						empty_trash_exit(data.gc, errno); //if a write failed we exit shell
+						empty_trash_exit(data.gc, errno);
 					//
 				}
 				else
@@ -119,7 +105,7 @@ int	basic_parsing(t_gc **gc, char *input, t_token **token, t_cmd **cmds)
 		*token = NULL;
 		return (0);
 	}
-	split_input = quote_split(input, gc);//ft_split(input, ' ');
+	split_input = quote_split(input, gc);
 	if (!split_input)
 		return (0);
 	if (parse(split_input, gc, token, cmds) == 0)

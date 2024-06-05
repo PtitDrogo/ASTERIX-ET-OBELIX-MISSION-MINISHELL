@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 15:05:47 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 15:48:27 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ typedef enum e_tok_val //
 typedef struct s_token
 {
 	char			*str;
-	int				token_fd; //maybe fuse this and str later idk;
+	int				token_fd;
 	t_tok_val		type;
 	struct s_token	*next;
 	struct s_token	*prev;

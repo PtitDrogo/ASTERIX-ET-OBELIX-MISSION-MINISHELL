@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 16:21:40 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 16:41:00 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,6 @@ int		builtin_parse(t_env **env, t_gc **gc, char **cmd, int backup_fds[2]);
 char	*accurate_shell(t_gc **gc, t_env *env);
 bool	is_ascii(unsigned char c);
 int		verify_input(char *input);
-char    **rebuild_env_no_gc(t_env *root);
-void	recycle_trash(t_gc	**gc, t_env	**env);
 void	secure_dup2_no_exit(int new_fd, int old_fd, int **pipes, t_gc *gc, int number_of_pipes);
 char	*prompt(t_gc **gc, t_env *env);
 char	*accurate_shell(t_gc **gc, t_env *env);
@@ -52,7 +50,7 @@ int main(int argc, char const *argv[], char **envp)
 			data.str_status = ft_itoa(exit_status(-1));
 			setter_gc(data.str_status, &data.gc);
 			malloc_check(data.str_status, data.gc);
-			if (exit_status(parse_all_here_docs(data.cmds, &data.gc, data.env, data.str_status)) == EXIT_SUCCESS)
+			if (exit_status(parse_all_here_docs(&data)) == EXIT_SUCCESS)
 			{
 				expander(data.env, &data.gc, data.cmds, data.str_status);
 				int number_of_pipes = count_pipes(data.token);

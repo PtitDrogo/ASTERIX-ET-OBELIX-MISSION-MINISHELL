@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 16:21:11 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 16:41:59 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,7 @@ int		no_dupplicate_check(void	*data, t_gc *gc);
 int					here_doc(char *delimiter, t_gc **gc, int fd, bool do_expand, t_env *env, char *error_value);
 t_gc				**global_gc(t_gc **gc);
 int					global_fd(int fd);
-int					parse_all_here_docs(t_cmd *cmds, t_gc **gc, t_env *env, char *error_value);
+int					parse_all_here_docs(t_data *data);
 t_gc				**global_gc(t_gc **gc);
 t_cmd				*global_cmd(t_cmd *cmds);
 int					global_fd(int fd);

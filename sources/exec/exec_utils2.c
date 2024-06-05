@@ -6,15 +6,15 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 14:10:35 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 14:11:34 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 15:09:46 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_token *get_next_first_token(t_token *token_root)
+t_token	*get_next_first_token(t_token *token_root)
 {
-	t_token *current;
+	t_token	*current;
 
 	current = token_root;
 	while (current)
@@ -72,25 +72,31 @@ void	close_all_pipes(int **pipes_fds, t_gc *gc, int number_of_pipes)
 	return ;
 }
 
-void    close_all_heredoc_pipes(t_cmd *cmds_root, t_gc *gc)
+void	close_all_heredoc_pipes(t_cmd *cmds_root, t_gc *gc)
 {
-    t_token *current;
+	t_token	*current;
 
-    while (cmds_root)
-    {
-        current = cmds_root->redirection_in;
-        while (current)
-        {
-            if (current->type == D_LESS)
+	while (cmds_root)
+	{
+		current = cmds_root->redirection_in;
+		while (current)
+		{
+			if (current->type == D_LESS)
 			{
 				if (current->token_fd != -1)
-                	if (close(current->token_fd) == -1)
-						perror_exit(gc, EXIT_FAILURE, "Failed to close pipe"); //should care about if this close can fail later;
+					if (close(current->token_fd) == -1)
+						perror_exit(gc, EXIT_FAILURE, "Failed to close pipe");
 			}
-            current = current->next;
-        }
-        cmds_root = cmds_root->next;
-    }
-    return ;
+			current = current->next;
+		}
+		cmds_root = cmds_root->next;
+	}
+	return ;
 }
 
+char	*try_path(char *path)
+{
+	if (access(path, X_OK) == 0)
+		return (path);
+	return (NULL);
+}

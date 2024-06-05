@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 12:35:12 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 15:22:10 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int 	empty_trash(t_gc *gc);
 int		add_to_trash(t_gc **root, void *to_free);
 int		basic_parsing(t_gc **gc, char *input, t_token **token, t_cmd **cmds);
-int		theo_basic_parsing(t_env **env_dup_root, t_gc **gc, char **cmd, int backup_fds[2]);
+int		builtin_parse(t_env **env_dup_root, t_gc **gc, char **cmd, int backup_fds[2]);
 char	*accurate_shell(t_gc **gc, t_env *env);
 bool	is_ascii(unsigned char c);
 int		verify_input(char *input);
@@ -82,7 +82,7 @@ int main(int argc, char const *argv[], char **envp)
 					process_status = process_behavior(data.cmds, &data.gc, data.token);
 					close_all_heredoc_pipes(data.cmds, data.gc);
 					if (process_status == 0)
-						exit_status(theo_basic_parsing(&data.env_dup_root, &data.gc, data.cmds->str, backup_fds));
+						exit_status(builtin_parse(&data.env_dup_root, &data.gc, data.cmds->str, backup_fds));
 					
 					//PUT STD back to normal
 					dup2(backup_fds[0], STDIN_FILENO);
@@ -127,7 +127,7 @@ int	basic_parsing(t_gc **gc, char *input, t_token **token, t_cmd **cmds)
 	return (1);
 }
 
-int	theo_basic_parsing(t_env **env_dup_root, t_gc **gc, char **cmd, int backup_fds[2])
+int	builtin_parse(t_env **env_dup_root, t_gc **gc, char **cmd, int backup_fds[2])
 {
 	if (cmd == NULL || cmd[0] == NULL)
 		return (1);

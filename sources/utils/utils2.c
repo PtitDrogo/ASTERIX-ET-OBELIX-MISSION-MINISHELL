@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 05:47:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/03 06:45:35 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 15:19:24 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,5 +51,15 @@ int	count_arrays_in_doubleptr(void **array)
 	{
 		i++;
 	}
+	return (i);
+}
+
+size_t	len_to_char(char *str, char c)
+{
+	int	i;
+
+	i = 0;
+	while (str[i] != c && str[i])
+		i++;
 	return (i);
 }

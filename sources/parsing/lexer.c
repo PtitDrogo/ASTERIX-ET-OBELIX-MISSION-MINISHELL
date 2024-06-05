@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:15:09 by garivo            #+#    #+#             */
-/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 15:21:23 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,8 +82,6 @@ t_token	*tokenize(char **input, t_gc **gc)
 
 	i = 0;
 	tokenpile = NULL;
-	// if (input == NULL);
-	// 	return (NULL); //This gets rid of the memory leak but also nothing works so not great
 	while (input[i])
 	{
 		token = create_token(input[i], gc);

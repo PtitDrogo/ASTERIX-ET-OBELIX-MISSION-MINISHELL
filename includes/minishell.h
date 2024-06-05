@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 14:15:24 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 15:05:47 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,15 +96,15 @@ typedef struct s_expand
 	int		total_size;
 	int		size; 
 	int		mode;
-	t_env *env;
+	t_env	*env;
 	
 } t_expand;
 
 typedef struct s_exec
 {
 	char	**envp;
-	t_cmd	*current_cmd;
-	t_token	*token_current;
+	t_cmd	*cmd_cur;
+	t_token	*token_cur;
 	int		status;
 	int 	**pipes_fds;
 	int 	number_of_pipes;
@@ -211,18 +211,19 @@ int		print_open_err_msg(int errnumber, char *file);
 int		**open_pipes(t_cmd *cmds, t_gc **gc, int number_of_pipes);
 int 	exec(t_data *data, int **pipes_fds, int number_of_pipes);
 int		count_pipes(t_token *token_list);
-int		theo_basic_parsing(t_env **env_dup_root, t_gc **gc, char **cmd, int backup_fds[2]);
-int		process_behavior(t_cmd *cmds, t_gc **gc, t_token *token_current);
+int		builtin_parse(t_env **env_dup_root, t_gc **gc, char **cmd, int backup_fds[2]);
+int		process_behavior(t_cmd *cmds, t_gc **gc, t_token *token_cur);
 t_token *get_next_first_token(t_token *token_root);
 char	*ft_strjoin_and_add(char const *s1, char const *s2, char c);
 void	close_all_pipes(int **pipes_fds, t_gc *gc, int number_of_pipes);
 void    close_all_heredoc_pipes(t_cmd *cmds_root, t_gc *gc);
-void	init_exec(t_exec *exec, t_data *data, int **pipes_fds, int number_of_pipes);
+void	init_exec(t_exec *exec, t_data *data, int **pipes_fds, int number_pipes);
 int		handle_status(int *status);
 void	handle_command(t_data *data, t_exec *exec, char *valid_path);
 int		get_correct_cmd(t_cmd *cmds);
 char	*find_env_variable(char **envp, char *env_to_find);
 char    **rebuild_env(t_env *root, t_gc **gc);
+char	*try_path(char *path);
 
 
 

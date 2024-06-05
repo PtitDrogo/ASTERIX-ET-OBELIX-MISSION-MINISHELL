@@ -6,21 +6,11 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 14:47:08 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/03 06:45:35 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 15:10:41 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-size_t	len_to_char(char *str, char c)
-{
-	int	i;
-
-	i = 0;
-	while (str[i] != c && str[i])
-		i++;
-	return (i);
-}
 
 int	is_char_in_str(char *str, char c)
 {

@@ -6,21 +6,22 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 14:07:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 14:10:25 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 14:46:34 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	init_exec(t_exec *exec, t_data *data, int **pipes_fds, int number_of_pipes)
+void	init_exec(t_exec *exec, t_data *data, int **pipes_fds, int number_pipes)
 {
-	exec->current_cmd = data->cmds;
-	exec->envp = rebuild_env(data->env_dup_root, &data->gc); //this need to close fd if ail
-	exec->token_current = data->token;
+	exec->cmd_cur = data->cmds;
+	exec->envp = rebuild_env(data->env_dup_root, &data->gc);
+	exec->token_cur = data->token;
 	exec->pipes_fds = pipes_fds;
-	exec->number_of_pipes = number_of_pipes;
+	exec->number_of_pipes = number_pipes;
 }
-int		handle_status(int *status)
+
+int	handle_status(int *status)
 {
 	if (WIFEXITED(*status))
 		*status = WEXITSTATUS(*status);
@@ -34,20 +35,20 @@ int		handle_status(int *status)
 
 void	handle_command(t_data *data, t_exec *exec, char *valid_path)
 {
-	if (is_builtin(exec->current_cmd->str))
-	{	
-		theo_basic_parsing(&data->env_dup_root, &data->gc, exec->current_cmd->str, NULL);
+	if (is_builtin(exec->cmd_cur->str))
+	{
+		builtin_parse(&data->env_dup_root, &data->gc, exec->cmd_cur->str, NULL);
 		empty_trash_exit(data->gc, 0);
 	}
-	execve(valid_path, exec->current_cmd->str, exec->envp);
+	execve(valid_path, exec->cmd_cur->str, exec->envp);
 	ft_printf2("Execve failed\n");
-	empty_trash_exit(data->gc, 127);	
+	empty_trash_exit(data->gc, 127);
 }
 
 int	get_correct_cmd(t_cmd *cmds)
 {
-	int i;
-	
+	int	i;
+
 	i = 0;
 	if (cmds && cmds->str)
 	{

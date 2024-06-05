@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 14:18:33 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 15:06:58 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,21 +22,21 @@ int	exec(t_data *data, int **pipes_fds, int number_of_pipes)
 
 	ft_memset(&exec, 0, sizeof(exec));
 	init_exec(&exec, data, pipes_fds, number_of_pipes);
-	while (exec.current_cmd)
+	while (exec.cmd_cur)
 	{
 		child_process(data, &exec);
-		exec.token_current = get_next_first_token(exec.token_current);
-		exec.current_cmd = exec.current_cmd->next;
+		exec.token_cur = get_next_first_token(exec.token_cur);
+		exec.cmd_cur = exec.cmd_cur->next;
 	}
 	close_all_pipes(pipes_fds, data->gc, number_of_pipes);
 	close_all_heredoc_pipes(data->cmds, data->gc);
-	exec.current_cmd = data->cmds;
-	while (exec.current_cmd)
+	exec.cmd_cur = data->cmds;
+	while (exec.cmd_cur)
 	{
-		waitpid(exec.current_cmd->cmd_id, &exec.status, 0);
+		waitpid(exec.cmd_cur->cmd_id, &exec.status, 0);
 		if (handle_status(&exec.status) == -1)
 			empty_trash_exit(data->gc, 1);
-		exec.current_cmd = exec.current_cmd->next;
+		exec.cmd_cur = exec.cmd_cur->next;
 	}
 	return (exec.status);
 }
@@ -45,17 +45,17 @@ static void	handle_unvalid_path(t_data *data, t_exec *exec)
 {
 	if (errno == EISDIR)
 	{
-		ft_printf2("%s: Is a directory\n", exec->current_cmd->str[0]);
+		ft_printf2("%s: Is a directory\n", exec->cmd_cur->str[0]);
 		empty_trash_exit(data->gc, 126);
 	}
 	else if (errno == EACCES)
 	{
-		ft_printf2("%s: Permission denied\n", exec->current_cmd->str[0]);
+		ft_printf2("%s: Permission denied\n", exec->cmd_cur->str[0]);
 		empty_trash_exit(data->gc, 126);
 	}
 	else
 	{
-		ft_printf2("%s: command not found\n", exec->current_cmd->str[0]);
+		ft_printf2("%s: command not found\n", exec->cmd_cur->str[0]);
 		empty_trash_exit(data->gc, 127);
 	}
 }
@@ -63,25 +63,25 @@ static void	handle_unvalid_path(t_data *data, t_exec *exec)
 static void	child_process(t_data *data, t_exec *exec)
 {
 	char	*valid_path;
-	int		process_status; 
+	int		status;
 
-	exec->current_cmd->cmd_id = fork();
-	if (exec->current_cmd->cmd_id == -1)
+	exec->cmd_cur->cmd_id = fork();
+	if (exec->cmd_cur->cmd_id == -1)
 		perror_exit(data->gc, errno, "Error creating subshell");
-	if (exec->current_cmd->cmd_id == 0)
+	if (exec->cmd_cur->cmd_id == 0)
 	{
-		process_status = process_behavior(exec->current_cmd, &data->gc, exec->token_current);
+		status = process_behavior(exec->cmd_cur, &data->gc, exec->token_cur);
 		close_all_pipes(exec->pipes_fds, data->gc, exec->number_of_pipes);
 		close_all_heredoc_pipes(data->cmds, data->gc);
-		if (process_status != 0)
+		if (status != 0)
 			empty_trash_exit(data->gc, 1);
-		if (get_correct_cmd(exec->current_cmd) == 0)
+		if (get_correct_cmd(exec->cmd_cur) == 0)
 			empty_trash_exit(data->gc, 0);
-		valid_path = find_valid_path(exec->current_cmd, exec->envp, &data->gc);
-		if (valid_path == NULL && exec->current_cmd && exec->current_cmd->str
-				&& is_builtin(exec->current_cmd->str) == false)
+		valid_path = find_valid_path(exec->cmd_cur, exec->envp, &data->gc);
+		if (valid_path == NULL && exec->cmd_cur && exec->cmd_cur->str
+			&& is_builtin(exec->cmd_cur->str) == false)
 			handle_unvalid_path(data, exec);
-		else if (exec->current_cmd && exec->current_cmd->str)
+		else if (exec->cmd_cur && exec->cmd_cur->str)
 			handle_command(data, exec, valid_path);
 		else
 			empty_trash_exit(data->gc, 127);
@@ -90,18 +90,19 @@ static void	child_process(t_data *data, t_exec *exec)
 
 char	**rebuild_env(t_env *root, t_gc **gc)
 {
-    int		number_of_variables;
+	int		number_of_variables;
 	char	**envp;
 	int		i;
 
 	i = 0;
 	number_of_variables = count_nodes(root);
-    envp = malloc_trash(sizeof(char *) * (number_of_variables + 1), gc);
+	envp = malloc_trash(sizeof(char *) * (number_of_variables + 1), gc);
 	while (root)
-    {
-        if (root->variable)
+	{
+		if (root->variable)
 		{
-			envp[i] = setter_gc(ft_strjoin_and_add(root->variable_name, root->variable, '='), gc);
+			envp[i] = setter_gc(ft_strjoin_and_add(root->variable_name,
+						root->variable, '='), gc);
 			malloc_check(envp[i], *gc);
 		}
 		else
@@ -109,9 +110,9 @@ char	**rebuild_env(t_env *root, t_gc **gc)
 			envp[i] = setter_gc(ft_strdup(root->variable_name), gc);
 			malloc_check(envp[i], *gc);
 		}
-        root = root->next;
+		root = root->next;
 		i++;
-    }
+	}
 	envp[i] = NULL;
 	return (envp);
 }
@@ -122,22 +123,17 @@ static char	*find_valid_path(t_cmd *cmd, char **envp, t_gc **gc)
 	char	**paths;
 	int		i;
 
-	if (envp == NULL || cmd == NULL || cmd->str == NULL || cmd->str[0] == NULL) //yes we need all of these
+	if (envp == NULL || cmd == NULL || cmd->str == NULL || cmd->str[0] == NULL)
 		return (NULL);
 	if (is_char_in_str(*(cmd->str), '/') == true)
-	{
-		if (access(*(cmd->str), X_OK) == 0)
-			return (*(cmd->str));
-		else
-			return (NULL);
-	}
+		return (try_path(*(cmd->str)));
 	path = find_env_variable(envp, "PATH");
 	if (path == NULL)
 		return (NULL);
 	paths = (char **)setter_double_p_gc((void **)ft_split(path, ':'), gc);
 	malloc_check(paths, *gc);
 	i = -1;
-	while(paths[++i])
+	while (paths[++i])
 	{
 		path = setter_gc(ft_strjoin_and_add(paths[i], cmd->str[0], '/'), gc);
 		malloc_check(path, *gc);
@@ -146,5 +142,3 @@ static char	*find_valid_path(t_cmd *cmd, char **envp, t_gc **gc)
 	}
 	return (NULL);
 }
-
-

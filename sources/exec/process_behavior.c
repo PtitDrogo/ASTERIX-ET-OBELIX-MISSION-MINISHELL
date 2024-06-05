@@ -6,16 +6,16 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 06:19:34 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/03 06:28:33 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 14:21:05 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	handle_first_pipe(t_token **token_current, int *tmp_fd, t_token **in);
-int	handle_in_redin(t_token **token_current, int *tmp_fd, t_token **in);
-int	handle_in_redout(t_token **token_current, int *tmp_fd, t_token **out);
-int	handle_dup(t_token **token_current, int *tmp_fd, t_token **in_out, int std);
+int	handle_first_pipe(t_token **token_cur, int *tmp_fd, t_token **in);
+int	handle_in_redin(t_token **token_cur, int *tmp_fd, t_token **in);
+int	handle_in_redout(t_token **token_cur, int *tmp_fd, t_token **out);
+int	handle_dup(t_token **token_cur, int *tmp_fd, t_token **in_out, int std);
 
 int	process_behavior(t_cmd *cmds, t_gc **gc, t_token *current)
 {
@@ -42,9 +42,9 @@ int	process_behavior(t_cmd *cmds, t_gc **gc, t_token *current)
 	return (0);
 }
 
-int	handle_first_pipe(t_token **token_current, int *tmp_fd, t_token **in)
+int	handle_first_pipe(t_token **token_cur, int *tmp_fd, t_token **in)
 {
-	if ((*token_current)->type == PIPE)
+	if ((*token_cur)->type == PIPE)
 	{
 		if (*in)
 		{
@@ -60,12 +60,12 @@ int	handle_first_pipe(t_token **token_current, int *tmp_fd, t_token **in)
 			}
 			(*in) = (*in)->next;
 		}
-		(*token_current) = (*token_current)->next;
+		(*token_cur) = (*token_cur)->next;
 	}
 	return (0);
 }
 
-int	handle_in_redin(t_token **token_current, int *tmp_fd, t_token **in)
+int	handle_in_redin(t_token **token_cur, int *tmp_fd, t_token **in)
 {
 	int	status;
 
@@ -84,13 +84,13 @@ int	handle_in_redin(t_token **token_current, int *tmp_fd, t_token **in)
 			*tmp_fd = (*in)->token_fd;
 			(*in) = (*in)->next;
 		}
-		status = handle_dup(token_current, tmp_fd, in, STDIN_FILENO);
+		status = handle_dup(token_cur, tmp_fd, in, STDIN_FILENO);
 		(*in) = (*in)->next;
 	}
 	return (status);
 }
 
-int	handle_in_redout(t_token **token_current, int *fd, t_token **out)
+int	handle_in_redout(t_token **token_cur, int *fd, t_token **out)
 {
 	int	status;
 
@@ -113,13 +113,13 @@ int	handle_in_redout(t_token **token_current, int *fd, t_token **out)
 		}
 		if ((*out)->type == PIPE)
 			*fd = (*out)->token_fd;
-		status = handle_dup(token_current, fd, out, STDOUT_FILENO);
+		status = handle_dup(token_cur, fd, out, STDOUT_FILENO);
 		(*out) = (*out)->next;
 	}
 	return (status);
 }
 
-int	handle_dup(t_token **token_current, int *tmp_fd, t_token **in_out, int std)
+int	handle_dup(t_token **token_cur, int *tmp_fd, t_token **in_out, int std)
 {
 	if (((*in_out)->next == NULL) || (*in_out)->type == PIPE)
 	{
@@ -130,8 +130,8 @@ int	handle_dup(t_token **token_current, int *tmp_fd, t_token **in_out, int std)
 			return (1);
 		}
 	}
-	if ((*token_current)->type == LESS || (*token_current)->type == D_LESS
-		|| (*token_current)->type == GREAT || (*token_current)->type == D_GREAT)
+	if ((*token_cur)->type == LESS || (*token_cur)->type == D_LESS
+		|| (*token_cur)->type == GREAT || (*token_cur)->type == D_GREAT)
 	{
 		if (close(*tmp_fd) == -1)
 		{

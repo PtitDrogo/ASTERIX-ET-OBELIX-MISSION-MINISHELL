@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 12:48:32 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 16:19:59 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/06 13:50:17 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,10 @@
 
 int	unset(t_env *env, char *env_to_find)
 {
-	int	len_env;
 	t_env *current;
 	
 	current = env;
-	if (!env_to_find || !env) // uh ?
+	if (!env_to_find || !env)
 		return (0);
 	while (current)
 	{
@@ -29,5 +28,5 @@ int	unset(t_env *env, char *env_to_find)
 		}
 		current = current->next;
 	}
-	return (0); // couldnt find env variable
+	return (0);
 }

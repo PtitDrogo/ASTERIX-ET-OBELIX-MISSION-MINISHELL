@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 19:05:11 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/06 13:30:27 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,6 +177,7 @@ int		sorted_env_print(t_env *env, t_gc *gc);
 int		pwd(t_gc **gc);
 int		echo(char **to_echo, t_gc **gc);
 int 	cd(char **cmd, t_gc **gc, t_env *env);
+int		builtin_parse(t_env **env, t_gc **gc, char **cmd, int backup_fds[2]);
 
 //UTILS
 size_t		len_to_char(char *str, char c);
@@ -185,26 +186,31 @@ int			ft_strcmp(const char *s1, const char *s2);
 int			pop(t_env *env, t_env *node_to_pop);
 int			generate_env_llist(t_env **env, t_gc **gc, char **envp);
 int			count_nodes(t_env *root);
-t_env *get_env_node(t_env *root, char *variable_name);
+t_env 		*get_env_node(t_env *root, char *variable_name);
 bool		is_builtin(char **cmd);
 int			count_arrays_in_doubleptr(void **array);
 char		*env_var(t_env *root, char *variable_name);
 char		**rebuild_env(t_env *root, t_gc **gc);
 char		*ft_strjoin_and_add(char const *s1, char const *s2, char c);
 char		*ft_strncat(char *src, char *dst, int len);
-char	*readline_n_add_n(char *readline, t_gc **gc);
-void	before_expand_innit(t_data *data);
+char		*readline_n_add_n(char *readline, t_gc **gc);
+void		before_expand_innit(t_data *data);
+int    		ft_strncmp_n(char *input, char *delim, size_t n);
+char		*prompt(t_gc **gc, t_env *env);
+int			verify_input(char *input);
+int			print_open_err_msg(int errnumber, char *file);
+void		close_backup_fds(int backup_fds[2]);
 //innits
-void	minishell_innit(t_data *data, char **envp);
+
 
 //errors && exit
 void    perror_exit(t_gc *gc, int exit_code, char *err_msg);
 void	empty_trash_exit(t_gc *gc, int exit_code);
-void    ft_error(char *error, t_gc *gc);
 int		exit_status(int status);
 void	exit_heredoc(int status);
 void	free_heredoc(void);
 int		print_open_err_msg(int errnumber, char *file);
+void	minishell_graceful_exit(t_gc *gc);
 
 
 ///------------------------Execution------------------------///
@@ -260,5 +266,6 @@ void	new_prompt(int none);
 void	cancel_cmd(int none);
 void	cancel_heredoc(int none);
 // void	cancel_cmd_coredumped(int none);
+void	cancel_backslash(int none);
 
 #endif

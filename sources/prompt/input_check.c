@@ -1,40 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   globals.c                                          :+:      :+:    :+:   */
+/*   input_check.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/05 17:42:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/06 12:54:09 by tfreydie         ###   ########.fr       */
+/*   Created: 2024/06/06 12:24:53 by tfreydie          #+#    #+#             */
+/*   Updated: 2024/06/06 12:25:11 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_gc	**global_gc(t_gc **gc)
-{
-	static t_gc	**sgc;
+static bool	is_ascii(unsigned char c);
 
-	if (gc)
-		sgc = gc;
-	return (sgc);
+int		verify_input(char *input)
+{
+	int i;
+	
+	i = 0;
+	if (input[0] == '\0')
+		return (0);
+	while (input[i])
+	{
+		if (is_ascii((unsigned char)input[i]) == false)
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
-t_cmd	*global_cmd(t_cmd *cmds)
+static bool	is_ascii(unsigned char c)
 {
-	static t_cmd	*ccmds;
-
-	if (cmds)
-		ccmds = cmds;
-	return (ccmds);
-}
-
-int	global_fd(int fd)
-{
-	static int	ffd;
-
-	if (fd != -1)
-		ffd = fd;
-	return (ffd);
+	return (c <= 127);
 }

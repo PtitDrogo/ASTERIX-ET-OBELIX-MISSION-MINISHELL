@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 14:07:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 16:19:59 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/06 11:48:06 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,15 @@ int	handle_status(int *status)
 	else if (WIFSIGNALED(*status))
 		*status = 128 + WTERMSIG(*status);
 	if (*status == 130)
+	{	
 		if (ft_printf("\n") == -1)
 			return (2);
+	}
+	else if (*status == 131)
+	{	
+		if (ft_printf("Core Dumped\n") == -1)
+			return (2);
+	}
 	return (1);
 }
 

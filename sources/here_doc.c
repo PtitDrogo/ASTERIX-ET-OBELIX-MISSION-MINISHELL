@@ -6,21 +6,20 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 18:38:27 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/06 12:19:47 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int		ft_strncmp_n(char *input, char *delim, size_t n);
+int				ft_strncmp_n(char *input, char *delim, size_t n);
 static void		hd_process(t_data *data, char *delim, int fd, bool do_expand);
 bool			update_expand_bool(t_data *data, t_token *current);
 int				execute_heredoc(t_data *data, t_token *current, bool do_expand);
 
-
-int parse_all_here_docs(t_data *data)
+int	parse_all_here_docs(t_data *data)
 {
-	t_token *current;
+	t_token	*current;
 	t_cmd	*current_cmd;
 	int		status;
 	bool	do_expand;
@@ -47,11 +46,11 @@ int parse_all_here_docs(t_data *data)
 	return (status);
 }
 
-int		execute_heredoc(t_data *data, t_token *current, bool do_expand)
+int	execute_heredoc(t_data *data, t_token *current, bool do_expand)
 {
-	int pipe_heredoc[2];
-	int status;
-	
+	int	pipe_heredoc[2];
+	int	status;
+
 	pipe(pipe_heredoc);
 	current->token_fd = pipe_heredoc[0];
 	status = here_doc(data, current->next->str, pipe_heredoc[1], do_expand);
@@ -61,8 +60,11 @@ int		execute_heredoc(t_data *data, t_token *current, bool do_expand)
 
 bool	update_expand_bool(t_data *data, t_token *current)
 {
-	int before_expand_len = ft_len(current->next->str);
-	current->next->str = expand_single_str(data, current->next->str, REMOVESQUOTES);
+	int	before_expand_len;
+
+	before_expand_len = ft_len(current->next->str);
+	current->next->str = expand_single_str(data,
+			current->next->str, REMOVESQUOTES);
 	if (before_expand_len != ft_len(current->next->str))
 		return (false);
 	return (true);
@@ -70,7 +72,7 @@ bool	update_expand_bool(t_data *data, t_token *current)
 
 int	here_doc(t_data *data, char *delim, int fd, bool do_expand)
 {
-	int	status;
+	int		status;
 	int		pid;
 
 	global_fd(fd);
@@ -80,6 +82,7 @@ int	here_doc(t_data *data, char *delim, int fd, bool do_expand)
 	else if (pid == 0)
 	{
 		signal(SIGINT, cancel_heredoc);
+		signal(SIGQUIT, SIG_IGN);
 		hd_process(data, delim, fd, do_expand);
 		exit_heredoc(EXIT_SUCCESS);
 	}
@@ -101,8 +104,9 @@ static void	hd_process(t_data *data, char *delim, int fd, bool do_expand)
 	{
 		input = readline_n_add_n(readline("heredoc> "), &data->gc);
 		if (input == NULL)
-		{	
-			if (ft_printf2("bash: warning: here-document delimited by end-of-file (wanted `%s')\n", delim) == -1)
+		{
+			if (ft_printf2("bash: warning: here-document delimited \
+				by end-of-file (wanted `%s')\n", delim) == -1)
 			{
 				free_heredoc();
 				perror_exit(data->gc, errno, WRITE_ERR_MSG);
@@ -120,18 +124,3 @@ static void	hd_process(t_data *data, char *delim, int fd, bool do_expand)
 		}
 	}
 }
-
-static int    ft_strncmp_n(char *input, char *delim, size_t n)
-{
-	size_t    i;
-
-	i = 0;
-	while (input[i] == delim[i] && input[i] && i < n)
-	{
-		i++;
-	}
-	if (input[i] == '\n' && delim[i] == '\0')
-		return (0);
-	return ((unsigned char)input[i] - (unsigned char)delim[i]);
-}
-

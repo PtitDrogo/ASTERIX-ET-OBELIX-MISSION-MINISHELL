@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 17:28:02 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/06 12:23:47 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,13 +100,9 @@ static void	fill_str(t_expand *expdr, t_gc **gc, t_env *env, int i)
 				|| expdr->mode == EXPAND) && expdr->mode != REMOVESQUOTES)
 		{
 			tmp = setter_gc(get_expand_str(&(expdr->array[i + 1]), gc), gc);
-			if (tmp_check(expdr, &i, tmp))
-				;
-			else
+			if (!tmp_check(expdr, &i, tmp))
 			{
-				if (handle_question_mark(expdr, &i, &tmp))
-					;
-				else
+				if (!handle_question_mark(expdr, &i, &tmp))
 					tmp = setter_gc(env_var(env, tmp), gc);
 				fill_string(expdr, tmp);
 			}

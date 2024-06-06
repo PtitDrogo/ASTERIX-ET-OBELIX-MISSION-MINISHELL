@@ -18,6 +18,7 @@ SRCS =		$(SRCS_DIR)/builtins/export.c \
 			$(SRCS_DIR)/utils/utils.c \
 			$(SRCS_DIR)/utils/utils2.c \
 			$(SRCS_DIR)/builtins/env.c \
+			$(SRCS_DIR)/builtins/builtin_parse.c \
 			$(SRCS_DIR)/builtins/exit.c \
 			$(SRCS_DIR)/readline.c \
       		$(SRCS_DIR)/parsing/parser.c \
@@ -34,6 +35,9 @@ SRCS =		$(SRCS_DIR)/builtins/export.c \
 			$(SRCS_DIR)/utils/recycle_trash.c \
 			$(SRCS_DIR)/utils/globals.c \
 			$(SRCS_DIR)/parsing/open_pipes.c \
+			$(SRCS_DIR)/utils/utils3.c \
+			$(SRCS_DIR)/prompt/prompt.c \
+			$(SRCS_DIR)/prompt/input_check.c \
 			$(SRCS_DIR)/exec/exec_utils2.c \
 			$(SRCS_DIR)/exec/exec_utils.c \
 			$(SRCS_DIR)/exec/exec.c \

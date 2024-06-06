@@ -65,7 +65,7 @@ OBJS			=	$(patsubst $(SRCS_DIR)%.c, $(OBJS_DIR)%.o, $(SRCS))
 
 CC	=	cc
 RM	=	rm -f
-CFLAGS	=	-g3 -Wall -Wextra -Werror -I.
+CFLAGS	=	-Wall -Wextra -Werror -g3 -I.
 
 NAME	=	libft.a
 

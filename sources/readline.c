@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/06 13:53:05 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/06 15:20:19 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,10 @@ static int	basic_parsing(t_gc **gc, char *input,
 
 int	main(int argc, char const *argv[], char **envp)
 {
-	t_data				data;
+	t_data	data;
+
 	(void)argc;
 	(void)argv;
-	
 	ft_memset(&data, 0, sizeof(data));
 	generate_env_llist(&(data.env), &data.gc, envp);
 	data.status = exit_status(0);
@@ -44,8 +44,7 @@ int	main(int argc, char const *argv[], char **envp)
 			add_history(data.input);
 		recycle_trash_new(&data.gc, data.env);
 	}
-	minishell_graceful_exit(data.gc);
-	return (0);
+	return (minishell_graceful_exit(data.gc));
 }
 
 static void	execute_valid_input(t_data *data)

@@ -17,7 +17,7 @@ size_t	ft_len(const char *s)
 	size_t	i;
 
 	if (s == NULL)
-		return(0); //en vrai c'est mieux comme ca;
+		return (0);
 	i = 0;
 	while (s[i])
 	{

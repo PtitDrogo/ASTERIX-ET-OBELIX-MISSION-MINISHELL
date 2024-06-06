@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 12:24:53 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/06 12:25:11 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/06 14:39:58 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 
 static bool	is_ascii(unsigned char c);
 
-int		verify_input(char *input)
+int	verify_input(char *input)
 {
-	int i;
-	
+	int	i;
+
 	i = 0;
 	if (input[0] == '\0')
 		return (0);

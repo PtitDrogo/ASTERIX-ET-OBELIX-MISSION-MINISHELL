@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 12:16:38 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/06 12:17:21 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/06 14:59:14 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ static char	*accurate_shell(t_gc **gc, t_env *env);
 
 char	*prompt(t_gc **gc, t_env *env)
 {
-	char *pwd;
+	char	*pwd;
 
 	pwd = accurate_shell(gc, env);
 	if (pwd)
@@ -31,11 +31,11 @@ char	*prompt(t_gc **gc, t_env *env)
 
 static char	*accurate_shell(t_gc **gc, t_env *env)
 {
-	t_env 		*pwd;
-	char		*backup_pwd;
-	
+	t_env	*pwd;
+	char	*backup_pwd;
+
 	pwd = get_env_node(env, "PWD");
- 	if (pwd != NULL)
+	if (pwd != NULL)
 		return (pwd->variable);
 	else
 	{

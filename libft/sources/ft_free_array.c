@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_free_array.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/08 18:32:26 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/01 15:34:24 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/06/06 14:32:39 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,12 @@ void	ft_free_array(void **array)
 	while (array[j])
 	{
 		if (array[j])
-		{	
+		{
 			free(array[j]);
-			array[j] = NULL; // I thought this should work
+			array[j] = NULL;
 		}
 		j++;
 	}
 	free(array);
-	array = NULL; // I realise this doesnt work
 	return ;
 }

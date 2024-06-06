@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 15:58:57 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/06 12:53:55 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/06 15:21:17 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,9 @@ void	innit_here_doc(t_gc **gc, t_cmd *cmd, int *status)
 	global_cmd(cmd);
 }
 
-void	minishell_graceful_exit(t_gc *gc)
+int	minishell_graceful_exit(t_gc *gc)
 {
-	ft_printf("exit\n");
 	rl_clear_history();
 	empty_trash(gc);
+	return (0);
 }

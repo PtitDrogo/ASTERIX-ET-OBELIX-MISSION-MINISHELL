@@ -6,52 +6,29 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 16:11:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/06 13:49:59 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/06 16:01:18 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int			unset(t_env *env, char *env_to_find);
-int			export(t_env **root, void *variable, t_gc **gc);
-int			pop(t_env *env, t_env *node_to_pop);
-t_env 		*check_if_variable_exist(t_env *root, void *variable);
-char		*get_env_name(const char *src, t_gc **gc);
-char		*get_env_var(const char *src, t_gc **gc);
-int			is_valid_env_name(char *name, t_gc *gc);
-
-//TODO make this universal later
-int	pop(t_env *env, t_env *node_to_pop)
-{	
-	if (!env || !node_to_pop)
-		return (0); //gotta check later;
-	while (env->next && env->next != node_to_pop)	
-		env = env->next;
-	if (env->next == NULL)
-		return (0); // we couldnt find the node to pop
-	env->next = env->next->next;
-	node_to_pop->variable = NULL;
-	return (1);
-}
+static t_env		*check_if_variable_exist(t_env *root, void *variable);
+static char			*get_env_name(const char *src, t_gc **gc);
+static char			*get_env_var(const char *src, t_gc **gc);
+static int			set_same(t_env	*same_name_node, void *variable, t_gc **gc);
 
 int	export(t_env **root, void *variable, t_gc **gc)
 {
 	t_env	*new_node;
 	t_env	*current;
 	t_env	*same_name_node;
-	
+
 	if (is_valid_env_name(variable, *gc) == 0)
 		return (1);
 	same_name_node = check_if_variable_exist(*root, variable);
 	if (same_name_node)
-	{
-		same_name_node->variable_name = get_env_name(variable, gc);
-		same_name_node->variable = get_env_var(variable, gc);
-		return (0);
-	}
+		return (set_same(same_name_node, variable, gc));
 	new_node = malloc_trash(sizeof(t_env), gc);
-	if (!new_node)
-		return (0);
 	new_node->next = NULL;
 	new_node->variable_name = get_env_name(variable, gc);
 	new_node->variable = get_env_var(variable, gc);
@@ -67,37 +44,10 @@ int	export(t_env **root, void *variable, t_gc **gc)
 	return (0);
 }
 
-//this function checks if the env var name is valid;
-int	is_valid_env_name(char *name, t_gc *gc)
+static t_env	*check_if_variable_exist(t_env *root, void *variable)
 {
-	int	i;
-	
-	if (ft_isalpha(name[0]) == 0 && name[0] != '_')
-	{	
-		if (ft_printf2("bash: export: `%s': not a valid identifier\n", name) == -1)
-			perror_exit(gc, errno, WRITE_ERR_MSG);
-		return (0);
-	}
-	i = 1; // we start after the first letter;
-	while (name[i] && name[i] != '=')
-	{
-		if (ft_isalnum(name[i]) == 0 && name[i] != '_')
-		{	
-			if (ft_printf2("bash: export: `%s': not a valid identifier\n", name) == -1)
-				perror_exit(gc, errno, WRITE_ERR_MSG);
-			return (0);
-		}
-		i++;
-	}
-	return (1);
-}
+	size_t	var_len;
 
-//this function checks if the variable exists already, if it does, it returns the node with the
-//variable, otherwise it returns NULL
-t_env *check_if_variable_exist(t_env *root, void *variable)
-{
-	size_t var_len;
-	
 	if (variable == NULL)
 		return (NULL);
 	if (is_char_in_str(variable, '=') == 0)
@@ -115,7 +65,7 @@ t_env *check_if_variable_exist(t_env *root, void *variable)
 	return (NULL);
 }
 
-char	*get_env_name(const char *src, t_gc **gc)
+static char	*get_env_name(const char *src, t_gc **gc)
 {
 	int		i;
 	int		j;
@@ -138,35 +88,27 @@ char	*get_env_name(const char *src, t_gc **gc)
 	return (dest);
 }
 
-char	*get_env_var(const char *src, t_gc **gc)
+static char	*get_env_var(const char *src, t_gc **gc)
 {
-	int i;
+	int		i;
 	char	*to_return;
+
 	i = 0;
 	while (src[i] != '\0' && src[i] != '=')
 		i++;
 	if (src[i] == '\0')
-		return (NULL);//Could be return empty malloc(but risk of false positive), would also make it different than failed malloc
-	i++; // to go past the '='
+		return (NULL);
+	i++;
 	while (src[i] && ((src[i] >= 9 && src[i] <= 13) || src[i] == ' '))
-		i++; // get rid of spaces at the beginning;
+		i++;
 	to_return = setter_gc(ft_strdup(&src[i]), gc);
 	malloc_check(to_return, *gc);
 	return (to_return);
 }
 
-//returns 0 is envp is NULL, but no env doesnt exit shell so we dont do anything
-int	generate_env_llist(t_env **env, t_gc **gc, char **envp)
+int	set_same(t_env	*same_name_node, void *variable, t_gc **gc)
 {
-	int i;
-
-	i = -1;
-	if (envp == NULL)
-		return (0);
-	while (envp[++i])
-	{	
-		if (export(env, (void *)envp[i], gc) == 1)
-			return (0);
-	}
-	return (1);
+	same_name_node->variable_name = get_env_name(variable, gc);
+	same_name_node->variable = get_env_var(variable, gc);
+	return (0);
 }

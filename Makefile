@@ -20,6 +20,7 @@ SRCS =		$(SRCS_DIR)/builtins/export.c \
 			$(SRCS_DIR)/builtins/env.c \
 			$(SRCS_DIR)/builtins/builtin_parse.c \
 			$(SRCS_DIR)/builtins/exit.c \
+			$(SRCS_DIR)/builtins/export_print.c \
 			$(SRCS_DIR)/readline.c \
       		$(SRCS_DIR)/parsing/parser.c \
 			$(SRCS_DIR)/parsing/lexer.c \
@@ -29,6 +30,7 @@ SRCS =		$(SRCS_DIR)/builtins/export.c \
 			$(SRCS_DIR)/parsing/quote_split_utils.c \
 			$(SRCS_DIR)/builtins/echo.c \
 			$(SRCS_DIR)/builtins/cd.c \
+			$(SRCS_DIR)/builtins/cd_errors.c \
 			$(SRCS_DIR)/builtins/pwd.c \
 			$(SRCS_DIR)/utils/innits.c \
 			$(SRCS_DIR)/here_doc.c \

@@ -6,12 +6,12 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/06 13:30:27 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/06 16:39:30 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
-# define  MINISHELL_H
+# define MINISHELL_H
 
 ///------------------------Includes------------------------///
 # include <stdio.h>
@@ -30,9 +30,8 @@
 
 ///------------------------Structs------------------------///
 
-typedef struct s_env_node 
+typedef struct s_env_node
 {
-
 	struct s_env_node	*next;
 	char				*variable_name;
 	char				*variable;
@@ -113,19 +112,19 @@ typedef struct s_exec
 
 ///------------------------Defines------------------------///
 
-#define ATOI_ERROR 3000000000
-#define	SYNTAX_ERROR 2
-#define MALLOC_ERROR 1
-#define MALLOC_ERR_MSG "Error : Malloc failed\n"
-#define WRITE_ERR_MSG "Error : Writing failed"
-#define	SYNTAX_ERROR_MSG "bash: syntax error near unexpected token"
-#define PERROR_ERR_MSG "Error : "
-#define HEREDOC_FILE ".ft_heredoc"
-#define WRITE_ERROR 1
+# define ATOI_ERROR 3000000000
+# define	SYNTAX_ERROR 2
+# define MALLOC_ERROR 1
+# define MALLOC_ERR_MSG "Error : Malloc failed\n"
+# define WRITE_ERR_MSG "Error : Writing failed"
+# define	SYNTAX_ERROR_MSG "bash: syntax error near unexpected token"
+# define PERROR_ERR_MSG "Error : "
+# define HEREDOC_FILE ".ft_heredoc"
+# define WRITE_ERROR 1
 
-#define STD_EX 1
-#define REMOVESQUOTES 2
-#define EXPAND 3
+# define STD_EX 1
+# define REMOVESQUOTES 2
+# define EXPAND 3
 
 ///------------------------Functions------------------------///
 
@@ -149,10 +148,9 @@ int					parse_all_here_docs(t_data *data);
 t_gc				**global_gc(t_gc **gc);
 int					global_fd(int fd);
 t_cmd				*global_cmd(t_cmd *cmds);
-void				innit_here_doc(t_gc **gc, t_cmd *cmd, int *status);;
+
 
 //EXPANDER
-// char 	**expand(t_env_node *env, t_gc **gc, char **arrays, char *error_value, int mode);
 char 	*expand_single_str(t_data *data, char *array, int mode);
 void	expander(t_data *data);
 
@@ -194,14 +192,18 @@ char		**rebuild_env(t_env *root, t_gc **gc);
 char		*ft_strjoin_and_add(char const *s1, char const *s2, char c);
 char		*ft_strncat(char *src, char *dst, int len);
 char		*readline_n_add_n(char *readline, t_gc **gc);
-void		before_expand_innit(t_data *data);
+
 int    		ft_strncmp_n(char *input, char *delim, size_t n);
 char		*prompt(t_gc **gc, t_env *env);
 int			verify_input(char *input);
 int			print_open_err_msg(int errnumber, char *file);
 void		close_backup_fds(int backup_fds[2]);
-//innits
+int			is_valid_env_name(char *name, t_gc *gc);
+void		handle_error(char *dir_path, t_gc *gc);
 
+//innits
+void				innit_here_doc(t_gc **gc, t_cmd *cmd, int *status);
+void				before_expand_innit(t_data *data);
 
 //errors && exit
 void    perror_exit(t_gc *gc, int exit_code, char *err_msg);
@@ -210,7 +212,7 @@ int		exit_status(int status);
 void	exit_heredoc(int status);
 void	free_heredoc(void);
 int		print_open_err_msg(int errnumber, char *file);
-void	minishell_graceful_exit(t_gc *gc);
+int		minishell_graceful_exit(t_gc *gc);
 
 
 ///------------------------Execution------------------------///
@@ -235,23 +237,23 @@ char	*try_path(char *path);
 
 
 ///------------------------Parser/Lexer------------------------///
-int		parse(char **input, t_gc **gc, t_token	**tokenpile, t_cmd	**cmd_chain);
+int		parse(char **input, t_gc **gc, t_token **tokenpile, t_cmd **cmd_chain);
 t_token	*tokenize(char **input, t_gc **gc);
 void	add_token(t_token **tokenpile, t_token *new_token);
 t_token	*dup_token(t_token *token, t_gc **gc);
 void	set_to_last_redir(t_token **tokenpile);
 int    syntax_error(t_token *token, t_gc *gc);
+
 //quote_split
 char	**quote_split(char *input, t_gc **gc);
 size_t	count_words(char *input);
 size_t	extract_len(char *input);
 char	*extract_redirection(char *input, char *res, size_t *index);
 void	extract(char *input, char *res, size_t *index);
-size_t	count_unquoted_words(char *input, size_t *i,
-	int quoted_count, int *firstchar);
-int	count_quoted_words(char *input, size_t *i,
-	int *firstchar);
+size_t	count_unquoted_words(char *input, size_t *i, int quoted_count, int *firstchar);
+int		count_quoted_words(char *input, size_t *i, int *firstchar);
 size_t	get_extract_len(char *input);
+
 //Syntax_error
 void	redir_next_not_str(t_token *token, t_gc *gc);
 bool	is_classic_redir(t_token *token);
@@ -259,13 +261,9 @@ bool	is_classic_redir_valid(t_token *token, t_gc *gc);
 bool	is_first_token_pipe(t_token *token, t_gc *gc);
 bool	is_pipe_valid(t_token *token, t_gc *gc);
 
-
-
 ///------------------------Signal handling------------------------///
 void	new_prompt(int none);
 void	cancel_cmd(int none);
 void	cancel_heredoc(int none);
-// void	cancel_cmd_coredumped(int none);
-void	cancel_backslash(int none);
 
 #endif

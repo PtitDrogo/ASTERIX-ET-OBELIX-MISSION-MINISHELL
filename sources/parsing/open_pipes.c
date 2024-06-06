@@ -6,22 +6,21 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 13:59:06 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/31 20:43:26 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 17:29:47 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 int			count_pipes(t_token *token_list);
-static void	init_pipes(int **pipes, int pipe_number, t_garbage_collect *gc);
-static int	**malloc_pipes_fds(int pipe_number, t_garbage_collect **gc);
+static void	init_pipes(int **pipes, int pipe_number, t_gc *gc);
+static int	**malloc_pipes_fds(int pipe_number, t_gc **gc);
 static void	fill_pipes_in_token(t_cmd *cmds, int **pipes_fds);
 
-int	**open_pipes(t_cmd *cmds, t_garbage_collect **gc, int number_of_pipes)
+int	**open_pipes(t_cmd *cmds, t_gc **gc, int number_of_pipes)
 {
 	int	**pipes_fds;
 
-	//Technically if the malloc fails we need to close the pipes fds;
 	pipes_fds = malloc_pipes_fds(number_of_pipes, gc);
 	init_pipes(pipes_fds, number_of_pipes, *gc);
 	fill_pipes_in_token(cmds, pipes_fds);
@@ -58,7 +57,7 @@ int	count_pipes(t_token *token_list)
 	return (pipe_count);
 }
 
-static void	init_pipes(int **pipes,int pipe_number, t_garbage_collect *gc)
+static void	init_pipes(int **pipes, int pipe_number, t_gc *gc)
 {
 	int	i;
 
@@ -72,7 +71,7 @@ static void	init_pipes(int **pipes,int pipe_number, t_garbage_collect *gc)
 	return ;
 }
 
-static int	**malloc_pipes_fds(int pipe_number, t_garbage_collect **gc)
+static int	**malloc_pipes_fds(int pipe_number, t_gc **gc)
 {
 	int	i;
 	int	**pipe_fds;

@@ -6,20 +6,20 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 17:32:57 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/31 20:03:42 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/06 14:07:51 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int		no_dupplicate_check(void	*data, t_garbage_collect *gc);
+int		no_dupplicate_check(void	*data, t_gc *gc);
 
-int	add_to_trash(t_garbage_collect **root, void *to_free)
+int	add_to_trash(t_gc **root, void *to_free)
 {
-	t_garbage_collect	*new_node;
-	t_garbage_collect	*current;
+	t_gc	*new_node;
+	t_gc	*current;
 
-	new_node = malloc(sizeof(t_garbage_collect));
+	new_node = malloc(sizeof(t_gc));
 	if (!new_node)
 		return (0);
 	new_node->next = NULL;
@@ -36,18 +36,11 @@ int	add_to_trash(t_garbage_collect **root, void *to_free)
 	return (1);
 }
 
-void	*malloc_trash(int size, t_garbage_collect **gc)
+void	*malloc_trash(int size, t_gc **gc)
 {
 	void	*to_return;
-	// static int i = 0;
-	
-	//DEBUG
-	// i++;
-	// if (i != 200)
+
 	to_return = malloc(size);
-	// else
-	// 	to_return = NULL;
-	//DEBUG
 	if (!to_return)
 	{
 		if (ft_printf2("Malloc failed\n") == -1)
@@ -67,9 +60,9 @@ void	*malloc_trash(int size, t_garbage_collect **gc)
 	return (to_return);
 }
 
-int	empty_trash(t_garbage_collect *gc)
+int	empty_trash(t_gc *gc)
 {
-	t_garbage_collect	*tmp_to_free;
+	t_gc	*tmp_to_free;
 
 	while (gc)
 	{
@@ -81,7 +74,7 @@ int	empty_trash(t_garbage_collect *gc)
 	return (1);
 }
 
-static int	no_dupplicate_check(void	*data, t_garbage_collect *gc)
+int	no_dupplicate_check(void	*data, t_gc *gc)
 {
 	while (gc)
 	{
@@ -92,7 +85,7 @@ static int	no_dupplicate_check(void	*data, t_garbage_collect *gc)
 	return (1);
 }
 
-void	*setter_gc(void *data_to_set, t_garbage_collect **gc)
+void	*setter_gc(void *data_to_set, t_gc **gc)
 {
 	if (data_to_set == NULL)
 		return (data_to_set);
@@ -102,7 +95,7 @@ void	*setter_gc(void *data_to_set, t_garbage_collect **gc)
 		{
 			free(data_to_set);
 			if (ft_printf2(MALLOC_ERR_MSG) == -1)
-				perror_exit(*gc, errno, WRITE_ERR_MSG);
+				perror_exit(*gc, EXIT_FAILURE, WRITE_ERR_MSG);
 			empty_trash_exit(*gc, MALLOC_ERROR);
 		}
 	}

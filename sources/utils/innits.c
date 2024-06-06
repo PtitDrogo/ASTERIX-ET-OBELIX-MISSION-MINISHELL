@@ -1,32 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   unset.c                                            :+:      :+:    :+:   */
+/*   innits.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/12 12:48:32 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/06 15:28:22 by tfreydie         ###   ########.fr       */
+/*   Created: 2024/06/05 15:58:57 by tfreydie          #+#    #+#             */
+/*   Updated: 2024/06/06 15:21:17 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	unset(t_env *env, char *env_to_find)
+void	before_expand_innit(t_data *data)
 {
-	t_env	*current;
+	signal(SIGINT, cancel_cmd);
+	signal(SIGQUIT, cancel_cmd);
+	data->str_status = ft_itoa(exit_status(-1));
+	setter_gc(data->str_status, &data->gc);
+	malloc_check(data->str_status, data->gc);
+}
 
-	current = env;
-	if (!env_to_find || !env)
-		return (0);
-	while (current)
-	{
-		if (ft_strcmp(current->variable_name, env_to_find) == 0)
-		{
-			pop(env, current);
-			return (0);
-		}
-		current = current->next;
-	}
+void	innit_here_doc(t_gc **gc, t_cmd *cmd, int *status)
+{
+	*status = EXIT_SUCCESS;
+	global_gc(gc);
+	global_cmd(cmd);
+}
+
+int	minishell_graceful_exit(t_gc *gc)
+{
+	rl_clear_history();
+	empty_trash(gc);
 	return (0);
 }

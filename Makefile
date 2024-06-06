@@ -18,23 +18,38 @@ SRCS =		$(SRCS_DIR)/builtins/export.c \
 			$(SRCS_DIR)/utils/utils.c \
 			$(SRCS_DIR)/utils/utils2.c \
 			$(SRCS_DIR)/builtins/env.c \
+			$(SRCS_DIR)/builtins/builtin_parse.c \
 			$(SRCS_DIR)/builtins/exit.c \
+			$(SRCS_DIR)/builtins/export_print.c \
 			$(SRCS_DIR)/readline.c \
       		$(SRCS_DIR)/parsing/parser.c \
 			$(SRCS_DIR)/parsing/lexer.c \
 			$(SRCS_DIR)/builtins/export_utils.c \
 			$(SRCS_DIR)/errors.c \
 			$(SRCS_DIR)/parsing/quote_split.c \
+			$(SRCS_DIR)/parsing/quote_split_utils.c \
 			$(SRCS_DIR)/builtins/echo.c \
 			$(SRCS_DIR)/builtins/cd.c \
+			$(SRCS_DIR)/builtins/cd_errors.c \
 			$(SRCS_DIR)/builtins/pwd.c \
+			$(SRCS_DIR)/utils/innits.c \
 			$(SRCS_DIR)/here_doc.c \
+			$(SRCS_DIR)/utils/recycle_trash.c \
+			$(SRCS_DIR)/utils/globals.c \
 			$(SRCS_DIR)/parsing/open_pipes.c \
+			$(SRCS_DIR)/utils/utils3.c \
+			$(SRCS_DIR)/prompt/prompt.c \
+			$(SRCS_DIR)/prompt/input_check.c \
+			$(SRCS_DIR)/exec/exec_utils2.c \
 			$(SRCS_DIR)/exec/exec_utils.c \
+			$(SRCS_DIR)/exec/exec.c \
 			$(SRCS_DIR)/exec/process_behavior.c \
 			$(SRCS_DIR)/parsing/syntax_error.c \
+			$(SRCS_DIR)/parsing/syntax_error_utils.c \
 			$(SRCS_DIR)/signal.c	\
-			$(SRCS_DIR)/expander/expander.c 
+			$(SRCS_DIR)/expander/expander.c \
+			$(SRCS_DIR)/expander/expander_utils.c \
+			$(SRCS_DIR)/expander/expander_utils2.c 
 #------------------------------------------------------------------------#
 
 #---------------------------------Compilation & Linking---------------------------------#

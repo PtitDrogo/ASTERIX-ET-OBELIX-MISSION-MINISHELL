@@ -6,60 +6,73 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/31 20:43:02 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/06 12:19:47 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-//TODO, somehow get the initial call to heredoc to the history
-static char		*readline_n_add_n(char *readline, t_garbage_collect **gc);
-static int		ft_strncmp_n(char *input, char *delimiter, size_t n);
-static void		here_doc_process(char *delimiter, t_garbage_collect **gc, int fd, bool do_expand, t_env_node *env, char *error_value);
-char 			*expand_here_doc_str(t_env_node *env, t_garbage_collect **gc, char *array, char *error_value);
-char 			*expand_here_doc_str(t_env_node *env, t_garbage_collect **gc, char *array, char *error_value);
+int				ft_strncmp_n(char *input, char *delim, size_t n);
+static void		hd_process(t_data *data, char *delim, int fd, bool do_expand);
+bool			update_expand_bool(t_data *data, t_token *current);
+int				execute_heredoc(t_data *data, t_token *current, bool do_expand);
 
-//I want this function to exit with only one open pipe end per USED heredoc;
-int parse_all_here_docs(t_cmd *cmds, t_garbage_collect **gc, t_env_node *env, char *error_value)
+int	parse_all_here_docs(t_data *data)
 {
-	t_token *current;
+	t_token	*current;
+	t_cmd	*current_cmd;
 	int		status;
-	bool do_expand;
-	
-	do_expand = true;
-	status = EXIT_SUCCESS;
-	global_gc(gc);
-	global_cmd(cmds);
-	while (cmds)
+	bool	do_expand;
+
+	innit_here_doc(&data->gc, data->cmds, &status);
+	current_cmd = data->cmds;
+	while (current_cmd)
 	{
-		current = cmds->redirection_in;
+		current = current_cmd->redirection_in;
 		while (current)
 		{
 			if (current->type == D_LESS)
 			{
-				int pipe_heredoc[2];
-				pipe(pipe_heredoc);
-				int before_expand_len = ft_strlen(current->next->str);
-				current->next->str = remove_quotes(gc, current->next->str);
-				if (before_expand_len != ft_strlen(current->next->str))
-					do_expand = false;
-				current->token_fd = pipe_heredoc[0];
-				status = here_doc(current->next->str, gc, pipe_heredoc[1], do_expand, env, error_value);
-				close(pipe_heredoc[1]);
+				do_expand = update_expand_bool(data, current);
+				status = execute_heredoc(data, current, do_expand);
 				if (status != EXIT_SUCCESS)
 					return (status);
 				current = current->next;
 			}
 			current = current->next;
 		}
-		cmds = cmds->next;
+		current_cmd = current_cmd->next;
 	}
 	return (status);
 }
 
-int	here_doc(char *delimiter, t_garbage_collect **gc, int fd, bool do_expand, t_env_node *env, char *error_value)
+int	execute_heredoc(t_data *data, t_token *current, bool do_expand)
 {
+	int	pipe_heredoc[2];
 	int	status;
+
+	pipe(pipe_heredoc);
+	current->token_fd = pipe_heredoc[0];
+	status = here_doc(data, current->next->str, pipe_heredoc[1], do_expand);
+	close(pipe_heredoc[1]);
+	return (status);
+}
+
+bool	update_expand_bool(t_data *data, t_token *current)
+{
+	int	before_expand_len;
+
+	before_expand_len = ft_len(current->next->str);
+	current->next->str = expand_single_str(data,
+			current->next->str, REMOVESQUOTES);
+	if (before_expand_len != ft_len(current->next->str))
+		return (false);
+	return (true);
+}
+
+int	here_doc(t_data *data, char *delim, int fd, bool do_expand)
+{
+	int		status;
 	int		pid;
 
 	global_fd(fd);
@@ -69,7 +82,8 @@ int	here_doc(char *delimiter, t_garbage_collect **gc, int fd, bool do_expand, t_
 	else if (pid == 0)
 	{
 		signal(SIGINT, cancel_heredoc);
-		here_doc_process(delimiter, gc, fd, do_expand, env, error_value);
+		signal(SIGQUIT, SIG_IGN);
+		hd_process(data, delim, fd, do_expand);
 		exit_heredoc(EXIT_SUCCESS);
 	}
 	waitpid(pid, &status, 0);
@@ -82,91 +96,31 @@ int	here_doc(char *delimiter, t_garbage_collect **gc, int fd, bool do_expand, t_
 	return (status);
 }
 
-t_garbage_collect	**global_gc(t_garbage_collect **gc)
-{
-	static t_garbage_collect	**sgc;
-
-	if (gc)
-		sgc = gc;
-	return (sgc);
-}
-
-t_cmd	*global_cmd(t_cmd *cmds)
-{
-	static t_cmd	*ccmds;
-
-	if (cmds)
-		ccmds = cmds;
-	return (ccmds);
-}
-
-int	global_fd(int fd)
-{
-	static int	ffd;
-
-	if (fd != -1)
-		ffd = fd;
-	return (ffd);
-}
-
-//here_doc that will write into the fd we give it, it doesnt update history because life is hard.
-static void	here_doc_process(char *delimiter, t_garbage_collect **gc, int fd, bool do_expand, t_env_node *env, char *error_value)
+static void	hd_process(t_data *data, char *delim, int fd, bool do_expand)
 {
 	char	*input;
 
-    while (1)
+	while (1)
 	{
-		input = readline_n_add_n(readline("heredoc> "), gc);
+		input = readline_n_add_n(readline("heredoc> "), &data->gc);
 		if (input == NULL)
-		{	
-			if (ft_printf2("bash: warning: here-document delimited by end-of-file (wanted `%s')\n", delimiter) == -1)
+		{
+			if (ft_printf2("bash: warning: here-document delimited \
+				by end-of-file (wanted `%s')\n", delim) == -1)
 			{
 				free_heredoc();
-				perror_exit(*gc, errno, WRITE_ERR_MSG);
+				perror_exit(data->gc, errno, WRITE_ERR_MSG);
 			}
 			return ;
 		}
-		if (ft_strncmp_n(input, delimiter, ft_strlen(input)) == 0)
+		if (ft_strncmp_n(input, delim, ft_len(input)) == 0)
 			break ;
-		//IF delimiter isnt in quote we expand EVERYTHING
-		// input = expand_here_doc_str(input); //WILL NEED TO FEED A STRUCT WITH ALL the Variables needed;
 		if (do_expand == true)
-			input = expand_here_doc_str(env, gc, input, error_value);
-		
-		if (write(fd, input, ft_strlen(input)) == -1)
+			input = expand_single_str(data, input, EXPAND);
+		if (write(fd, input, ft_len(input)) == -1)
 		{
 			free_heredoc();
-            perror_exit(*gc, errno, WRITE_ERR_MSG);
+			perror_exit(data->gc, errno, WRITE_ERR_MSG);
 		}
 	}
-	printf("Returning 1 in heredoc\n");
 }
-
-char	*readline_n_add_n(char *readline, t_garbage_collect **gc)
-{
-	if (readline == NULL)
-		return (NULL);
-	setter_gc(readline, gc);
-	readline = ft_strjoin(readline, "\n");
-	malloc_check(readline, *gc);
-	setter_gc(readline, gc);
-	return (readline);
-}
-
-static int    ft_strncmp_n(char *input, char *delimiter, size_t n)
-{
-    size_t    i;
-
-    i = 0;
-    while (input[i] == delimiter[i] && input[i] && i < n)
-    {
-        i++;
-    }
-    if (input[i] == '\n' && delimiter[i] == '\0')
-        return (0);
-	// printf("cmp is about to return %i\n",(unsigned char)input[i] - (unsigned char)delimiter[i] );
-    return ((unsigned char)input[i] - (unsigned char)delimiter[i]);
-}
-
-
-

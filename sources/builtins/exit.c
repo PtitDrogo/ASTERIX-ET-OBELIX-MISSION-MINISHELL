@@ -6,61 +6,48 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 14:57:56 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 05:29:02 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/06 16:34:42 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-//TODO, replace errors with write to stderr;
-
 static bool	too_many_arguments(char **str);
-static bool	is_letter_in_first_arg(char *str);
+static bool	char_check(char *str);
 static int	get_exit_return_value(char *arg);
-void	close_backup_fds(int backup_fds[2]);
+static int	handle_too_many_args(t_gc **gc, int backup_fds[2]);
 
-int ft_exit(char **args, t_garbage_collect *gc, int backup_fds[2])
+//Make up your mind with error messages;
+int	ft_exit(char **args, t_gc *gc, int backup_fds[2])
 {
-    int exit_value;
-    int i;
-
-	
-    if (args == NULL || *args == NULL || *args[0] == '\0')
-    {
-		close_backup_fds(backup_fds);
-		if (printf("exit\n") == -1)
-			perror_exit(gc, errno, WRITE_ERR_MSG);
-		empty_trash_exit(gc, 0); // normal execution
-	}
-	if (is_letter_in_first_arg(*args) == true || ft_safe_atoi(*args) == ATOI_ERROR) //hilarious use of my safe atoi can perfectly replicate bash
+	if (args == NULL || *args == NULL || *args[0] == '\0')
 	{
 		close_backup_fds(backup_fds);
-		if (printf("exit\n") == -1)
+		if (ft_printf("exit\n") == -1)
 			perror_exit(gc, errno, WRITE_ERR_MSG);
-		if (ft_printf2("bash: exit: %s: numeric argument required\n", args[0]) == -1)
+		empty_trash_exit(gc, 0);
+	}
+	if (char_check(*args) == true || ft_safe_atoi(*args) == ATOI_ERROR)
+	{
+		close_backup_fds(backup_fds);
+		if (ft_printf("exit\n") == -1)
+			perror_exit(gc, errno, WRITE_ERR_MSG);
+		if (ft_printf2("bash: exit: %s: numeric \
+				argument required\n", args[0]) == -1)
 			perror_exit(gc, errno, WRITE_ERR_MSG);
 		empty_trash_exit(gc, 2);
 	}
-    if (too_many_arguments(args) == true)
-	{
-		if (printf("exit\n") == -1)
-			perror_exit(gc, errno, WRITE_ERR_MSG);
-		if (ft_printf2("bash: exit: too many arguments\n") == -1)
-		{	
-			close_backup_fds(backup_fds);
-			perror_exit(gc, errno, WRITE_ERR_MSG);
-		}
-		return (1); // this does NOT exit
-	}
+	if (too_many_arguments(args) == true)
+		return (handle_too_many_args(&gc, backup_fds));
 	close_backup_fds(backup_fds);
 	empty_trash_exit(gc, get_exit_return_value(*args));
-	return(0); // we should never get there
+	return (0);
 }
-//error message should be written in 2 so the ft_printf2 will have to go;
 
-static int		get_exit_return_value(char *arg)
+static int	get_exit_return_value(char *arg)
 {
-	int result;
+	int	result;
+
 	result = ft_atoi(arg);
 	if (result < 0)
 	{
@@ -69,13 +56,12 @@ static int		get_exit_return_value(char *arg)
 	}
 	else
 		result = result % 256;
-	// ft_printf2("exit with code %i\n", result);
 	return (result);
-	
 }
-static bool	is_letter_in_first_arg(char *str)
+
+static bool	char_check(char *str)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (str[i] == '-' || str[i] == '+')
@@ -96,14 +82,17 @@ static bool	too_many_arguments(char **str)
 	return (true);
 }
 
-void	close_backup_fds(int backup_fds[2])
+static int	handle_too_many_args(t_gc **gc, int backup_fds[2])
 {
-	if (backup_fds == NULL)
-		return ;
-	else
+	if (ft_printf("exit\n") == -1)
 	{
-		close (backup_fds[0]);
-		close (backup_fds[1]);
+		close_backup_fds(backup_fds);
+		perror_exit(*gc, errno, WRITE_ERR_MSG);
 	}
-	return ;
+	if (ft_printf2("bash: exit: too many arguments\n") == -1)
+	{
+		close_backup_fds(backup_fds);
+		perror_exit(*gc, errno, WRITE_ERR_MSG);
+	}
+	return (1);
 }

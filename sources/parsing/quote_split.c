@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   quote_split.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/24 18:11:38 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/31 20:26:13 by garivo           ###   ########.fr       */
+/*   Updated: 2024/06/06 12:38:57 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	count_quoted_words(char *input, size_t *i,
+int	count_quoted_words(char *input, size_t *i,
 	int *firstchar)
 {
 	size_t	quote;
@@ -37,7 +37,7 @@ static int	count_quoted_words(char *input, size_t *i,
 	return (0);
 }
 
-static size_t	count_unquoted_words(char *input, size_t *i,
+size_t	count_unquoted_words(char *input, size_t *i,
 	int quoted_count, int *firstchar)
 {
 	size_t	wc;
@@ -66,27 +66,7 @@ static size_t	count_unquoted_words(char *input, size_t *i,
 	return (wc);
 }
 
-static size_t	count_words(char *input)
-{
-	size_t	i;
-	size_t	wc;
-	int		quoted_count;
-	int		firstchar;
-
-	wc = 0;
-	firstchar = 1;
-	i = 0;
-	while (input[i])
-	{
-		quoted_count = count_quoted_words(input, &i, &firstchar);
-		if (quoted_count == -1)
-			return (0);
-		wc += count_unquoted_words(input, &i, quoted_count, &firstchar);
-	}
-	return (wc);
-}
-
-static size_t	get_extract_len(char *input)
+size_t	get_extract_len(char *input)
 {
 	char	separator;
 	size_t	i;
@@ -115,66 +95,7 @@ static size_t	get_extract_len(char *input)
 	return (len);
 }
 
-static size_t	extract_len(char *input)
-{
-	char	separator;
-	size_t	i;
-
-	i = 0;
-	if (input[i] == '<' || input[i] == '>' || input[i] == '|')
-	{
-		if (input[i + 1] == input[i])
-			return (2);
-		return (1);
-	}
-	return (get_extract_len(input));
-}
-
-static char	*extract_redirection(char *input, char *res, size_t *index)
-{
-	size_t	i;
-
-	i = 0;
-	if ((input[i] == '<' || input[i] == '>'
-			|| input[i] == '|') && ++(*index) > 0)
-	{
-		if (input[i + 1] == input[i] && ++(*index) > 0)
-			return (ft_strncat(&input[i], res, 2));
-		return (ft_strncat(&input[i], res, 1));
-	}
-	return (NULL);
-}
-
-static void	extract(char *input, char *res, size_t *index)
-{
-	size_t	i;
-	char	separator;
-	size_t	quote_start;
-
-	i = 0;
-	if (extract_redirection(input, res, index) != NULL)
-		return ;
-	while (input[i] && input[i] != ' ' && input[i] != '<'
-		&& input[i] != '>' && input[i] != '|')
-	{
-		quote_start = i;
-		separator = 0;
-		if ((input[i] == '\'' || input[i] == '"') && ++i && ++*index)
-		{
-			separator = input[i - 1];
-			while (input[i] && input[i] != separator && ++*index)
-				i++;
-			if (i - quote_start > 1)
-				ft_strncat(&input[quote_start], res, i - quote_start + 1);
-		}
-		else
-			ft_strncat(&input[i], res, 1);
-		i++;
-		(*index)++;
-	}
-}
-
-static char	**quote_splitting(char *input, char **res, t_garbage_collect **gc)
+static char	**quote_splitting(char *input, char **res, t_gc **gc)
 {
 	size_t	i;
 	size_t	j;
@@ -202,7 +123,7 @@ static char	**quote_splitting(char *input, char **res, t_garbage_collect **gc)
 	return (res);
 }
 
-char	**quote_split(char *input, t_garbage_collect **gc)
+char	**quote_split(char *input, t_gc **gc)
 {
 	char	**res;
 

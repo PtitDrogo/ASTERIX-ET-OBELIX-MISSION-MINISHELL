@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 18:15:09 by garivo            #+#    #+#             */
-/*   Updated: 2024/05/31 18:38:42 by garivo           ###   ########.fr       */
+/*   Updated: 2024/06/05 17:29:08 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	set_to_last_redir(t_token **tokenpile)
 		*tokenpile = (*tokenpile)->next;
 }
 
-t_token	*dup_token(t_token *token, t_garbage_collect **gc)
+t_token	*dup_token(t_token *token, t_gc **gc)
 {
 	t_token	*dup;
 
@@ -52,7 +52,7 @@ void	add_token(t_token **tokenpile, t_token *new_token)
 	return ;
 }
 
-static t_token	*create_token(char *str, t_garbage_collect **gc)
+static t_token	*create_token(char *str, t_gc **gc)
 {
 	t_token	*token;
 
@@ -74,7 +74,7 @@ static t_token	*create_token(char *str, t_garbage_collect **gc)
 	return (token);
 }
 
-t_token	*tokenize(char **input, t_garbage_collect **gc)
+t_token	*tokenize(char **input, t_gc **gc)
 {
 	t_token	*tokenpile;
 	t_token	*token;

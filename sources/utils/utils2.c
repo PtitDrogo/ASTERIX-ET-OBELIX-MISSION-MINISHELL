@@ -6,15 +6,15 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 05:47:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 05:51:17 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 17:44:54 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	*get_env_variable(t_env_node *root, char *variable_name)
+char	*env_var(t_env *root, char *variable_name)
 {
-	t_env_node	*home_node;
+	t_env	*home_node;
 
 	home_node = get_env_node(root, variable_name);
 	if (home_node == NULL)
@@ -52,4 +52,25 @@ int	count_arrays_in_doubleptr(void **array)
 		i++;
 	}
 	return (i);
+}
+
+size_t	len_to_char(char *str, char c)
+{
+	int	i;
+
+	i = 0;
+	while (str[i] != c && str[i])
+		i++;
+	return (i);
+}
+
+char	*readline_n_add_n(char *readline, t_gc **gc)
+{
+	if (readline == NULL)
+		return (NULL);
+	setter_gc(readline, gc);
+	readline = ft_strjoin(readline, "\n");
+	malloc_check(readline, *gc);
+	setter_gc(readline, gc);
+	return (readline);
 }

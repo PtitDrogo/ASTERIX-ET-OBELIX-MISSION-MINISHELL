@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/09 18:27:36 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/04/25 14:10:21 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/03 06:23:45 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ static char	*line_check(char *line, char *buffer, int *line_status)
 	if (buffer[i] == '\n')
 	{
 		i++;
-		ft_memmove(buffer, &buffer[i], ft_strlen(&buffer[i]) + 1);
+		ft_memmove(buffer, &buffer[i], ft_len(&buffer[i]) + 1);
 		return (line);
 	}
 	*line_status = 0;
@@ -110,7 +110,7 @@ static char	*join_and_free(char *line, char *buffer)
 	while (buffer[i] != '\n' && buffer[i] != '\0')
 		i++;
 	effective_bufferlen = i + (buffer[i] == '\n');
-	linelen = ft_strlen(line);
+	linelen = ft_len(line);
 	new_line = malloc(sizeof(char) * (linelen + effective_bufferlen + 1));
 	if (!new_line)
 		return (free_and_null(line));

@@ -6,446 +6,137 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/30 08:22:41 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/06 12:23:47 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+static void	update_new_array_size(t_expand *expdr, t_env *env, t_gc **gc);
+static void	fill_str(t_expand *expdr, t_gc **gc, t_env *env, int i);
+static char	**expand(t_data *data, char **arrays, int mode);
 
-//I coded this assuming Ill get the full thing with the dollar sign (exemple = $MIAOU)
-//return the expanded string
-
-//Bash essaye d'expand PUIS il vire les quotes;
-//en theorie si j'enleve juste les quotes au debut et a la fin je suis gucci
-
-int		count_new_size_of_array(char *array, t_env_node *env, t_garbage_collect **gc, char *error_value);
-bool	can_expand(char *current_quotes);
-char	*create_string_to_expand(char *str, t_garbage_collect **gc);
-char 	**expand(t_env_node *env, t_garbage_collect **gc, char **arrays, char *error_value);
-int		chars_to_expand(char *str);
-int		update_current_quote(char c, char *current_quotes);
-char	**wrap_str_in_double_str(t_garbage_collect **gc, char *array);
-char 	*expand_single_str(t_env_node *env, t_garbage_collect **gc, char *array, char *error_value);
-int		count_new_size_always_expand(char *array, t_env_node *env, t_garbage_collect **gc, char *error_value);
-
-void	expander(t_env_node *env, t_garbage_collect **gc, t_cmd *cmds, char *error_value)
+void	expander(t_data *data)
 {
-	t_token *current;
-	
-	while (cmds)
+	t_token	*current;
+	t_cmd	*current_cmd;
+
+	current_cmd = data->cmds;
+	while (current_cmd)
 	{
-		cmds->str = expand(env, gc, cmds->str, error_value);
-		current = cmds->redirection_in;
+		current_cmd->str = expand(data, current_cmd->str, STD_EX);
+		current = current_cmd->redirection_in;
 		while (current)
 		{
-			current->str = expand_single_str(env, gc, current->str, error_value);
+			current->str = expand_single_str(data,
+					current->str, STD_EX);
 			current = current->next;
 		}
-		current = cmds->redirection_out;
+		current = current_cmd->redirection_out;
 		while (current)
 		{
-			current->str = expand_single_str(env, gc, current->str, error_value);
+			current->str = expand_single_str(data,
+					current->str, STD_EX);
 			current = current->next;
 		}
-		cmds = cmds->next;
+		current_cmd = current_cmd->next;
 	}
 	return ;
 }
 
-char *expand_single_str(t_env_node *env, t_garbage_collect **gc, char *array, char *error_value)
+char	*expand_single_str(t_data *data, char *array, int mode)
 {
-	int	i;
-	int size;
-	int total_size;
-	char *expanded_var;
-	char *tmp;
+	t_expand	expdr;
+	int			i;
+
 	i = 0;
-	char current_quotes = '\0';
 	if (array == NULL)
 		return (NULL);
-
-	total_size = count_new_size_of_array(array, env, gc, error_value);
-	expanded_var = malloc_trash(total_size + 1, gc);
-	expanded_var[total_size] = '\0';
-	size = 0;
-	while (array[i])
-	{
-		if (array[i] == '\'' || array[i] == '\"')
-		{	
-			if (update_current_quote(array[i], &current_quotes) == 1)
-				expanded_var[size++] = array[i++];
-			else
-				i++;
-		}
-		else if (array[i] == '$' && can_expand(&current_quotes))
-		{
-			tmp = setter_gc(create_string_to_expand(&(array[i + 1]), gc), gc);
-			if (ft_strlen(tmp) == 0)
-			{	
-				expanded_var[size++] = '$';
-				i++;
-			}
-			else
-			{
-				i += ft_strlen(tmp) + 1;
-				if (tmp && tmp[0] == '?')
-					tmp = error_value;
-				else
-					tmp = setter_gc(get_env_variable(env, tmp), gc);
-				while (tmp && *tmp && size < total_size)
-				{	
-					expanded_var[size++] = *tmp;
-					tmp++;
-				}
-			}
-		}
-		else	
-			expanded_var[size++] = array[i++];
-	}
-	return (expanded_var);
+	ft_memset(&expdr, 0, sizeof(expdr));
+	init_expander_struct(&expdr, array, data->str_status, mode);
+	update_new_array_size(&expdr, data->env, &data->gc);
+	expdr.expanded_var = malloc_trash(expdr.total_size + 1, &data->gc);
+	expdr.expanded_var[expdr.total_size] = '\0';
+	fill_str(&expdr, &data->gc, data->env, i);
+	return (expdr.expanded_var);
 }
 
-//Takes a double pointer and return its with ENV var expanded and quotes removed;
-char **expand(t_env_node *env, t_garbage_collect **gc, char **arrays, char *error_value)
+static char	**expand(t_data *data, char **arrays, int mode)
 {
-	int	i;
-	int j;
-	int size;
-	
-	char *expanded_var;
-	char *tmp;
+	int			i;
+	int			j;
+	t_expand	expdr;
+
 	i = 0;
-	char current_quotes = '\0';
 	if (arrays == NULL)
 		return (NULL);
+	ft_memset(&expdr, 0, sizeof(expdr));
+	init_expander_struct(&expdr, arrays[i], data->str_status, mode);
 	while (arrays[i])
 	{
-		int total_size = count_new_size_of_array(arrays[i], env, gc, error_value);
-		expanded_var = malloc_trash(total_size + 1, gc);
-		expanded_var[total_size] = '\0';
-		size = 0;
 		j = 0;
-		while (arrays[i][j])
-		{
-			if (arrays[i][j] == '\'' || arrays[i][j] == '\"')
-			{	
-				if (update_current_quote(arrays[i][j], &current_quotes) == 1)
-					expanded_var[size++] = arrays[i][j++];
-				else
-					j++;
-			}
-			else if (arrays[i][j] == '$' && can_expand(&current_quotes))
-			{
-				tmp = setter_gc(create_string_to_expand(&(arrays[i][j + 1]), gc), gc);
-				if (ft_strlen(tmp) == 0)
-				{	
-					expanded_var[size++] = '$';
-					j++;
-				}
-				else
-				{
-					j += ft_strlen(tmp) + 1;
-					if (tmp && tmp[0] == '?')
-						tmp = error_value;
-					else
-						tmp = setter_gc(get_env_variable(env, tmp), gc);
-					while (tmp && *tmp && size < total_size)
-					{	
-						expanded_var[size++] = *tmp;
-						tmp++;
-					}
-				}
-			}
-			else	
-				expanded_var[size++] = arrays[i][j++];
-		}
-		arrays[i] = expanded_var;
+		expdr.array = arrays[i];
+		expdr.size = 0;
+		expdr.total_size = 0;
+		update_new_array_size(&expdr, data->env, &data->gc);
+		expdr.expanded_var = malloc_trash(expdr.total_size + 1, &data->gc);
+		expdr.expanded_var[expdr.total_size] = '\0';
+		fill_str(&expdr, &data->gc, data->env, j);
+		arrays[i] = expdr.expanded_var;
 		i++;
-		}
+	}
 	return (arrays);
 }
-//Returns the size of a string after quotes removal and $ expansion;
-int	count_new_size_of_array(char *array, t_env_node *env, t_garbage_collect **gc, char *error_value)
-{
-	int	i;
-	int size;
-	char *cur_var;
-	char current_quotes;
 
-	i = 0;
-	size = 0;
-	current_quotes = '\0';
-	if (array == NULL)
-		return (0);
-	
-	while (array[i])
+static void	fill_str(t_expand *expdr, t_gc **gc, t_env *env, int i)
+{
+	char	*tmp;
+
+	while (expdr->array[i])
 	{
-		if (array[i] == '\'' || array[i] == '\"')
-		{	
-			size += update_current_quote(array[i], &current_quotes); //absolute dark magic
-			i++; 
-		}
-		else if (array[i] == '$' && can_expand(&current_quotes) == true)
+		if (check_quotes(expdr, &i))
+			;
+		else if (expdr->array[i] == '$' && (can_expand(&expdr->quote) == true
+				|| expdr->mode == EXPAND) && expdr->mode != REMOVESQUOTES)
 		{
-			cur_var = create_string_to_expand(&array[i + 1], gc);
-			if (ft_strlen(cur_var) == 0)
+			tmp = setter_gc(get_expand_str(&(expdr->array[i + 1]), gc), gc);
+			if (!tmp_check(expdr, &i, tmp))
 			{
-				size++;
-				i++;
-			}
-			else if (array[i + 1] == '?') //We know previous char is $ and we know '?' stops expanding
-			{
-				size += ft_strlen(error_value); //Might as well give the string of error value already ?
-				i += 2;
-			}
-			else
-			{
-				size += ft_strlen(get_env_variable(env, cur_var)) - 1; //Recursion baby (-1 for the $ sign)
-				i += ft_strlen(cur_var); //if $ECHO, we jump by 4 characters;
+				if (!handle_question_mark(expdr, &i, &tmp))
+					tmp = setter_gc(env_var(env, tmp), gc);
+				fill_string(expdr, tmp);
 			}
 		}
 		else
-		{	
-			size++;
-			i++;
-		}
+			expdr->expanded_var[expdr->size++] = expdr->array[i++];
 	}
-	return (size);
 }
 
-bool	can_expand(char *current_quotes)
+static void	update_new_array_size(t_expand *x, t_env *env, t_gc **gc)
 {
-	if (*current_quotes == '\'')
-		return (false);
-	else
-		return (true);
-}
-
-//update current quotes and return the amount to increase size of string by;
-int		update_current_quote(char c, char *current_quotes)
-{
-	if (c == *current_quotes)
-	{	
-		*current_quotes = '\0';
-		return (0);
-	}
-	else if (c == '\'')
-	{
-		if (*current_quotes == '\0')
-		{	
-			*current_quotes = '\'';
-			return (0);
-		}
-		return (1);
-	}
-	else if (c == '\"')
-	{
-		if (*current_quotes == '\0')
-		{	
-			*current_quotes = '\"';
-			return (0);
-		}
-		return (1);
-	}
-	return (1);
-}
-
-//FEED INTO THIS THE CHAR AFTER THE DOLLAR (Maybe we change this later)
-//This will check for every character after the dollar if the char is a valid char for env name
-//when it meets a char thats not valid, it returns the string;
-//If the very first char is not valid, it returns the string PLUS a dollar sign;
-char	*create_string_to_expand(char *str, t_garbage_collect **gc)
-{
-	int 	i;
-	int 	size;
-	char	*new_str;
-	
-	size = chars_to_expand(str);
-	new_str = malloc_trash(size + 1, gc);
-	new_str[size] = '\0';
-	i = -1;
-	while(++i < size)
-		new_str[i] = str[i];
-	//if the len of this new string is 0 it means we keep the dollar, idk where to put that logic;
-	return(new_str);
-}
-
-//Lets make a function that takes the string, starting after the dollar, and returns where
-// the end of the expansion should occur;
-int	chars_to_expand(char *str)
-{
-	int	i;
-	
-	if (str[0] == '?')
-		return (1);
-	if (ft_isalpha(str[0]) == 0 && str[0] != '_')
-		return (0);
-	i = 1;
-	while (str[i])
-	{
-		if (ft_isalnum(str[i]) == 0 && str[i] != '_')
-			return (i);
-		i++;
-	}
-	return (i);
-}
-
-
-char *remove_quotes(t_garbage_collect **gc, char *array)
-{
-	int	i;
-	int size;
-	int total_size;
-	char *expanded_var;
-	char *tmp;
-	i = 0;
-	char current_quotes = '\0';
-	if (array == NULL)
-		return (NULL);
-
-	total_size = count_size_no_quotes(array, gc);
-	expanded_var = malloc_trash(total_size + 1, gc);
-	expanded_var[total_size] = '\0';
-	size = 0;
-	while (array[i])
-	{
-		if (array[i] == '\'' || array[i] == '\"')
-		{	
-			if (update_current_quote(array[i], &current_quotes) == 1)
-				expanded_var[size++] = array[i++];
-			else
-				i++;
-		}
-		else	
-			expanded_var[size++] = array[i++];
-	}
-	return (expanded_var);
-}
-
-int	count_size_no_quotes(char *array, t_garbage_collect **gc)
-{
-	int	i;
-	int size;
-	char current_quotes;
+	int		i;
+	char	*cur_var;
 
 	i = 0;
-	size = 0;
-	current_quotes = '\0';
-	if (array == NULL)
-		return (0);
-	while (array[i])
+	if (x->array == NULL)
+		return (x->total_size = 0, (void)0);
+	while (x->array[i])
 	{
-		if (array[i] == '\'' || array[i] == '\"')
-			size += update_current_quote(array[i], &current_quotes); //absolute dark magic
-		else
-			size++;
-		i++;
-	}
-	return (size);
-}
-
-char *expand_here_doc_str(t_env_node *env, t_garbage_collect **gc, char *array, char *error_value)
-{
-	int	i;
-	int size;
-	int total_size;
-	char *expanded_var;
-	char *tmp;
-	char current_quotes;
-
-	current_quotes = '\0';
-	i = 0;
-	if (array == NULL)
-		return (NULL);
-
-	total_size = count_new_size_always_expand(array, env, gc, error_value);
-	expanded_var = malloc_trash(total_size + 1, gc);
-	expanded_var[total_size] = '\0';
-	size = 0;
-	while (size < total_size)
-	{
-		if (array[i] == '\'' || array[i] == '\"')
-		{	
-			if (update_current_quote(array[i], &current_quotes) == 1)
-				expanded_var[size++] = array[i++];
-			else
-				i++;
-		}
-		if (array[i] == '$')
+		if ((x->array[i] == '\'' || x->array[i] == '\"' ) && x->mode != EXPAND)
+			var_up(&x->total_size, &i, up_quote(x->array[i], &x->quote), 1);
+		else if (x->array[i] == '$' && (can_expand(&x->quote) == true
+				|| x->mode == EXPAND) && x->mode != REMOVESQUOTES)
 		{
-			tmp = setter_gc(create_string_to_expand(&(array[i + 1]), gc), gc);
-			if (ft_strlen(tmp) == 0)
-			{	
-				expanded_var[size++] = '$';
-				i++;
-			}
+			cur_var = get_expand_str(&x->array[i + 1], gc);
+			if (ft_len(cur_var) == 0)
+				var_up(&x->total_size, &i, 1, 1);
+			else if (x->array[i + 1] == '?')
+				var_up(&x->total_size, &i, ft_len(x->error_value), 2);
 			else
-			{
-				i += ft_strlen(tmp) + 1;
-				if (tmp && tmp[0] == '?')
-					tmp = error_value;
-				else
-					tmp = setter_gc(get_env_variable(env, tmp), gc);
-				while (tmp && *tmp && size < total_size)
-				{	
-					expanded_var[size++] = *tmp;
-					tmp++;
-				}
-			}
-		}
-		else	
-			expanded_var[size++] = array[i++];
-	}
-	return (expanded_var);
-}
-
-
-int	count_new_size_always_expand(char *array, t_env_node *env, t_garbage_collect **gc, char *error_value)
-{
-	int	i;
-	int size;
-	char *cur_var;
-	char current_quotes;
-
-	i = 0;
-	size = 0;
-	current_quotes = '\0';
-	if (array == NULL)
-		return (0);
-	
-	while (array[i])
-	{
-		if (array[i] == '\'' || array[i] == '\"')
-		{	
-			size += update_current_quote(array[i], &current_quotes); //absolute dark magic
-			i++; 
-		}
-		else if (array[i] == '$')
-		{
-			cur_var = create_string_to_expand(&array[i + 1], gc);
-			if (ft_strlen(cur_var) == 0)
-			{
-				size++;
-				i++;
-			}
-			else if (array[i + 1] == '?') //We know previous char is $ and we know '?' stops expanding
-			{
-				size += ft_strlen(error_value); //Might as well give the string of error value already ?
-				i += 2;
-			}
-			else
-			{
-				size += ft_strlen(get_env_variable(env, cur_var)) - 1; //Recursion baby (-1 for the $ sign)
-				i += ft_strlen(cur_var); //if $ECHO, we jump by 4 characters;
-			}
+				var_up(&x->total_size, &i,
+					ft_len(env_var(env, cur_var)) - 1, ft_len(cur_var));
 		}
 		else
-		{	
-			size++;
-			i++;
-		}
+			var_up(&x->total_size, &i, 1, 1);
 	}
-	return (size);
 }
-

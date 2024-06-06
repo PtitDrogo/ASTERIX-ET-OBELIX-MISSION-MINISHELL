@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   ft_len.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,12 +12,12 @@
 
 #include "libft.h"
 
-size_t	ft_strlen(const char *s)
+size_t	ft_len(const char *s)
 {
 	size_t	i;
 
 	if (s == NULL)
-		return(0); //en vrai c'est mieux comme ca;
+		return (0);
 	i = 0;
 	while (s[i])
 	{

@@ -6,21 +6,11 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 14:47:08 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/05/31 20:47:59 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/05 15:10:41 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-size_t	len_to_char(char *str, char c)
-{
-	int	i;
-
-	i = 0;
-	while (str[i] != c && str[i])
-		i++;
-	return (i);
-}
 
 int	is_char_in_str(char *str, char c)
 {
@@ -44,7 +34,7 @@ char	*ft_strncat(char *src, char *dst, int len)
 	int	size;
 
 	i = 0;
-	size = ft_strlen(dst);
+	size = ft_len(dst);
 	while (src[i] && i < len)
 	{
 		dst[size + i] = src[i];
@@ -55,7 +45,7 @@ char	*ft_strncat(char *src, char *dst, int len)
 }
 
 //count what nth node the node is
-int	count_nodes(t_env_node *root)
+int	count_nodes(t_env *root)
 {
 	int	i;
 
@@ -82,7 +72,7 @@ int	ft_strcmp(const char *s1, const char *s2)
 	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
 
-t_env_node	*get_env_node(t_env_node *root, char *variable_name)
+t_env	*get_env_node(t_env *root, char *variable_name)
 {
 	if (variable_name == NULL || root == NULL)
 		return (NULL);

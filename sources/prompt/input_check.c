@@ -1,29 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strchr.c                                        :+:      :+:    :+:   */
+/*   input_check.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/07 10:54:16 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/03 06:23:45 by tfreydie         ###   ########.fr       */
+/*   Created: 2024/06/06 12:24:53 by tfreydie          #+#    #+#             */
+/*   Updated: 2024/06/06 14:39:58 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "minishell.h"
 
-char	*ft_strchr(const char *s, int c)
+static bool	is_ascii(unsigned char c);
+
+int	verify_input(char *input)
 {
-	size_t	i;
-	size_t	len;
+	int	i;
 
 	i = 0;
-	len = ft_len(s);
-	while (i <= len)
+	if (input[0] == '\0')
+		return (0);
+	while (input[i])
 	{
-		if (s[i] == (char)c)
-			return ((char *)&s[i]);
+		if (is_ascii((unsigned char)input[i]) == false)
+			return (0);
 		i++;
 	}
-	return (NULL);
+	return (1);
+}
+
+static bool	is_ascii(unsigned char c)
+{
+	return (c <= 127);
 }

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 16:01:27 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/06 13:53:31 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/07 15:06:43 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,11 @@
 
 void	empty_trash_exit(t_gc *gc, int exit_code)
 {
+	int	i;
+
+	i = 2;
+	while (++i <= 1023)
+		close(i);
 	empty_trash(gc);
 	rl_clear_history();
 	exit(exit_code);

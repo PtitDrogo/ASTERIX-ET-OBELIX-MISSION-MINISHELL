@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/06 18:31:53 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/07 14:38:52 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,12 +104,6 @@ static int	basic_parsing(t_gc **gc, char *input, t_token **token, t_cmd **cmds)
 		return (0);
 	}
 	split_input = quote_split(input, gc);
-	for(int i = 0; split_input[i]; i++)
-	{
-		printf("%s\n", split_input[i]);
-		if (split_input[i] && split_input[i][0] == '\0')
-			printf("Empty string\n");
-	}
 	if (!split_input)
 		return (0);
 	if (parse(split_input, gc, token, cmds) == 0)

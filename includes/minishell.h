@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/06 16:39:30 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/07 13:30:06 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,12 +88,12 @@ typedef struct s_data
 
 typedef struct s_expand
 {
-	char	*array;  
-	char	*expanded_var; 
-	char	*error_value; 
+	char	*array;
+	char	*expanded_var;
+	char	*error_value;
 	char	quote;
 	int		total_size;
-	int		size; 
+	int		size;
 	int		mode;
 	t_env	*env;
 	
@@ -105,32 +105,28 @@ typedef struct s_exec
 	t_cmd	*cmd_cur;
 	t_token	*token_cur;
 	int		status;
-	int 	**pipes_fds;
-	int 	number_of_pipes;
+	int		**pipes_fds;
+	int		number_of_pipes;
 
 } t_exec;
 
 ///------------------------Defines------------------------///
 
-# define ATOI_ERROR 3000000000
+# define	ATOI_ERROR 3000000000
 # define	SYNTAX_ERROR 2
-# define MALLOC_ERROR 1
-# define MALLOC_ERR_MSG "Error : Malloc failed\n"
-# define WRITE_ERR_MSG "Error : Writing failed"
+# define	MALLOC_ERROR 1
+# define	MALLOC_ERR_MSG "Error : Malloc failed\n"
+# define	WRITE_ERR_MSG "Error : Writing failed"
 # define	SYNTAX_ERROR_MSG "bash: syntax error near unexpected token"
-# define PERROR_ERR_MSG "Error : "
-# define HEREDOC_FILE ".ft_heredoc"
-# define WRITE_ERROR 1
+# define	PERROR_ERR_MSG "Error : "
+# define	HEREDOC_FILE ".ft_heredoc"
+# define	WRITE_ERROR 1
 
-# define STD_EX 1
-# define REMOVESQUOTES 2
-# define EXPAND 3
+# define	STD_EX 1
+# define	REMOVESQUOTES 2
+# define	EXPAND 3
 
 ///------------------------Functions------------------------///
-
-//--------------------------------debug
-void check_fd(int fd);
-
 
 //garbage collector
 int		add_to_trash(t_gc **root, void *to_free);

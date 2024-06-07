@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/07 14:38:52 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/07 18:46:11 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,9 @@ int	main(int argc, char const *argv[], char **envp)
 {
 	t_data	data;
 
-	(void)argc;
-	(void)argv;
 	ft_memset(&data, 0, sizeof(data));
 	generate_env_llist(&(data.env), &data.gc, envp);
+	get_init_pwd(&data.gc, &data.env, argc, argv);
 	data.status = exit_status(0);
 	while (1)
 	{
@@ -67,7 +66,10 @@ static void	open_pipe_n_exec(t_data *data)
 	if (number_of_pipes == 0 && is_builtin(data->cmds->str))
 		handle_solo_builtin(data);
 	else
+	{
+		data->is_last_cmd = true;
 		exit_status(exec(data, data->pipes, number_of_pipes));
+	}
 }
 
 static void	handle_solo_builtin(t_data *data)

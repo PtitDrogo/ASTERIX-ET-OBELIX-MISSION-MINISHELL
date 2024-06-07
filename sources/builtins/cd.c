@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:54:37 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/07 13:42:49 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/07 17:21:34 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,6 @@ char	*join_path_to_home(char *dir_path, char *home, t_gc **gc)
 	return (to_return);
 }
 
-//fix this later;
 int	update_pwd(t_gc **gc, t_env *env, char *dir_path)
 {
 	t_env	*pwd_old;

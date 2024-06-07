@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 15:06:58 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/07 18:36:21 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,10 @@ int	exec(t_data *data, int **pipes_fds, int number_of_pipes)
 	init_exec(&exec, data, pipes_fds, number_of_pipes);
 	while (exec.cmd_cur)
 	{
+		if (exec.cmd_cur->next == NULL)
+			data->is_last_cmd = true;
+		else
+			data->is_last_cmd = false;
 		child_process(data, &exec);
 		exec.token_cur = get_next_first_token(exec.token_cur);
 		exec.cmd_cur = exec.cmd_cur->next;
@@ -45,17 +49,17 @@ static void	handle_unvalid_path(t_data *data, t_exec *exec)
 {
 	if (errno == EISDIR)
 	{
-		ft_printf2("%s: Is a directory\n", exec->cmd_cur->str[0]);
+		ft_printf2("bash: %s: Is a directory\n", exec->cmd_cur->str[0]);
 		empty_trash_exit(data->gc, 126);
 	}
 	else if (errno == EACCES)
 	{
-		ft_printf2("%s: Permission denied\n", exec->cmd_cur->str[0]);
+		ft_printf2("bash: %s: Permission denied\n", exec->cmd_cur->str[0]);
 		empty_trash_exit(data->gc, 126);
 	}
 	else
 	{
-		ft_printf2("%s: command not found\n", exec->cmd_cur->str[0]);
+		ft_printf2("bash: %s: command not found\n", exec->cmd_cur->str[0]);
 		empty_trash_exit(data->gc, 127);
 	}
 }
@@ -78,6 +82,7 @@ static void	child_process(t_data *data, t_exec *exec)
 		if (get_correct_cmd(exec->cmd_cur) == 0)
 			empty_trash_exit(data->gc, 0);
 		valid_path = find_valid_path(exec->cmd_cur, exec->envp, &data->gc);
+		handle_directory_case(valid_path, data->gc);
 		if (valid_path == NULL && exec->cmd_cur && exec->cmd_cur->str
 			&& is_builtin(exec->cmd_cur->str) == false)
 			handle_unvalid_path(data, exec);

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/06 12:19:47 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/10 14:06:16 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ int	here_doc(t_data *data, char *delim, int fd, bool do_expand)
 	int		status;
 	int		pid;
 
-	global_fd(fd);
+	set_n_get_fd(fd);
 	pid = fork();
 	if (pid == -1)
 		exit_heredoc(EXIT_FAILURE);

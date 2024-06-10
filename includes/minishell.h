@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/07 20:00:57 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/06/10 14:06:16 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,9 +141,9 @@ int		no_dupplicate_check(void	*data, t_gc *gc);
 //Here_doc
 int					here_doc(t_data *data, char *delimiter, int fd, bool do_expand);
 int					parse_all_here_docs(t_data *data);
-t_gc				**global_gc(t_gc **gc);
-int					global_fd(int fd);
-t_cmd				*global_cmd(t_cmd *cmds);
+t_gc				**set_n_get_gc(t_gc **gc);
+int					set_n_get_fd(int fd);
+t_cmd				*set_n_get_cmd(t_cmd *cmds);
 
 
 //EXPANDER

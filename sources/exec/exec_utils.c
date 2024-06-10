@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 14:07:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/07 20:02:58 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/06/10 14:02:30 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,6 @@ int	handle_status(int *status)
 	if (*status == 130)
 	{
 		if (ft_printf("\n") == -1)
-			return (2);
-	}
-	else if (*status == 131)
-	{
-		if (ft_printf("Core Dumped\n") == -1)
 			return (2);
 	}
 	return (1);

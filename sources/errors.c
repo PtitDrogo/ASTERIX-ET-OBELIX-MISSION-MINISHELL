@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 16:01:27 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/07 15:06:43 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/10 14:06:16 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,9 @@ void	exit_heredoc(int status)
 {
 	t_gc	**gc;
 
-	gc = global_gc(NULL);
-	close_all_heredoc_pipes(global_cmd(NULL), *gc);
-	close(global_fd(-1));
+	gc = set_n_get_gc(NULL);
+	close_all_heredoc_pipes(set_n_get_cmd(NULL), *gc);
+	close(set_n_get_fd(-1));
 	empty_trash_exit(*gc, status);
 }
 
@@ -56,7 +56,7 @@ void	free_heredoc(void)
 {
 	t_gc	**gc;
 
-	gc = global_gc(NULL);
-	close_all_heredoc_pipes(global_cmd(NULL), *gc);
-	close(global_fd(-1));
+	gc = set_n_get_gc(NULL);
+	close_all_heredoc_pipes(set_n_get_cmd(NULL), *gc);
+	close(set_n_get_fd(-1));
 }

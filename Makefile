@@ -35,7 +35,7 @@ SRCS =		$(SRCS_DIR)/builtins/export.c \
 			$(SRCS_DIR)/utils/innits.c \
 			$(SRCS_DIR)/here_doc.c \
 			$(SRCS_DIR)/utils/recycle_trash.c \
-			$(SRCS_DIR)/utils/globals.c \
+			$(SRCS_DIR)/utils/set_n_get.c \
 			$(SRCS_DIR)/parsing/open_pipes.c \
 			$(SRCS_DIR)/utils/utils3.c \
 			$(SRCS_DIR)/prompt/prompt.c \

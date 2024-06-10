@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/10 14:12:02 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/10 16:02:02 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,19 +87,21 @@ static void	handle_solo_builtin(t_data *data)
 
 	backup_fds[0] = dup(0);
 	backup_fds[1] = dup(1);
+	if (backup_fds[0] == -1 || backup_fds[1] == -1)
+		empty_trash_exit(data->gc, 1);
 	process_status = process_behavior(data->cmds, &data->gc, data->token);
 	close_all_heredoc_pipes(data->cmds, data->gc);
 	if (process_status == 0)
 		exit_status(builtin_parse(&data->env, &data->gc,
 				data->cmds->str, backup_fds));
-	dup2(backup_fds[0], STDIN_FILENO);
-	dup2(backup_fds[1], STDOUT_FILENO);
-	close(backup_fds[0]);
-	close(backup_fds[1]);
+	if (dup2(backup_fds[0], STDIN_FILENO) == -1 || dup2(backup_fds[1], STDOUT_FILENO) == -1)
+		empty_trash_exit(data->gc, 1);
+	if (close(backup_fds[0]) == -1 || close(backup_fds[1]) == -1)
+		empty_trash_exit(data->gc, 1);
 	if (process_status == 1)
 		exit_status(1);
 	else if (process_status == 2)
-		empty_trash_exit(data->gc, errno);
+		empty_trash_exit(data->gc, 1);
 }
 
 static int	basic_parsing(t_gc **gc, char *input, t_token **token, t_cmd **cmds)

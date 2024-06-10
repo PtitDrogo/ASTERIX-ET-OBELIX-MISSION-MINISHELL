@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/10 16:02:02 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/10 17:48:00 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static void	execute_valid_input(t_data *data);
 static void	open_pipe_n_exec(t_data *data);
 static void	handle_solo_builtin(t_data *data);
-static int	basic_parsing(t_gc **gc, char *input,
+static int	basic_parsing(t_data *data, char *input,
 				t_token **token, t_cmd **cmds);
 
 int	main(int argc, char const *argv[], char **envp)
@@ -45,7 +45,7 @@ int	main(int argc, char const *argv[], char **envp)
 			empty_trash_exit(data.gc, MALLOC_ERROR);
 		if (!data.input)
 			break ;
-		if (verify_input(data.input) && basic_parsing(&data.gc,
+		if (verify_input(data.input) && basic_parsing(&data,
 				data.input, &data.token, &data.cmds) && data.token)
 			execute_valid_input(&data);
 		if (verify_input(data.input))
@@ -104,7 +104,7 @@ static void	handle_solo_builtin(t_data *data)
 		empty_trash_exit(data->gc, 1);
 }
 
-static int	basic_parsing(t_gc **gc, char *input, t_token **token, t_cmd **cmds)
+static int	basic_parsing(t_data *data, char *input, t_token **token, t_cmd **cmds)
 {
 	char	**split_input;
 
@@ -115,10 +115,13 @@ static int	basic_parsing(t_gc **gc, char *input, t_token **token, t_cmd **cmds)
 		*token = NULL;
 		return (0);
 	}
-	split_input = quote_split(input, gc);
+	data->str_status = setter_gc(ft_itoa(data->status), &data->gc);
+	malloc_check(data->str_status, data->gc);
+	input = expand_single_str(data, input, STD_EX);
+	split_input = quote_split(input, &data->gc);
 	if (!split_input)
 		return (0);
-	if (parse(split_input, gc, token, cmds) == 0)
+	if (parse(split_input, &data->gc, token, cmds) == 0)
 		return (0);
 	return (1);
 }

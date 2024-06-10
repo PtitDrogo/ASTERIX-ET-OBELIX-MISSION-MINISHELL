@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 03:14:56 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 15:10:04 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/10 19:10:05 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,11 @@ int	chars_to_expand(char *str)
 
 	if (str[0] == '?')
 		return (1);
+	// if (str[0] == '\'' || str[0] == '\"')
+	// {	
+	// 	printf("YO la team \n");
+	// 	return (0);
+	// }
 	if (ft_isalpha(str[0]) == 0 && str[0] != '_')
 		return (0);
 	i = 1;
@@ -76,9 +81,15 @@ char	*get_expand_str(char *str, t_gc **gc)
 bool	can_expand(char *quote)
 {
 	if (*quote == '\'')
+	{	
+		// printf("returning false\n");
 		return (false);
+	}
 	else
+	{	
+		// printf("returning true \n");
 		return (true);
+	}
 }
 
 void	var_up(int *var_1, int *var_2, int add_to_1, int add_to_2)

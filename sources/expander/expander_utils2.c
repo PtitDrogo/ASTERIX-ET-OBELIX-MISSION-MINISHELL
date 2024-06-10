@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 06:02:54 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/03 06:59:01 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/10 17:52:30 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int	check_quotes(t_expand *ex, int *i)
 {
 	if (ex->array[*i] == '\'' || ex->array[*i] == '\"')
 	{
-		if (up_quote(ex->array[*i], &ex->quote) == 1 || ex->mode == EXPAND)
+		if (up_quote(ex->array[*i], &ex->quote) == 1 || ex->mode == EXPAND || ex->mode == STD_EX)
 			ex->expanded_var[ex->size++] = ex->array[(*i)++];
 		else
 			(*i)++;

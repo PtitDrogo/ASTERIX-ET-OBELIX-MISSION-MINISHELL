@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/06 12:23:47 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/10 19:09:21 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,19 +24,22 @@ void	expander(t_data *data)
 	current_cmd = data->cmds;
 	while (current_cmd)
 	{
-		current_cmd->str = expand(data, current_cmd->str, STD_EX);
+		// printf("%s\n", current_cmd->str[0]);
+		current_cmd->str = expand(data, current_cmd->str, REMOVESQUOTES);
 		current = current_cmd->redirection_in;
 		while (current)
 		{
+			// printf("%s\n", current->str);
 			current->str = expand_single_str(data,
-					current->str, STD_EX);
+					current->str, REMOVESQUOTES);
 			current = current->next;
 		}
 		current = current_cmd->redirection_out;
 		while (current)
 		{
+			// printf("%s\n", current->str);
 			current->str = expand_single_str(data,
-					current->str, STD_EX);
+					current->str, REMOVESQUOTES);
 			current = current->next;
 		}
 		current_cmd = current_cmd->next;
@@ -97,9 +100,11 @@ static void	fill_str(t_expand *expdr, t_gc **gc, t_env *env, int i)
 		if (check_quotes(expdr, &i))
 			;
 		else if (expdr->array[i] == '$' && (can_expand(&expdr->quote) == true
-				|| expdr->mode == EXPAND) && expdr->mode != REMOVESQUOTES)
+				|| expdr->mode == EXPAND) && expdr->mode != REMOVESQUOTES )
 		{
 			tmp = setter_gc(get_expand_str(&(expdr->array[i + 1]), gc), gc);
+			// if ((expdr->array[i + 1] != '\'' || expdr->array[i + 1] != '\"') && expdr->quote == '\0')
+			// 	i++;
 			if (!tmp_check(expdr, &i, tmp))
 			{
 				if (!handle_question_mark(expdr, &i, &tmp))
@@ -119,15 +124,17 @@ static void	update_new_array_size(t_expand *x, t_env *env, t_gc **gc)
 
 	i = 0;
 	if (x->array == NULL)
-		return (x->total_size = 0, (void)0);
+		return (x->total_size = 0, (void)0);	
 	while (x->array[i])
 	{
-		if ((x->array[i] == '\'' || x->array[i] == '\"' ) && x->mode != EXPAND)
+		if ((x->array[i] == '\'' || x->array[i] == '\"' ) && x->mode != EXPAND && x->mode != STD_EX)
 			var_up(&x->total_size, &i, up_quote(x->array[i], &x->quote), 1);
 		else if (x->array[i] == '$' && (can_expand(&x->quote) == true
-				|| x->mode == EXPAND) && x->mode != REMOVESQUOTES)
+				|| x->mode == EXPAND) && x->mode != REMOVESQUOTES) 
 		{
 			cur_var = get_expand_str(&x->array[i + 1], gc);
+			// if ((x->array[i + 1] != '\'' || x->array[i + 1] != '\"') && x->quote == '\0')
+			// 	i++;
 			if (ft_len(cur_var) == 0)
 				var_up(&x->total_size, &i, 1, 1);
 			else if (x->array[i + 1] == '?')

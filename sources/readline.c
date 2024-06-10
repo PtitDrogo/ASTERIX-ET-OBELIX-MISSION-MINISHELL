@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/08 11:54:11 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/06/10 23:22:00 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static void	execute_valid_input(t_data *data);
 static void	open_pipe_n_exec(t_data *data);
 static void	handle_solo_builtin(t_data *data);
-static int	basic_parsing(t_gc **gc, char *input,
+static int	big_parser(t_data *data, char *input,
 				t_token **token, t_cmd **cmds);
 
 int	main(int argc, char const *argv[], char **envp)
@@ -28,24 +28,16 @@ int	main(int argc, char const *argv[], char **envp)
 	data.status = exit_status(0);
 	while (1)
 	{
-		data.input = NULL; //optionnal ?
+		data.input = NULL;
 		data.status = exit_status(-1);
 		signal(SIGINT, new_prompt);
 		signal(SIGQUIT, SIG_IGN);
-		//SEE WITH FRIENDS HOW TO HANDLE THIS
-		if (isatty(STDIN_FILENO)) //isatty(STDIN_FILENO) ?
-			data.input = readline(prompt(&data.gc, data.env));
-		else
-		{	
-			data.input = get_next_line(0); // un des deux ?
-			// data.input = readline(NULL);
-		}	
-		//SEE WITH FRIEND HOW TO HANDLE THIS
+		data.input = readline(prompt(&data.gc, data.env));
 		if (add_to_trash(&data.gc, data.input) == 0)
 			empty_trash_exit(data.gc, MALLOC_ERROR);
 		if (!data.input)
 			break ;
-		if (verify_input(data.input) && basic_parsing(&data.gc,
+		if (verify_input(data.input) && big_parser(&data,
 				data.input, &data.token, &data.cmds) && data.token)
 			execute_valid_input(&data);
 		if (verify_input(data.input))
@@ -87,22 +79,24 @@ static void	handle_solo_builtin(t_data *data)
 
 	backup_fds[0] = dup(0);
 	backup_fds[1] = dup(1);
+	if (backup_fds[0] == -1 || backup_fds[1] == -1)
+		empty_trash_exit(data->gc, 1);
 	process_status = process_behavior(data->cmds, &data->gc, data->token);
 	close_all_heredoc_pipes(data->cmds, data->gc);
 	if (process_status == 0)
 		exit_status(builtin_parse(&data->env, &data->gc,
 				data->cmds->str, backup_fds));
-	dup2(backup_fds[0], STDIN_FILENO);
-	dup2(backup_fds[1], STDOUT_FILENO);
-	close(backup_fds[0]);
-	close(backup_fds[1]);
+	if (dup2(backup_fds[0], 0) == -1 || dup2(backup_fds[1], 1) == -1)
+		empty_trash_exit(data->gc, 1);
+	if (close(backup_fds[0]) == -1 || close(backup_fds[1]) == -1)
+		empty_trash_exit(data->gc, 1);
 	if (process_status == 1)
 		exit_status(1);
 	else if (process_status == 2)
-		empty_trash_exit(data->gc, errno);
+		empty_trash_exit(data->gc, 1);
 }
 
-static int	basic_parsing(t_gc **gc, char *input, t_token **token, t_cmd **cmds)
+static int	big_parser(t_data *data, char *input, t_token **token, t_cmd **cmds)
 {
 	char	**split_input;
 
@@ -113,10 +107,13 @@ static int	basic_parsing(t_gc **gc, char *input, t_token **token, t_cmd **cmds)
 		*token = NULL;
 		return (0);
 	}
-	split_input = quote_split(input, gc);
+	data->str_status = setter_gc(ft_itoa(data->status), &data->gc);
+	malloc_check(data->str_status, data->gc);
+	input = expand_single_str(data, input, STD_EX);
+	split_input = quote_split(input, &data->gc);
 	if (!split_input)
 		return (0);
-	if (parse(split_input, gc, token, cmds) == 0)
+	if (parse(split_input, &data->gc, token, cmds) == 0)
 		return (0);
 	return (1);
 }

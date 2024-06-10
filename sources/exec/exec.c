@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/07 20:01:43 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/06/10 23:19:44 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,6 @@ int	exec(t_data *data, int **pipes_fds, int number_of_pipes)
 	init_exec(&exec, data, pipes_fds, number_of_pipes);
 	while (exec.cmd_cur)
 	{
-		// if (exec.cmd_cur->next == NULL)
-		// 	data->is_last_cmd = true;
-		// else
-		// 	data->is_last_cmd = false;
 		child_process(data, &exec);
 		exec.token_cur = get_next_first_token(exec.token_cur);
 		exec.cmd_cur = exec.cmd_cur->next;
@@ -41,6 +37,11 @@ int	exec(t_data *data, int **pipes_fds, int number_of_pipes)
 		if (handle_status(&exec.status) == -1)
 			empty_trash_exit(data->gc, 1);
 		exec.cmd_cur = exec.cmd_cur->next;
+	}
+	if (exec.status == 131)
+	{
+		if (ft_printf("Core Dumped\n") == -1)
+			return (2);
 	}
 	return (exec.status);
 }

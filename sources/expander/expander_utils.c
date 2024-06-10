@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 03:14:56 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 15:10:04 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/10 23:16:03 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,9 +76,13 @@ char	*get_expand_str(char *str, t_gc **gc)
 bool	can_expand(char *quote)
 {
 	if (*quote == '\'')
+	{
 		return (false);
+	}
 	else
+	{
 		return (true);
+	}
 }
 
 void	var_up(int *var_1, int *var_2, int add_to_1, int add_to_2)

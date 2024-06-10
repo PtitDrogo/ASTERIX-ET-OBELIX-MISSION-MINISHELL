@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 14:07:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/07 20:02:58 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/06/10 23:20:01 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,30 +32,16 @@ int	handle_status(int *status)
 		if (ft_printf("\n") == -1)
 			return (2);
 	}
-	else if (*status == 131)
-	{
-		if (ft_printf("Core Dumped\n") == -1)
-			return (2);
-	}
 	return (1);
 }
 
 void	handle_command(t_data *data, t_exec *exec, char *valid_path)
 {
-	// bool	is_valid;
-
-	// is_valid = (exec && exec->cmd_cur && exec->cmd_cur->str);
 	if (is_builtin(exec->cmd_cur->str))
 	{
 		builtin_parse(&data->env, &data->gc, exec->cmd_cur->str, NULL);
 		empty_trash_exit(data->gc, 0);
 	}
-	// if (data->is_last_cmd == false && is_valid
-	// 	&& ft_strnstr(exec->cmd_cur->str[0], "/minishell",
-	// 		ft_len(exec->cmd_cur->str[0])))
-	// {
-	// 	empty_trash_exit(data->gc, 127);
-	// }
 	execve(valid_path, exec->cmd_cur->str, exec->envp);
 	ft_printf2("Error executing command\n");
 	empty_trash_exit(data->gc, 127);

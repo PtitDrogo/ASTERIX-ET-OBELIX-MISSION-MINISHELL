@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   prompt.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 12:16:38 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/07 22:38:25 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/06/10 23:16:39 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,6 @@ char	*prompt(t_gc **gc, t_env *env)
 {
 	char	*pwd;
 
-	//This fixed the ./minishell | ./minishell situation mostly but tester loses its mind with this;
-	// if (!isatty(STDIN_FILENO))
-	// 	return (NULL);
 	pwd = accurate_shell(gc, env);
 	if (pwd)
 	{

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 06:02:54 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/10 19:30:31 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/10 21:17:54 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,4 +65,5 @@ void	init_expander_struct(t_expand *ex, char *array, char *error, int mode)
 	ex->mode = mode;
 	ex->error_value = error;
 	ex->in_here_doc = false;
+	ex->end_here_doc = 0; //maybe this need to be INT MAX;
 }

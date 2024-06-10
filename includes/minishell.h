@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/10 19:30:00 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/10 22:00:30 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,7 @@ typedef struct s_expand
 	int		total_size;
 	int		size;
 	int		mode;
+	int		end_here_doc;
 	bool	in_here_doc;
 	t_env	*env;
 	
@@ -150,6 +151,9 @@ t_cmd				*set_n_get_cmd(t_cmd *cmds);
 //EXPANDER
 char 	*expand_single_str(t_data *data, char *array, int mode);
 void	expander(t_data *data);
+int		get_to_end_of_heredoc(t_expand *x, int i);
+void	handle_heredoc_case(t_expand *x, int i);
+bool    is_valid_dollar(t_expand *x, int i);
 
 //expander utils
 void	var_up(int *var_1, int *var_2, int add_to_1, int add_to_2);

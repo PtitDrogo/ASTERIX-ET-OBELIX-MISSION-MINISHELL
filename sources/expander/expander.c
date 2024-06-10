@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/10 19:57:34 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/10 22:03:04 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ static void	update_new_array_size(t_expand *expdr, t_env *env, t_gc **gc);
 static void	fill_str(t_expand *expdr, t_gc **gc, t_env *env, int i);
 static char	**expand(t_data *data, char **arrays, int mode);
 
+
 void	expander(t_data *data)
 {
 	t_token	*current;
@@ -24,12 +25,10 @@ void	expander(t_data *data)
 	current_cmd = data->cmds;
 	while (current_cmd)
 	{
-		// printf("%s\n", current_cmd->str[0]);
 		current_cmd->str = expand(data, current_cmd->str, REMOVESQUOTES);
 		current = current_cmd->redirection_in;
 		while (current)
 		{
-			// printf("%s\n", current->str);
 			current->str = expand_single_str(data,
 					current->str, REMOVESQUOTES);
 			current = current->next;
@@ -37,7 +36,6 @@ void	expander(t_data *data)
 		current = current_cmd->redirection_out;
 		while (current)
 		{
-			// printf("%s\n", current->str);
 			current->str = expand_single_str(data,
 					current->str, REMOVESQUOTES);
 			current = current->next;
@@ -97,10 +95,10 @@ static void	fill_str(t_expand *expdr, t_gc **gc, t_env *env, int i)
 
 	while (expdr->array[i])
 	{
+		handle_heredoc_case(expdr, i);
 		if (check_quotes(expdr, &i))
 			;
-		else if (expdr->array[i] == '$' && (can_expand(&expdr->quote) == true
-				|| expdr->mode == EXPAND) && expdr->mode != REMOVESQUOTES )
+		else if (is_valid_dollar(expdr, i))
 		{
 			tmp = setter_gc(get_expand_str(&(expdr->array[i + 1]), gc), gc);
 			if ((expdr->array[i + 1] == '\'' || expdr->array[i + 1] == '\"') && expdr->quote == '\0')
@@ -127,13 +125,11 @@ static void	update_new_array_size(t_expand *x, t_env *env, t_gc **gc)
 		return (x->total_size = 0, (void)0);	
 	while (x->array[i])
 	{
-		// if (x->array[i] == '<' && x->array[i + 1] == '<' && x->quote == '\0')
-		// 	x->in_here_doc == true;
-		
-		if ((x->array[i] == '\'' || x->array[i] == '\"' ) && x->mode != EXPAND && x->mode != STD_EX)
+		handle_heredoc_case(x, i);
+		if ((x->array[i] == '\'' || x->array[i] == '\"' ) && x->mode != EXPAND
+			&& x->mode != STD_EX)
 			var_up(&x->total_size, &i, up_quote(x->array[i], &x->quote), 1);
-		else if (x->array[i] == '$' && (can_expand(&x->quote) == true
-				|| x->mode == EXPAND) && x->mode != REMOVESQUOTES) 
+		else if (is_valid_dollar(x, i))
 		{
 			cur_var = get_expand_str(&x->array[i + 1], gc);
 			if ((x->array[i + 1] == '\'' || x->array[i + 1] == '\"') && x->quote == '\0')
@@ -150,21 +146,5 @@ static void	update_new_array_size(t_expand *x, t_env *env, t_gc **gc)
 			var_up(&x->total_size, &i, 1, 1);
 	}
 }
-//I trigger this here_doc right after I detect < and < one after another
-//Lets just say that i the second << so i dont waste a line;
-//I want to return the position thats at the end of the here_doc;
 
-// int	get_to_end_of_heredoc(t_expand *x, int i)
-// {
-// 	char end_goal;
 
-// 	end_goal = ' ';
-// 	while (x->array[i] == ' ')
-// 		i++; //Getting to the beginning of the delimiter;
-// 	if (x->array[i] == '\'' || x->array[i] == '\"')
-// 		end_goal = x->array[i]; //if we have a quote we want to keep going until the end of the quote
-// 							 //otherwise, we keep going until there is a space;
-	
-// 	while (x->array[i] != end_goal)
-// 		i++;
-// }

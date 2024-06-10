@@ -48,6 +48,7 @@ SRCS =		$(SRCS_DIR)/builtins/export.c \
 			$(SRCS_DIR)/parsing/syntax_error_utils.c \
 			$(SRCS_DIR)/signal.c	\
 			$(SRCS_DIR)/expander/expander.c \
+			$(SRCS_DIR)/expander/here_doc_exp.c \
 			$(SRCS_DIR)/expander/expander_utils.c \
 			$(SRCS_DIR)/expander/expander_utils2.c 
 #------------------------------------------------------------------------#

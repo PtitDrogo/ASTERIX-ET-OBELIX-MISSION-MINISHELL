@@ -56,7 +56,8 @@ SRCS =		$(SRCS_DIR)/builtins/export.c \
 CC		=	cc
 RM		=	rm -f
 
-CFLAGS	=	-g3 
+CFLAGS	=	-g3
+#-fsanitize=address
 LINKLIBS = -L libft/ -lft 
 INCLUDES = -I $(HEADER_DIR) -I libft -MMD -MP
 

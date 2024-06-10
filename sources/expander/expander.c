@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/10 19:09:21 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/10 19:57:34 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,9 +103,9 @@ static void	fill_str(t_expand *expdr, t_gc **gc, t_env *env, int i)
 				|| expdr->mode == EXPAND) && expdr->mode != REMOVESQUOTES )
 		{
 			tmp = setter_gc(get_expand_str(&(expdr->array[i + 1]), gc), gc);
-			// if ((expdr->array[i + 1] != '\'' || expdr->array[i + 1] != '\"') && expdr->quote == '\0')
-			// 	i++;
-			if (!tmp_check(expdr, &i, tmp))
+			if ((expdr->array[i + 1] == '\'' || expdr->array[i + 1] == '\"') && expdr->quote == '\0')
+				i++;
+			else if (!tmp_check(expdr, &i, tmp))
 			{
 				if (!handle_question_mark(expdr, &i, &tmp))
 					tmp = setter_gc(env_var(env, tmp), gc);
@@ -127,15 +127,18 @@ static void	update_new_array_size(t_expand *x, t_env *env, t_gc **gc)
 		return (x->total_size = 0, (void)0);	
 	while (x->array[i])
 	{
+		// if (x->array[i] == '<' && x->array[i + 1] == '<' && x->quote == '\0')
+		// 	x->in_here_doc == true;
+		
 		if ((x->array[i] == '\'' || x->array[i] == '\"' ) && x->mode != EXPAND && x->mode != STD_EX)
 			var_up(&x->total_size, &i, up_quote(x->array[i], &x->quote), 1);
 		else if (x->array[i] == '$' && (can_expand(&x->quote) == true
 				|| x->mode == EXPAND) && x->mode != REMOVESQUOTES) 
 		{
 			cur_var = get_expand_str(&x->array[i + 1], gc);
-			// if ((x->array[i + 1] != '\'' || x->array[i + 1] != '\"') && x->quote == '\0')
-			// 	i++;
-			if (ft_len(cur_var) == 0)
+			if ((x->array[i + 1] == '\'' || x->array[i + 1] == '\"') && x->quote == '\0')
+				i++;
+			else if (ft_len(cur_var) == 0)
 				var_up(&x->total_size, &i, 1, 1);
 			else if (x->array[i + 1] == '?')
 				var_up(&x->total_size, &i, ft_len(x->error_value), 2);
@@ -147,3 +150,21 @@ static void	update_new_array_size(t_expand *x, t_env *env, t_gc **gc)
 			var_up(&x->total_size, &i, 1, 1);
 	}
 }
+//I trigger this here_doc right after I detect < and < one after another
+//Lets just say that i the second << so i dont waste a line;
+//I want to return the position thats at the end of the here_doc;
+
+// int	get_to_end_of_heredoc(t_expand *x, int i)
+// {
+// 	char end_goal;
+
+// 	end_goal = ' ';
+// 	while (x->array[i] == ' ')
+// 		i++; //Getting to the beginning of the delimiter;
+// 	if (x->array[i] == '\'' || x->array[i] == '\"')
+// 		end_goal = x->array[i]; //if we have a quote we want to keep going until the end of the quote
+// 							 //otherwise, we keep going until there is a space;
+	
+// 	while (x->array[i] != end_goal)
+// 		i++;
+// }

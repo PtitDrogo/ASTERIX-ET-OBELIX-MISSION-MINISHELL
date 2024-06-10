@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/10 17:36:32 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/10 19:30:00 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,7 @@ typedef struct s_expand
 	int		total_size;
 	int		size;
 	int		mode;
+	bool	in_here_doc;
 	t_env	*env;
 	
 } t_expand;

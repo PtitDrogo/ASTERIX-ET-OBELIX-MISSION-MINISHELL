@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 14:10:35 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 15:09:46 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/07 17:16:29 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,27 +29,26 @@ t_token	*get_next_first_token(t_token *token_root)
 char	*ft_strjoin_and_add(char const *s1, char const *s2, char c)
 {
 	char	*joined;
+	int		s1_len;
+	int		s2_len;
 	size_t	i;
 	size_t	j;
 
 	if (!s1 || !s2)
 		return (NULL);
-	i = 0;
+	s1_len = ft_len(s1);
+	s2_len = ft_len(s2);
+	i = -1;
 	j = 0;
-	joined = malloc(sizeof(char) * (ft_len(s1) + ft_len(s2) + 2));
+	joined = malloc(sizeof(char) * (s1_len + s2_len + 2));
 	if (!joined)
 		return (NULL);
-	while (i < ft_len(s1))
-	{
+	while (++i < s1_len)
 		joined[i] = s1[i];
-		i++;
-	}
 	joined[i] = c;
 	i++;
-	while (j < ft_len(s2))
-	{
+	while (j < s2_len)
 		joined[i++] = s2[j++];
-	}
 	joined[i] = '\0';
 	return (joined);
 }

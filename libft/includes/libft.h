@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/09 13:11:39 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/06 14:25:44 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/06 17:47:22 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ typedef struct s_list
 	struct s_list	*next;
 }	t_list;
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 10
+#  define BUFFER_SIZE 1000
 # endif
 
 # define ATOI_ERROR 3000000000
@@ -49,12 +49,15 @@ void	ft_putunsign(unsigned int nbr, char *base, int *size);
 void	ft_print_ptr(unsigned long long ptr, int *size);
 int		ft_printf(const char *text, ...);
 //printferr
-void	ft_putnbr_err(int nbr, int *size);
-void	ft_special_char_err(char c, va_list argptr, int *size);
-void	ft_putncount_char_err(char c, int *size);
-void	ft_print_ptr_err(unsigned long long ptr, int *size);
-void	ft_putuns_err(unsigned int nbr, char *base, int *size);
-void	ft_putncount_str_err(char *str, int *size);
+void	ft_putnbr_err(int nbr, int *size, char BUFFER[BUFFER_SIZE]);
+void	ft_special_char_err(char c, va_list argptr, int *size,
+			char BUFFER[BUFFER_SIZE]);
+void	ft_putncount_char_err(char c, int *size, char BUFFER[BUFFER_SIZE]);
+void	ft_print_ptr_err(unsigned long long ptr, int *size,
+			char BUFFER[BUFFER_SIZE]);
+void	uns_2(unsigned int nbr, char *base, int *size,
+			char BUFFER[BUFFER_SIZE]);
+void	ft_putncount_str_err(char *str, int *size, char BUFFER[BUFFER_SIZE]);
 int		ft_printf2(const char *text, ...);
 
 //libft//

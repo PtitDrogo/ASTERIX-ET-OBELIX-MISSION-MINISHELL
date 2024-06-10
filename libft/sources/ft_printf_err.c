@@ -12,13 +12,12 @@
 
 #include "libft.h"
 
-static size_t	ft_strlen_printf_err(const char *s);
-
 int	ft_printf2(const char *text, ...)
 {
 	va_list	argptr;
 	size_t	i;
 	int		actual_size;
+	char	buffer[BUFFER_SIZE];
 
 	va_start(argptr, text);
 	actual_size = 0;
@@ -30,74 +29,68 @@ int	ft_printf2(const char *text, ...)
 		if (text[i] == '%')
 		{
 			i++;
-			ft_special_char_err(text[i], argptr, &actual_size);
+			ft_special_char_err(text[i], argptr, &actual_size, buffer);
 		}
 		else
-			ft_putncount_char_err(text[i], &actual_size);
+			ft_putncount_char_err(text[i], &actual_size, buffer);
 		i++;
 	}
 	va_end(argptr);
+	if (actual_size != -1)
+		return (write(2, buffer, actual_size));
 	return (actual_size);
 }
 
-void	ft_special_char_err(char c, va_list argptr, int *size)
+void	ft_special_char_err(char c, va_list argptr, int *size,
+			char buffer[BUFFER_SIZE])
 {
 	if (c == 'c')
-		ft_putncount_char_err(va_arg(argptr, int), size);
+		ft_putncount_char_err(va_arg(argptr, int), size, buffer);
 	else if (c == 's')
-		ft_putncount_str_err(va_arg(argptr, char *), size);
+		ft_putncount_str_err(va_arg(argptr, char *), size, buffer);
 	else if (c == 'p')
-		ft_print_ptr_err(va_arg(argptr, unsigned long long), size);
+		ft_print_ptr_err(va_arg(argptr, unsigned long long), size, buffer);
 	else if (c == 'd')
-		ft_putnbr_err(va_arg(argptr, int), size);
+		ft_putnbr_err(va_arg(argptr, int), size, buffer);
 	else if (c == 'i')
-		ft_putnbr_err(va_arg(argptr, int), size);
+		ft_putnbr_err(va_arg(argptr, int), size, buffer);
 	else if (c == 'u')
-		ft_putuns_err(va_arg(argptr, unsigned int), "0123456789", size);
+		uns_2(va_arg(argptr, unsigned int), "0123456789", size, buffer);
 	else if (c == 'x')
-		ft_putuns_err(va_arg(argptr, unsigned int), "0123456789abcdef", size);
+		uns_2(va_arg(argptr, unsigned int), "0123456789abcdef", size, buffer);
 	else if (c == 'X')
-		ft_putuns_err(va_arg(argptr, unsigned int), "0123456789ABCDEF", size);
+		uns_2(va_arg(argptr, unsigned int), "0123456789ABCDEF", size, buffer);
 	else if (c == '%')
-		ft_putncount_char_err('%', size);
+		ft_putncount_char_err('%', size, buffer);
 	else if (c == '\0')
 		*size = -1;
 	else
 	{
-		ft_putncount_char_err('%', size);
-		ft_putncount_char_err(c, size);
+		ft_putncount_char_err('%', size, buffer);
+		ft_putncount_char_err(c, size, buffer);
 	}
 }
 
-void	ft_putncount_char_err(char c, int *size)
+void	ft_putncount_char_err(char c, int *size, char buffer[BUFFER_SIZE])
 {
-	if (write(2, &c, 1) == -1)
-		*size = -1;
-	else
-		*size += 1;
+	buffer[*size] = c;
+	*size += 1;
 }
 
-void	ft_putncount_str_err(char *str, int *size)
-{
-	int	strlen;
-
-	strlen = ft_strlen_printf_err(str);
-	if (!str)
-		ft_putncount_str("(null)", size);
-	else if (write(2, str, strlen) == -1)
-		*size = -1;
-	else
-		*size += strlen;
-}
-
-static size_t	ft_strlen_printf_err(const char *s)
+void	ft_putncount_str_err(char *str, int *size, char buffer[BUFFER_SIZE])
 {
 	int	i;
 
 	i = 0;
-	if (!s)
-		return (0);
-	while (s[i])
+	if (str == NULL)
+	{
+		ft_putncount_str_err("(null)", size, buffer);
+		return ;
+	}
+	while (str[i])
+	{
+		ft_putncount_char_err(str[i], size, buffer);
 		i++;
-	return (i);
+	}
+	return ;
 }

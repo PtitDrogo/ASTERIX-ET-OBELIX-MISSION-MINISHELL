@@ -1,0 +1,10 @@
+Minishell:/home/ptitdrogo/miniteam$ Makefile
+Minishell:/home/ptitdrogo/miniteam$ README.md
+Minishell:/home/ptitdrogo/miniteam$ includes
+Minishell:/home/ptitdrogo/miniteam$ libft
+Minishell:/home/ptitdrogo/miniteam$ minishell
+Minishell:/home/ptitdrogo/miniteam$ minishell_tester
+Minishell:/home/ptitdrogo/miniteam$ sources
+Minishell:/home/ptitdrogo/miniteam$ suppressions.supp
+Minishell:/home/ptitdrogo/miniteam$ testpipe.txt
+Minishell:/home/ptitdrogo/miniteam$ 

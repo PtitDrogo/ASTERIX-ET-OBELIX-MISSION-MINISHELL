@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 15:02:57 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/06 16:14:11 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/07 15:09:52 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,8 @@ int	is_valid_env_name(char *name, t_gc *gc)
 
 	if (ft_isalpha(name[0]) == 0 && name[0] != '_')
 	{
-		if (ft_printf2("bash: export: `%s': \
-			not a valid identifier\n", name) == -1)
+		if (ft_printf2("bash: export: `%s': not a valid identifier\n",
+				name) == -1)
 			perror_exit(gc, errno, WRITE_ERR_MSG);
 		return (0);
 	}
@@ -56,8 +56,8 @@ int	is_valid_env_name(char *name, t_gc *gc)
 	{
 		if (ft_isalnum(name[i]) == 0 && name[i] != '_')
 		{
-			if (ft_printf2("bash: export: `%s':\
-				 not a valid identifier\n", name) == -1)
+			if (ft_printf2("bash: export: `%s': not a valid identifier\n",
+					name) == -1)
 				perror_exit(gc, errno, WRITE_ERR_MSG);
 			return (0);
 		}

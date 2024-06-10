@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 14:57:56 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/06 16:34:42 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/07 13:34:04 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ static bool	char_check(char *str);
 static int	get_exit_return_value(char *arg);
 static int	handle_too_many_args(t_gc **gc, int backup_fds[2]);
 
-//Make up your mind with error messages;
 int	ft_exit(char **args, t_gc *gc, int backup_fds[2])
 {
 	if (args == NULL || *args == NULL || *args[0] == '\0')
@@ -32,8 +31,8 @@ int	ft_exit(char **args, t_gc *gc, int backup_fds[2])
 		close_backup_fds(backup_fds);
 		if (ft_printf("exit\n") == -1)
 			perror_exit(gc, errno, WRITE_ERR_MSG);
-		if (ft_printf2("bash: exit: %s: numeric \
-				argument required\n", args[0]) == -1)
+		if (ft_printf2("bash: exit: %s: numeric argument required\n",
+				args[0]) == -1)
 			perror_exit(gc, errno, WRITE_ERR_MSG);
 		empty_trash_exit(gc, 2);
 	}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/06 15:20:19 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/08 11:54:11 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,17 +22,25 @@ int	main(int argc, char const *argv[], char **envp)
 {
 	t_data	data;
 
-	(void)argc;
-	(void)argv;
 	ft_memset(&data, 0, sizeof(data));
 	generate_env_llist(&(data.env), &data.gc, envp);
+	get_init_pwd(&data.gc, &data.env, argc, argv);
 	data.status = exit_status(0);
 	while (1)
 	{
+		data.input = NULL; //optionnal ?
 		data.status = exit_status(-1);
 		signal(SIGINT, new_prompt);
 		signal(SIGQUIT, SIG_IGN);
-		data.input = readline(prompt(&data.gc, data.env));
+		//SEE WITH FRIENDS HOW TO HANDLE THIS
+		if (isatty(STDIN_FILENO)) //isatty(STDIN_FILENO) ?
+			data.input = readline(prompt(&data.gc, data.env));
+		else
+		{	
+			data.input = get_next_line(0); // un des deux ?
+			// data.input = readline(NULL);
+		}	
+		//SEE WITH FRIEND HOW TO HANDLE THIS
 		if (add_to_trash(&data.gc, data.input) == 0)
 			empty_trash_exit(data.gc, MALLOC_ERROR);
 		if (!data.input)
@@ -67,7 +75,9 @@ static void	open_pipe_n_exec(t_data *data)
 	if (number_of_pipes == 0 && is_builtin(data->cmds->str))
 		handle_solo_builtin(data);
 	else
+	{
 		exit_status(exec(data, data->pipes, number_of_pipes));
+	}
 }
 
 static void	handle_solo_builtin(t_data *data)

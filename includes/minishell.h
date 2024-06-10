@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/06 16:39:30 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/07 20:00:57 by ptitdrogo        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 # include <sys/wait.h>
 # include <sys/types.h>
 # include <signal.h>
+# include <sys/stat.h>
 
 ///------------------------Structs------------------------///
 
@@ -82,18 +83,17 @@ typedef struct s_data
 	int					**pipes;
 	int					status;
 	char				*str_status;
-
-
+	// bool				is_last_cmd;
 } t_data;
 
 typedef struct s_expand
 {
-	char	*array;  
-	char	*expanded_var; 
-	char	*error_value; 
+	char	*array;
+	char	*expanded_var;
+	char	*error_value;
 	char	quote;
 	int		total_size;
-	int		size; 
+	int		size;
 	int		mode;
 	t_env	*env;
 	
@@ -105,32 +105,28 @@ typedef struct s_exec
 	t_cmd	*cmd_cur;
 	t_token	*token_cur;
 	int		status;
-	int 	**pipes_fds;
-	int 	number_of_pipes;
+	int		**pipes_fds;
+	int		number_of_pipes;
 
 } t_exec;
 
 ///------------------------Defines------------------------///
 
-# define ATOI_ERROR 3000000000
+# define	ATOI_ERROR 3000000000
 # define	SYNTAX_ERROR 2
-# define MALLOC_ERROR 1
-# define MALLOC_ERR_MSG "Error : Malloc failed\n"
-# define WRITE_ERR_MSG "Error : Writing failed"
+# define	MALLOC_ERROR 1
+# define	MALLOC_ERR_MSG "Error : Malloc failed\n"
+# define	WRITE_ERR_MSG "Error : Writing failed"
 # define	SYNTAX_ERROR_MSG "bash: syntax error near unexpected token"
-# define PERROR_ERR_MSG "Error : "
-# define HEREDOC_FILE ".ft_heredoc"
-# define WRITE_ERROR 1
+# define	PERROR_ERR_MSG "Error : "
+# define	HEREDOC_FILE ".ft_heredoc"
+# define	WRITE_ERROR 1
 
-# define STD_EX 1
-# define REMOVESQUOTES 2
-# define EXPAND 3
+# define	STD_EX 1
+# define	REMOVESQUOTES 2
+# define	EXPAND 3
 
 ///------------------------Functions------------------------///
-
-//--------------------------------debug
-void check_fd(int fd);
-
 
 //garbage collector
 int		add_to_trash(t_gc **root, void *to_free);
@@ -176,6 +172,7 @@ int		pwd(t_gc **gc);
 int		echo(char **to_echo, t_gc **gc);
 int 	cd(char **cmd, t_gc **gc, t_env *env);
 int		builtin_parse(t_env **env, t_gc **gc, char **cmd, int backup_fds[2]);
+void	get_init_pwd(t_gc **gc, t_env **env, int argc, char const *argv[]);
 
 //UTILS
 size_t		len_to_char(char *str, char c);
@@ -200,6 +197,7 @@ int			print_open_err_msg(int errnumber, char *file);
 void		close_backup_fds(int backup_fds[2]);
 int			is_valid_env_name(char *name, t_gc *gc);
 void		handle_error(char *dir_path, t_gc *gc);
+void		handle_directory_case(char *valid_path, t_gc *gc);
 
 //innits
 void				innit_here_doc(t_gc **gc, t_cmd *cmd, int *status);

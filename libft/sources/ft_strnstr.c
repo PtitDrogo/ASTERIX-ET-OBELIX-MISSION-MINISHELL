@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strnstr.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/07 13:17:34 by tfreydie          #+#    #+#             */
-/*   Updated: 2023/11/15 16:32:30 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/07 18:39:57 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,9 @@ char	*ft_strnstr(const char *big, const char *little, size_t len)
 				i++;
 			}
 			if (little[i] == '\0')
+			{	
 				return ((char *)(big + j));
+			}
 		}
 		j++;
 	}

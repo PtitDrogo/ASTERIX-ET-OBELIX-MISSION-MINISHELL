@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/10 19:21:35 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/10 23:22:00 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static void	execute_valid_input(t_data *data);
 static void	open_pipe_n_exec(t_data *data);
 static void	handle_solo_builtin(t_data *data);
-static int	basic_parsing(t_data *data, char *input,
+static int	big_parser(t_data *data, char *input,
 				t_token **token, t_cmd **cmds);
 
 int	main(int argc, char const *argv[], char **envp)
@@ -28,24 +28,16 @@ int	main(int argc, char const *argv[], char **envp)
 	data.status = exit_status(0);
 	while (1)
 	{
-		data.input = NULL; //optionnal ?
+		data.input = NULL;
 		data.status = exit_status(-1);
 		signal(SIGINT, new_prompt);
 		signal(SIGQUIT, SIG_IGN);
-		//SEE WITH FRIENDS HOW TO HANDLE THIS
-		// if (isatty(STDIN_FILENO)) //isatty(STDIN_FILENO) ?
 		data.input = readline(prompt(&data.gc, data.env));
-		// else
-		// {	
-			// data.input = get_next_line(0); // un des deux ?
-			// data.input = readline(NULL);
-		// }	
-		//SEE WITH FRIEND HOW TO HANDLE THIS
 		if (add_to_trash(&data.gc, data.input) == 0)
 			empty_trash_exit(data.gc, MALLOC_ERROR);
 		if (!data.input)
 			break ;
-		if (verify_input(data.input) && basic_parsing(&data,
+		if (verify_input(data.input) && big_parser(&data,
 				data.input, &data.token, &data.cmds) && data.token)
 			execute_valid_input(&data);
 		if (verify_input(data.input))
@@ -94,7 +86,7 @@ static void	handle_solo_builtin(t_data *data)
 	if (process_status == 0)
 		exit_status(builtin_parse(&data->env, &data->gc,
 				data->cmds->str, backup_fds));
-	if (dup2(backup_fds[0], STDIN_FILENO) == -1 || dup2(backup_fds[1], STDOUT_FILENO) == -1)
+	if (dup2(backup_fds[0], 0) == -1 || dup2(backup_fds[1], 1) == -1)
 		empty_trash_exit(data->gc, 1);
 	if (close(backup_fds[0]) == -1 || close(backup_fds[1]) == -1)
 		empty_trash_exit(data->gc, 1);
@@ -104,7 +96,7 @@ static void	handle_solo_builtin(t_data *data)
 		empty_trash_exit(data->gc, 1);
 }
 
-static int	basic_parsing(t_data *data, char *input, t_token **token, t_cmd **cmds)
+static int	big_parser(t_data *data, char *input, t_token **token, t_cmd **cmds)
 {
 	char	**split_input;
 

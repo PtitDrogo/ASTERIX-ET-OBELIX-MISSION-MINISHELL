@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/10 22:03:04 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/10 23:23:00 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 static void	update_new_array_size(t_expand *expdr, t_env *env, t_gc **gc);
 static void	fill_str(t_expand *expdr, t_gc **gc, t_env *env, int i);
 static char	**expand(t_data *data, char **arrays, int mode);
-
 
 void	expander(t_data *data)
 {

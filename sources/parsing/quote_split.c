@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/24 18:11:38 by garivo            #+#    #+#             */
-/*   Updated: 2024/06/11 19:24:20 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/11 19:00:21 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int	count_quoted_words(char *input, size_t *i)
 		while (input[++*i] && input[*i] != separator)
 			*i = *i;
 		if (!input[(*i)++])
-			return (ft_printf("Unclosed quote\n"), -1);
+			return (ft_printf2("Unclosed quote\n"), -1);
 		return (1);
 	}
 	return (0);
@@ -116,12 +116,12 @@ static char	**quote_splitting(char *input, char **res, t_gc **gc)
 	return (res);
 }
 
-char	**quote_split(char *input, t_gc **gc)
+char	**quote_split(char *input, t_gc **gc, t_data *data)
 {
 	char	**res;
 	size_t	wc;
 
-	wc = count_words(input);
+	wc = count_words(input, data);
 	if (wc == 0)
 		return (NULL);
 	res = malloc_trash(((wc + 1) * sizeof(char *)), gc);

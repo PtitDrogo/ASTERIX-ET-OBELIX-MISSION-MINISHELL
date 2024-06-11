@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   errors.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 16:01:27 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/10 16:06:51 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/11 19:23:07 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,15 +31,6 @@ void	perror_exit(t_gc *gc, int exit_code, char *err_msg)
 	exit_code = 1;
 	empty_trash_exit(gc, exit_code);
 	return ;
-}
-
-int	exit_status(int status)
-{
-	static int	exit_status;
-
-	if (status != -1)
-		exit_status = status;
-	return (exit_status);
 }
 
 void	exit_heredoc(int status)

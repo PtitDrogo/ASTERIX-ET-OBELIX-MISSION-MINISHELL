@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   here_doc.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/10 16:31:12 by garivo           ###   ########.fr       */
+/*   Updated: 2024/06/11 13:47:51 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,12 @@ int	execute_heredoc(t_data *data, t_token *current, bool do_expand)
 	int	pipe_heredoc[2];
 	int	status;
 
-	pipe(pipe_heredoc);
+	if (pipe(pipe_heredoc) == -1)
+		empty_trash_exit(data->gc, 1);
 	current->token_fd = pipe_heredoc[0];
 	status = here_doc(data, current->next->str, pipe_heredoc[1], do_expand);
-	close(pipe_heredoc[1]);
+	if (close(pipe_heredoc[1]) == -1)
+		empty_trash_exit(data->gc, 1);
 	return (status);
 }
 
@@ -63,8 +65,7 @@ bool	update_expand_bool(t_data *data, t_token *current)
 	int	before_expand_len;
 
 	before_expand_len = ft_len(current->next->str);
-	current->next->str = expand_single_str(data,
-			current->next->str, REMOVESQUOTES);
+	current->next->str = expand_single_str(data, current->next->str, RMQUOTE);
 	if ((size_t)before_expand_len != ft_len(current->next->str))
 		return (false);
 	return (true);
@@ -75,7 +76,7 @@ int	here_doc(t_data *data, char *delim, int fd, bool do_expand)
 	int		status;
 	int		pid;
 
-	global_fd(fd);
+	set_n_get_fd(fd);
 	pid = fork();
 	if (pid == -1)
 		exit_heredoc(EXIT_FAILURE);

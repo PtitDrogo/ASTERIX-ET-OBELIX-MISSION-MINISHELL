@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 15:58:57 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/06 15:21:17 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/10 14:06:08 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@ void	before_expand_innit(t_data *data)
 void	innit_here_doc(t_gc **gc, t_cmd *cmd, int *status)
 {
 	*status = EXIT_SUCCESS;
-	global_gc(gc);
-	global_cmd(cmd);
+	set_n_get_gc(gc);
+	set_n_get_cmd(cmd);
 }
 
 int	minishell_graceful_exit(t_gc *gc)

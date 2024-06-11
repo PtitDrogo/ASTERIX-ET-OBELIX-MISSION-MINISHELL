@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/11 13:43:18 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/11 15:22:29 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ int	exec(t_data *data, int **pipes_fds, int number_of_pipes)
 			empty_trash_exit(data->gc, 1);
 		exec.cmd_cur = exec.cmd_cur->next;
 	}
+	//REMOVE ME DURING THE MERGE
 	if (exec.status == 130)
 	{
 		if (ft_printf("\n") == -1)
@@ -46,6 +47,7 @@ int	exec(t_data *data, int **pipes_fds, int number_of_pipes)
 	if (exec.status == 131)
 		if (ft_printf("Core Dumped\n") == -1)
 			return (2);
+	//REMOVE ME DURING THE MERGE
 	return (exec.status);
 }
 

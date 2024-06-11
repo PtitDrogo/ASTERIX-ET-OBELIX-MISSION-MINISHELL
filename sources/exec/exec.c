@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/11 15:22:29 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/11 15:38:45 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,16 +38,8 @@ int	exec(t_data *data, int **pipes_fds, int number_of_pipes)
 			empty_trash_exit(data->gc, 1);
 		exec.cmd_cur = exec.cmd_cur->next;
 	}
-	//REMOVE ME DURING THE MERGE
-	if (exec.status == 130)
-	{
-		if (ft_printf("\n") == -1)
-			return (2);
-	}
-	if (exec.status == 131)
-		if (ft_printf("Core Dumped\n") == -1)
-			return (2);
-	//REMOVE ME DURING THE MERGE
+	if (react_status(exec) == -1)
+		return (2);
 	return (exec.status);
 }
 

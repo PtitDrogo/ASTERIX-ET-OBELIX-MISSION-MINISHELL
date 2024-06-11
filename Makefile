@@ -40,6 +40,7 @@ SRCS =		$(SRCS_DIR)/builtins/export.c \
 			$(SRCS_DIR)/utils/utils3.c \
 			$(SRCS_DIR)/prompt/prompt.c \
 			$(SRCS_DIR)/prompt/input_check.c \
+			$(SRCS_DIR)/exec/exec_utils3.c \
 			$(SRCS_DIR)/exec/exec_utils2.c \
 			$(SRCS_DIR)/exec/exec_utils.c \
 			$(SRCS_DIR)/exec/exec.c \

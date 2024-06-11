@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/11 13:13:30 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/11 14:43:23 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,7 @@ static void	update_new_array_size(t_expand *x, t_env *env, t_gc **gc)
 		else if (is_valid_dollar(x, i))
 		{
 			cur_var = get_expand_str(&x->array[i + 1], gc);
-			if (dollar_edge_cases(x, &i, gc, cur_var))
+			if (dollar_edge_cases(x, &i, cur_var))
 				;
 			else if (x->array[i + 1] == '?')
 				var_up(&x->total_size, &i, ft_len(x->error_value), 2);

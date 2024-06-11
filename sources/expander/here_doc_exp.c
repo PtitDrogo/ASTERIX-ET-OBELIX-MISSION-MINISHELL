@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   here_doc_exp.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:56:24 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/11 13:13:24 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/11 14:42:25 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ bool	is_valid_dollar(t_expand *x, int i)
 		&& x->in_here_doc == false);
 }
 
-int	dollar_edge_cases(t_expand *x, int *i, t_gc **gc, char *cur_var)
+int	dollar_edge_cases(t_expand *x, int *i, char *cur_var)
 {
 	if ((x->array[(*i) + 1] == '\'' || x->array[(*i) + 1] == '\"')
 		&& x->quote == '\0')

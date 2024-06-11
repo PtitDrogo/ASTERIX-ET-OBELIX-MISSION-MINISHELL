@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 21:56:24 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/11 14:42:25 by garivo           ###   ########.fr       */
+/*   Updated: 2024/06/11 15:38:56 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,23 @@ int	dollar_edge_cases(t_expand *x, int *i, char *cur_var)
 	}
 	else if (ft_len(cur_var) == 0)
 	{
+		var_up(&x->total_size, i, 1, 1);
+		return (1);
+	}
+	return (0);
+}
+
+int	quotes_cases(t_expand *x, int *i)
+{
+	if ((x->array[*i] == '\'' || x->array[*i] == '\"' ) && x->mode == RMQUOTE)
+	{
+		var_up(&x->total_size, i, up_quote(x->array[*i], &x->quote), 1);
+		return (1);
+	}
+	else if ((x->array[*i] == '\'' || x->array[*i] == '\"' )
+		&& x->mode != RMQUOTE)
+	{
+		up_quote(x->array[*i], &x->quote);
 		var_up(&x->total_size, i, 1, 1);
 		return (1);
 	}

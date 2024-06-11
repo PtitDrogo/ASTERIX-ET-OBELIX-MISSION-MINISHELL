@@ -6,7 +6,11 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2024/06/11 15:12:22 by garivo           ###   ########.fr       */
+=======
+/*   Updated: 2024/06/11 15:19:39 by tfreydie         ###   ########.fr       */
+>>>>>>> main
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,6 +156,7 @@ int			get_to_end_of_heredoc(t_expand *x, int i);
 void		handle_heredoc_case(t_expand *x, int i);
 bool		is_valid_dollar(t_expand *x, int i);
 int			dollar_edge_cases(t_expand *x, int *i, char *cur_var);
+int			quotes_cases(t_expand *x, int *i);
 
 //expander utils
 void		var_up(int *var_1, int *var_2, int add_to_1, int add_to_2);

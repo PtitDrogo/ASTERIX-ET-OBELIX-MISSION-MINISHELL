@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:30:55 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/11 14:43:23 by garivo           ###   ########.fr       */
+/*   Updated: 2024/06/11 15:38:52 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,8 +126,8 @@ static void	update_new_array_size(t_expand *x, t_env *env, t_gc **gc)
 	while (x->array[i])
 	{
 		handle_heredoc_case(x, i);
-		if ((x->array[i] == '\'' || x->array[i] == '\"' ) && x->mode == RMQUOTE)
-			var_up(&x->total_size, &i, up_quote(x->array[i], &x->quote), 1);
+		if (quotes_cases(x, &i))
+			;
 		else if (is_valid_dollar(x, i))
 		{
 			cur_var = get_expand_str(&x->array[i + 1], gc);
@@ -136,8 +136,8 @@ static void	update_new_array_size(t_expand *x, t_env *env, t_gc **gc)
 			else if (x->array[i + 1] == '?')
 				var_up(&x->total_size, &i, ft_len(x->error_value), 2);
 			else
-				var_up(&x->total_size, &i,
-					ft_len(env_var(env, cur_var)) - 1, ft_len(cur_var));
+				var_up(&x->total_size, &i, ft_len(env_var(env, cur_var)) - 1,
+					ft_len(cur_var));
 		}
 		else
 			var_up(&x->total_size, &i, 1, 1);

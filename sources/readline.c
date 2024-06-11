@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/11 18:58:59 by garivo           ###   ########.fr       */
+/*   Updated: 2024/06/11 19:38:31 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ int	main(int argc, char const *argv[], char **envp)
 		signal(SIGINT, new_prompt);
 		signal(SIGQUIT, SIG_IGN);
 		data.input = readline(prompt(&data.gc, data.env));
-		data.status = exit_status(-1);
 		if (add_to_trash(&data.gc, data.input) == 0)
 			empty_trash_exit(data.gc, MALLOC_ERROR);
 		if (!data.input)

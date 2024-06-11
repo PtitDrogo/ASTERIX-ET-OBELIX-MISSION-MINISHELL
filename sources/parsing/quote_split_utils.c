@@ -6,13 +6,13 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 17:30:52 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/11 17:26:50 by garivo           ###   ########.fr       */
+/*   Updated: 2024/06/11 19:03:56 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-size_t	count_words(char *input)
+size_t	count_words(char *input, t_data *data)
 {
 	size_t	i;
 	size_t	wc;
@@ -26,7 +26,10 @@ size_t	count_words(char *input)
 	{
 		quoted_count = count_quoted_words(input, &i);
 		if (quoted_count == -1)
+		{
+			data->status = 2;
 			return (0);
+		}
 		if ((quoted_count == 1 && firstchar && ++wc > 0))
 			firstchar = 0;
 		if (quoted_count == 0)

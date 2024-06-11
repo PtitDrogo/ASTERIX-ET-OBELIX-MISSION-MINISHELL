@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/11 15:47:12 by garivo           ###   ########.fr       */
+/*   Updated: 2024/06/11 18:59:57 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,7 +207,6 @@ void		handle_directory_case(char *valid_path, t_gc *gc);
 
 //innits
 void		innit_here_doc(t_gc **gc, t_cmd *cmd, int *status);
-void		before_expand_innit(t_data *data);
 
 //errors && exit
 void		perror_exit(t_gc *gc, int exit_code, char *err_msg);
@@ -250,8 +249,8 @@ void		set_to_last_redir(t_token **tokenpile);
 int			syntax_error(t_token *token, t_gc *gc);
 
 //quote_split
-char		**quote_split(char *input, t_gc **gc);
-size_t		count_words(char *input);
+char		**quote_split(char *input, t_gc **gc, t_data *data);
+size_t		count_words(char *input, t_data *data);
 size_t		extract_len(char *input);
 char		*extract_redirection(char *input, char *res, size_t *index);
 void		extract(char *input, char *res, size_t *index);

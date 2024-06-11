@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/11 18:59:57 by garivo           ###   ########.fr       */
+/*   Updated: 2024/06/11 19:23:25 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,7 +211,6 @@ void		innit_here_doc(t_gc **gc, t_cmd *cmd, int *status);
 //errors && exit
 void		perror_exit(t_gc *gc, int exit_code, char *err_msg);
 void		empty_trash_exit(t_gc *gc, int exit_code);
-int			exit_status(int status);
 void		exit_heredoc(int status);
 void		free_heredoc(void);
 int			print_open_err_msg(int errnumber, char *file);

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 14:07:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/10 23:20:01 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/11 13:38:45 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,6 @@ int	handle_status(int *status)
 		*status = WEXITSTATUS(*status);
 	else if (WIFSIGNALED(*status))
 		*status = 128 + WTERMSIG(*status);
-	if (*status == 130)
-	{
-		if (ft_printf("\n") == -1)
-			return (2);
-	}
 	return (1);
 }
 

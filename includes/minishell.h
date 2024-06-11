@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/10 22:00:30 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/11 13:13:28 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ typedef struct s_exec
 # define	WRITE_ERROR 1
 
 # define	STD_EX 1
-# define	REMOVESQUOTES 2
+# define	RMQUOTE 2
 # define	EXPAND 3
 
 ///------------------------Functions------------------------///
@@ -154,6 +154,7 @@ void	expander(t_data *data);
 int		get_to_end_of_heredoc(t_expand *x, int i);
 void	handle_heredoc_case(t_expand *x, int i);
 bool    is_valid_dollar(t_expand *x, int i);
+int		dollar_edge_cases(t_expand *x, int *i, t_gc **gc, char *cur_var);
 
 //expander utils
 void	var_up(int *var_1, int *var_2, int add_to_1, int add_to_2);

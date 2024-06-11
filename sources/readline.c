@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/10 16:36:19 by garivo           ###   ########.fr       */
+/*   Updated: 2024/06/11 13:31:41 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,13 +33,8 @@ int	main(int argc, char const *argv[], char **envp)
 		signal(SIGINT, new_prompt);
 		signal(SIGQUIT, SIG_IGN);
 		//SEE WITH FRIENDS HOW TO HANDLE THIS
-		if (isatty(STDIN_FILENO)) //isatty(STDIN_FILENO) ?
-			data.input = readline(prompt(&data.gc, data.env));
-		else
-		{	
-			data.input = get_next_line(0); // un des deux ?
+		data.input = readline(prompt(&data.gc, data.env));
 			// data.input = readline(NULL);
-		}	
 		//SEE WITH FRIEND HOW TO HANDLE THIS
 		if (add_to_trash(&data.gc, data.input) == 0)
 			empty_trash_exit(data.gc, MALLOC_ERROR);

@@ -6,7 +6,7 @@
 /*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/24 18:11:38 by garivo            #+#    #+#             */
-/*   Updated: 2024/06/11 13:21:58 by garivo           ###   ########.fr       */
+/*   Updated: 2024/06/11 13:28:52 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,6 @@ char	**quote_split(char *input, t_gc **gc)
 	wc = count_words(input);
 	if (wc == 0)
 		return (NULL);
-	//ft_printf("wc : %i\n", wc);
-	res = malloc_trash((wc + 1) * sizeof(char *), gc);
+	res = malloc_trash(((wc + 1) * sizeof(char *)), gc);
 	return (quote_splitting(input, res, gc));
 }

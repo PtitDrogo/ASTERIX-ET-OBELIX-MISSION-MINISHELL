@@ -69,7 +69,11 @@ static void	fill_cmd(t_token **token, t_cmd *cmd, t_gc **gc)
 				add_token(redir, dup_token(*token, gc));
 		}
 		else
+		{
 			add_str(&cmd->str, (*token)->str, gc);
+			if (cmd->str && cmd->str[0])
+				cmd->empty = (cmd->str[0][0] == '\0');
+		}
 		if (*token)
 			*token = (*token)->next;
 	}

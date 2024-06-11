@@ -32,6 +32,7 @@ int	main(int argc, char const *argv[], char **envp)
 		signal(SIGINT, new_prompt);
 		signal(SIGQUIT, SIG_IGN);
 		data.input = readline(prompt(&data.gc, data.env));
+		data.status = exit_status(-1);
 		if (add_to_trash(&data.gc, data.input) == 0)
 			empty_trash_exit(data.gc, MALLOC_ERROR);
 		if (!data.input)

@@ -1,0 +1,10 @@
+includes
+libft
+Makefile
+minishell
+minishell_tester
+README.md
+salut
+salut.txt
+sources
+suppressions.supp

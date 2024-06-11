@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/11 15:38:45 by garivo           ###   ########.fr       */
+/*   Updated: 2024/06/11 19:22:49 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ static void	child_process(t_data *data, t_exec *exec)
 		close_all_heredoc_pipes(data->cmds, data->gc);
 		if (status != 0)
 			empty_trash_exit(data->gc, 1);
-		if (get_correct_cmd(exec->cmd_cur) == 0)
+		if (exec->cmd_cur->empty == true && get_correct_cmd(exec->cmd_cur) == 0)
 			empty_trash_exit(data->gc, 0);
 		valid_path = find_valid_path(exec->cmd_cur, exec->envp, &data->gc);
 		handle_directory_case(valid_path, data->gc);
@@ -126,11 +126,12 @@ static char	*find_valid_path(t_cmd *cmd, char **envp, t_gc **gc)
 	char	**paths;
 	int		i;
 
-	if (envp == NULL || cmd == NULL || cmd->str == NULL || cmd->str[0] == NULL)
+	if (envp == NULL || cmd == NULL || cmd->str == NULL
+		|| cmd->str[0] == NULL || !cmd->str[0][0])
 		return (NULL);
 	if (is_char_in_str(*(cmd->str), '/') == true)
 		return (try_path(*(cmd->str)));
-	path = find_env_variable(envp, "PATH");
+	path = find_env_variable(envp, "PATH=");
 	if (path == NULL)
 		return (NULL);
 	paths = (char **)setter_double_p_gc((void **)ft_split(path, ':'), gc);

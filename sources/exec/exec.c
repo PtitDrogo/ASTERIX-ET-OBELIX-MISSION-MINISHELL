@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 22:42:42 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/11 13:38:58 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/11 13:43:18 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ static void	child_process(t_data *data, t_exec *exec)
 		perror_exit(data->gc, errno, "Error creating subshell");
 	if (exec->cmd_cur->cmd_id == 0)
 	{
-		status = process_behavior(exec->cmd_cur, &data->gc, exec->token_cur);
+		status = process_behavior(exec->cmd_cur, exec->token_cur);
 		close_all_pipes(exec->pipes_fds, data->gc, exec->number_of_pipes);
 		close_all_heredoc_pipes(data->cmds, data->gc);
 		if (status != 0)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   quote_split_utils.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 17:30:52 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/05 17:41:07 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/11 13:17:51 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,17 +24,19 @@ size_t	count_words(char *input)
 	i = 0;
 	while (input[i])
 	{
-		quoted_count = count_quoted_words(input, &i, &firstchar);
+		quoted_count = count_quoted_words(input, &i);
 		if (quoted_count == -1)
 			return (0);
-		wc += count_unquoted_words(input, &i, quoted_count, &firstchar);
+		if ((quoted_count == 1 && firstchar && ++wc > 0))
+			firstchar = 0;
+		if (quoted_count == 0)
+			wc += count_unquoted_words(input, &i, &firstchar);
 	}
 	return (wc);
 }
 
 size_t	extract_len(char *input)
 {
-	char	separator;
 	size_t	i;
 
 	i = 0;

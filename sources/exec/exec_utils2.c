@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 14:10:35 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/07 17:16:29 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/10 16:33:23 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,8 @@ t_token	*get_next_first_token(t_token *token_root)
 char	*ft_strjoin_and_add(char const *s1, char const *s2, char c)
 {
 	char	*joined;
-	int		s1_len;
-	int		s2_len;
+	size_t	s1_len;
+	size_t	s2_len;
 	size_t	i;
 	size_t	j;
 

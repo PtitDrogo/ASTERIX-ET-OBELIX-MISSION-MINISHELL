@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/11 13:13:24 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/11 13:47:51 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,9 +65,8 @@ bool	update_expand_bool(t_data *data, t_token *current)
 	int	before_expand_len;
 
 	before_expand_len = ft_len(current->next->str);
-	current->next->str = expand_single_str(data,
-			current->next->str, RMQUOTE);
-	if (before_expand_len != ft_len(current->next->str))
+	current->next->str = expand_single_str(data, current->next->str, RMQUOTE);
+	if ((size_t)before_expand_len != ft_len(current->next->str))
 		return (false);
 	return (true);
 }

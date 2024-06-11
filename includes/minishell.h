@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/11 13:13:28 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/11 13:48:15 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,7 +225,7 @@ int		**open_pipes(t_cmd *cmds, t_gc **gc, int number_of_pipes);
 int 	exec(t_data *data, int **pipes_fds, int number_of_pipes);
 int		count_pipes(t_token *token_list);
 int		builtin_parse(t_env **env, t_gc **gc, char **cmd, int backup_fds[2]);
-int		process_behavior(t_cmd *cmds, t_gc **gc, t_token *token_cur);
+int		process_behavior(t_cmd *cmds, t_token *token_cur);
 t_token *get_next_first_token(t_token *token_root);
 char	*ft_strjoin_and_add(char const *s1, char const *s2, char c);
 void	close_all_pipes(int **pipes_fds, t_gc *gc, int number_of_pipes);
@@ -254,8 +254,8 @@ size_t	count_words(char *input);
 size_t	extract_len(char *input);
 char	*extract_redirection(char *input, char *res, size_t *index);
 void	extract(char *input, char *res, size_t *index);
-size_t	count_unquoted_words(char *input, size_t *i, int quoted_count, int *firstchar);
-int		count_quoted_words(char *input, size_t *i, int *firstchar);
+size_t	count_unquoted_words(char *input, size_t *i, int *firstchar);
+int		count_quoted_words(char *input, size_t *i);
 size_t	get_extract_len(char *input);
 
 //Syntax_error

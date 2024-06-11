@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/10 23:22:00 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/11 13:46:06 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ static void	handle_solo_builtin(t_data *data)
 	backup_fds[1] = dup(1);
 	if (backup_fds[0] == -1 || backup_fds[1] == -1)
 		empty_trash_exit(data->gc, 1);
-	process_status = process_behavior(data->cmds, &data->gc, data->token);
+	process_status = process_behavior(data->cmds, data->token);
 	close_all_heredoc_pipes(data->cmds, data->gc);
 	if (process_status == 0)
 		exit_status(builtin_parse(&data->env, &data->gc,

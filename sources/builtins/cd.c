@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:54:37 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/07 17:21:34 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/10 16:29:44 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ char		*safe_get_var(t_env *env, t_gc *gc, char *variable);
 
 int	cd(char **cmd, t_gc **gc, t_env *env)
 {
-	char	*home;
 	char	*dir_path;
 
 	if (cmd == NULL || cmd[0] == NULL)

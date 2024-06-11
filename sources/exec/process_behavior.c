@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_behavior.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 06:19:34 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/07 19:06:17 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/10 16:34:46 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int	handle_in_redin(t_token **token_cur, int *tmp_fd, t_token **in);
 int	handle_in_redout(t_token **token_cur, int *tmp_fd, t_token **out);
 int	handle_dup(t_token **token_cur, int *tmp_fd, t_token **in_out, int std);
 
-int	process_behavior(t_cmd *cmds, t_gc **gc, t_token *current)
+int	process_behavior(t_cmd *cmds, t_token *current)
 {
 	int		tmp_fd;
 	int		err;

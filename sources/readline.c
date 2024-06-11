@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptitdrogo <ptitdrogo@student.42.fr>        +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/08 11:54:11 by ptitdrogo        ###   ########.fr       */
+/*   Updated: 2024/06/10 16:36:19 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ static void	handle_solo_builtin(t_data *data)
 
 	backup_fds[0] = dup(0);
 	backup_fds[1] = dup(1);
-	process_status = process_behavior(data->cmds, &data->gc, data->token);
+	process_status = process_behavior(data->cmds, data->token);
 	close_all_heredoc_pipes(data->cmds, data->gc);
 	if (process_status == 0)
 		exit_status(builtin_parse(&data->env, &data->gc,

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   here_doc.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/01 16:47:43 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/06 12:19:47 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/10 16:31:12 by garivo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ bool	update_expand_bool(t_data *data, t_token *current)
 	before_expand_len = ft_len(current->next->str);
 	current->next->str = expand_single_str(data,
 			current->next->str, REMOVESQUOTES);
-	if (before_expand_len != ft_len(current->next->str))
+	if ((size_t)before_expand_len != ft_len(current->next->str))
 		return (false);
 	return (true);
 }

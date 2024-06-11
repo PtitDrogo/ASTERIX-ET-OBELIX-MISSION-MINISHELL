@@ -6,11 +6,13 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 19:05:05 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/07 19:05:10 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/11 15:34:09 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+static void	handle_extra_arg(t_gc **gc, char const *argv[]);
 
 int	pwd(t_gc **gc)
 {
@@ -37,7 +39,8 @@ void	get_init_pwd(t_gc **gc, t_env **env, int argc, char const *argv[])
 	t_env	*pwd_node;
 	char	*pwd_str;
 
-	(void)argc;
+	if (argc > 1)
+		handle_extra_arg(gc, argv);
 	(void)argv;
 	pwd_node = get_env_node(*env, "PWD");
 	if (pwd_node != NULL)
@@ -56,5 +59,12 @@ void	get_init_pwd(t_gc **gc, t_env **env, int argc, char const *argv[])
 		malloc_check(pwd_str, *gc);
 		export(env, pwd_str, gc);
 	}
+}
+
+static void	handle_extra_arg(t_gc **gc, char const *argv[])
+{
+	if (ft_printf2("bash: %s: No such file or directory\n", argv[1]) == -1)
+		perror_exit(*gc, errno, WRITE_ERR_MSG);
+	empty_trash_exit(*gc, 127);
 	return ;
 }

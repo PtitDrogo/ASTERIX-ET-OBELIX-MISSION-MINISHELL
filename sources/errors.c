@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   errors.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 16:01:27 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/11 19:23:07 by garivo           ###   ########.fr       */
+/*   Updated: 2024/06/11 19:54:03 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,4 +50,13 @@ void	free_heredoc(void)
 	gc = set_n_get_gc(NULL);
 	close_all_heredoc_pipes(set_n_get_cmd(NULL), *gc);
 	close(set_n_get_fd(-1));
+}
+
+int	exit_status(int status)
+{
+	static int	exit_status;
+
+	if (status != -1)
+		exit_status = status;
+	return (exit_status);
 }

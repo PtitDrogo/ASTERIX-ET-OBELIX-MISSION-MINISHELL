@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   readline.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/11 18:58:59 by garivo           ###   ########.fr       */
+/*   Updated: 2024/06/11 20:09:27 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,10 @@ int	main(int argc, char const *argv[], char **envp)
 	data.status = 0;
 	while (1)
 	{
-		data.input = NULL;
-		signal(SIGINT, new_prompt);
-		signal(SIGQUIT, SIG_IGN);
+		readline_init(&data.input);
 		data.input = readline(prompt(&data.gc, data.env));
-		data.status = exit_status(-1);
+		if (exit_status(-1) == 130)
+			data.status = 130;
 		if (add_to_trash(&data.gc, data.input) == 0)
 			empty_trash_exit(data.gc, MALLOC_ERROR);
 		if (!data.input)
@@ -43,6 +42,7 @@ int	main(int argc, char const *argv[], char **envp)
 		if (verify_input(data.input))
 			add_history(data.input);
 		recycle_trash_new(&data.gc, data.env);
+		exit_status(0);
 	}
 	return (minishell_graceful_exit(data.gc));
 }

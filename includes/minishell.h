@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/11 15:47:12 by garivo           ###   ########.fr       */
+/*   Updated: 2024/06/11 19:22:49 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ typedef struct s_cmd
 	t_token					*redirection_out;
 	struct s_cmd			*next;
 	int						cmd_id;
+	bool					empty;
 }	t_cmd;
 
 typedef struct s_data
@@ -83,6 +84,7 @@ typedef struct s_data
 	int					**pipes;
 	int					status;
 	char				*str_status;
+
 }	t_data;
 
 typedef struct s_expand

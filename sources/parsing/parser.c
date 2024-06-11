@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 17:48:23 by garivo            #+#    #+#             */
-/*   Updated: 2024/06/05 17:37:18 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/11 19:24:39 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,11 @@ static void	fill_cmd(t_token **token, t_cmd *cmd, t_gc **gc)
 				add_token(redir, dup_token(*token, gc));
 		}
 		else
+		{
 			add_str(&cmd->str, (*token)->str, gc);
+			if (cmd->str && cmd->str[0])
+				cmd->empty = (cmd->str[0][0] == '\0');
+		}
 		if (*token)
 			*token = (*token)->next;
 	}

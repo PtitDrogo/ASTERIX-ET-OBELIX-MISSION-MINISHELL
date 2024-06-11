@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   quote_split_utils.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 17:30:52 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/11 17:26:50 by garivo           ###   ########.fr       */
+/*   Updated: 2024/06/11 19:25:14 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,6 @@ void	extract(char *input, char *res, size_t *index)
 			separator = input[i - 1];
 			while (input[i] && input[i] != separator && ++*index)
 				i++;
-			//if (i - quote_start > 1)
 			ft_strncat(&input[quote_start], res, i - quote_start + 1);
 		}
 		else

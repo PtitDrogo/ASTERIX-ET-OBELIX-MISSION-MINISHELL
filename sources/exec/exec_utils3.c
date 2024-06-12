@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils3.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: garivo <garivo@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/11 15:03:22 by garivo            #+#    #+#             */
-/*   Updated: 2024/06/11 15:13:59 by garivo           ###   ########.fr       */
+/*   Updated: 2024/06/12 13:54:16 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	react_status(t_exec exec)
 			return (-1);
 	}
 	if (exec.status == 131)
-		if (ft_printf("Core Dumped\n") == -1)
+		if (ft_printf("Quit Core Dumped\n") == -1)
 			return (-1);
 	return (0);
 }

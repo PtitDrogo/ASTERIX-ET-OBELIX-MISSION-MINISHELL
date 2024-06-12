@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 12:01:34 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/11 20:09:06 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/12 13:55:13 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ void	handle_directory_case(char *valid_path, t_gc *gc)
 
 void	readline_init(char **input)
 {
-		*input = NULL;
-		signal(SIGINT, new_prompt);
-		signal(SIGQUIT, SIG_IGN);
+	*input = NULL;
+	signal(SIGINT, new_prompt);
+	signal(SIGQUIT, SIG_IGN);
 }

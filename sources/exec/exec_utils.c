@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 14:07:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/11 19:18:40 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/12 14:13:32 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void	handle_command(t_data *data, t_exec *exec, char *valid_path)
 {
 	if (is_builtin(exec->cmd_cur->str))
 	{
-		builtin_parse(&data->env, &data->gc, exec->cmd_cur->str, NULL);
+		builtin_parse(&data->env, data, exec->cmd_cur->str, NULL);
 		empty_trash_exit(data->gc, 0);
 	}
 	execve(valid_path, exec->cmd_cur->str, exec->envp);

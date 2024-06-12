@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:14:17 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/11 20:08:49 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/12 14:12:30 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,7 @@ typedef struct s_data
 	int					**pipes;
 	int					status;
 	char				*str_status;
+	bool				is_solo_b_in;
 
 }	t_data;
 
@@ -173,12 +174,12 @@ void		init_expander_struct(t_expand *expdr,
 int			unset(t_env *env, char *env_to_find);
 int			export(t_env **root, void *variable, t_gc **gc);
 int			env_builtin(t_env *env, t_gc *gc);
-int			ft_exit(char **args, t_gc *gc, int backup_fds[2]);
+int			ft_exit(char **args, t_gc *gc, int backup_fds[2], bool is_solo_b);
 int			sorted_env_print(t_env *env, t_gc *gc);
 int			pwd(t_gc **gc);
 int			echo(char **to_echo, t_gc **gc);
 int			cd(char **cmd, t_gc **gc, t_env *env);
-int			builtin_parse(t_env **env, t_gc **gc,
+int			builtin_parse(t_env **env, t_data *data,
 				char **cmd, int backup_fds[2]);
 void		get_init_pwd(t_gc **gc, t_env **env, int argc, char const *argv[]);
 
@@ -225,8 +226,6 @@ int			exit_status(int status);
 int			**open_pipes(t_cmd *cmds, t_gc **gc, int number_of_pipes);
 int			exec(t_data *data, int **pipes_fds, int number_of_pipes);
 int			count_pipes(t_token *token_list);
-int			builtin_parse(t_env **env, t_gc **gc,
-				char **cmd, int backup_fds[2]);
 int			process_behavior(t_cmd *cmds, t_token *token_cur);
 t_token		*get_next_first_token(t_token *token_root);
 char		*ft_strjoin_and_add(char const *s1, char const *s2, char c);

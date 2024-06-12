@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/19 16:35:49 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/11 20:09:27 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/12 14:22:02 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int	main(int argc, char const *argv[], char **envp)
 			data.status = 130;
 		if (add_to_trash(&data.gc, data.input) == 0)
 			empty_trash_exit(data.gc, MALLOC_ERROR);
-		if (!data.input)
+		if (!data.input && ft_printf("Exit\n"))
 			break ;
 		if (verify_input(data.input) && big_parser(&data,
 				data.input, &data.token, &data.cmds) && data.token)
@@ -52,6 +52,7 @@ static void	execute_valid_input(t_data *data)
 	signal(SIGINT, cancel_cmd);
 	signal(SIGQUIT, cancel_cmd);
 	data->status = parse_all_here_docs(data);
+	data->is_solo_b_in = false;
 	if (data->status == EXIT_SUCCESS)
 	{
 		expander(data);
@@ -77,6 +78,7 @@ static void	handle_solo_builtin(t_data *data)
 	int	backup_fds[2];
 	int	process_status;
 
+	data->is_solo_b_in = true;
 	backup_fds[0] = dup(0);
 	backup_fds[1] = dup(1);
 	if (backup_fds[0] == -1 || backup_fds[1] == -1)
@@ -84,7 +86,7 @@ static void	handle_solo_builtin(t_data *data)
 	process_status = process_behavior(data->cmds, data->token);
 	close_all_heredoc_pipes(data->cmds, data->gc);
 	if (process_status == 0)
-		data->status = builtin_parse(&data->env, &data->gc,
+		data->status = builtin_parse(&data->env, data,
 				data->cmds->str, backup_fds);
 	if (dup2(backup_fds[0], 0) == -1 || dup2(backup_fds[1], 1) == -1)
 		empty_trash_exit(data->gc, 1);

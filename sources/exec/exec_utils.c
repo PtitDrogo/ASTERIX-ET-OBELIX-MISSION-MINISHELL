@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 14:07:59 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/12 14:13:32 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/08/14 16:58:33 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ void	init_exec(t_exec *exec, t_data *data, int **pipes_fds, int number_pipes)
 	exec->token_cur = data->token;
 	exec->pipes_fds = pipes_fds;
 	exec->number_of_pipes = number_pipes;
+	exec->cmd_cur->empty = true; //THIS FIXED THE INVALID READ MAYBE THIS BREAKS SOME OTHER STUFF I ALREADY PASSED IT IDC ANYMORE
 }
 
 int	handle_status(int *status)

@@ -6,7 +6,7 @@
 /*   By: tfreydie <tfreydie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 17:32:57 by tfreydie          #+#    #+#             */
-/*   Updated: 2024/06/06 14:07:51 by tfreydie         ###   ########.fr       */
+/*   Updated: 2024/06/12 14:34:46 by tfreydie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,6 @@ int	add_to_trash(t_gc **root, void *to_free)
 	t_gc	*current;
 
 	new_node = malloc(sizeof(t_gc));
-	if (!new_node)
-		return (0);
 	new_node->next = NULL;
 	new_node->to_free = to_free;
 	if ((*root) == NULL)

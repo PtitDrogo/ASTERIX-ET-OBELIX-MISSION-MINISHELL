@@ -88,7 +88,7 @@ $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@ 
 	@printf $(UP)$(CUT)
 
-$(NAME): $(OBJS) $(LIBFT) Makefile
+$(NAME): $(OBJS) $(LIBFT) Makefile 
 	@echo "$(YELLOW)Compiling [$<]$(RESET)"
 	@$(CC) $(OBJS) $(CFLAGS) -lreadline $(INCLUDES) $(LINKLIBS) -o $@ 
 	@printf $(UP)$(CUT)

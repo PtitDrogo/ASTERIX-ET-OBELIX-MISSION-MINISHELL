@@ -89,7 +89,7 @@ size_t	get_extract_len(char *input)
 				len++;
 		}
 		else if (++i > 0 && ++len > 0)
-			;
+			continue; //Used to be only ; and made compilers cry
 	}
 	return (len);
 }
